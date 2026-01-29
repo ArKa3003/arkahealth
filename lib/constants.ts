@@ -54,6 +54,12 @@ export const navLinks = [
   { href: routes.ins, label: "ARKA-INS" },
 ] as const;
 
+export const demoNavLinks = [
+  { href: routes.clin, label: "ARKA-CLIN", icon: "Stethoscope" },
+  { href: routes.ed, label: "ARKA-ED", icon: "GraduationCap" },
+  { href: routes.ins, label: "ARKA-INS", icon: "Shield" },
+] as const;
+
 export const phaseCards = [
   {
     id: "clin",

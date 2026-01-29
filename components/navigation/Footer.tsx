@@ -11,7 +11,7 @@ export function Footer() {
           <p className="text-sm text-neutral-600 dark:text-neutral-400">
             © {new Date().getFullYear()} ARKA Health. Clinical decision support for imaging.
           </p>
-          <ul className="flex flex-wrap gap-6">
+          <ul className="flex flex-wrap items-center gap-6">
             {navLinks.map(({ href, label }) => (
               <li key={href}>
                 <Link
@@ -22,6 +22,14 @@ export function Footer() {
                 </Link>
               </li>
             ))}
+            <li>
+              <Link
+                href="mailto:contact@arkahealth.com"
+                className="text-sm text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
+              >
+                Contact
+              </Link>
+            </li>
           </ul>
         </div>
       </div>

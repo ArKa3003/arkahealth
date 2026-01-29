@@ -1,33 +1,314 @@
 @import "tailwindcss";
+@config "../tailwind.config.ts";
 
+/* Class-based dark mode (override default media query); dark is default via html.dark in layout */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ==========================================================================
+   1. CSS custom properties for all ARKA colors
+   ========================================================================== */
 :root {
-  --background: #ffffff;
-  --foreground: #0f172a;
-  --primary: #2563eb;
-  --primary-foreground: #ffffff;
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
+  /* ARKA color palette (use anywhere via var(--arka-*)) */
+  --arka-primary: #5b9bd5;
+  --arka-cyan: #00d9ff;
+  --arka-deep: #2c5f8d;
+  --arka-light: #a8d5e2;
+  --arka-pale: #e8f4f8;
+  --arka-bg-dark: #0d1929;
+  --arka-bg-medium: #1a2942;
+  --arka-text: #ffffff;
+  --arka-text-muted: #e8f4f8;
+  --arka-text-soft: #b8d8e8;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-primary: var(--primary);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@theme {
+  /* ARKA color palette (Tailwind theme) */
+  --color-arka-primary: #5b9bd5;
+  --color-arka-cyan: #00d9ff;
+  --color-arka-deep: #2c5f8d;
+  --color-arka-light: #a8d5e2;
+  --color-arka-pale: #e8f4f8;
+  --color-arka-bg-dark: #0d1929;
+  --color-arka-bg-medium: #1a2942;
+  --color-arka-text: #ffffff;
+  --color-arka-text-muted: #e8f4f8;
+  --color-arka-text-soft: #b8d8e8;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0f172a;
-    --foreground: #f8fafc;
-    --muted: #1e293b;
-    --muted-foreground: #94a3b8;
+  /* Typography: headings & body use Inter, accent/tagline use Georgia */
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-accent: "Georgia", ui-serif, serif;
+
+  /* Default transition: 300ms ease-out */
+  --transition-duration: 300ms;
+  --transition-timing-function: ease-out;
+  --ease-arka: ease-out;
+
+  /* Glow shadow (arka-cyan at 20% opacity) */
+  --shadow-glow: 0 0 20px 4px rgb(0 217 255 / 0.2);
+  --shadow-glow-sm: 0 0 12px 2px rgb(0 217 255 / 0.15);
+  --shadow-glow-lg: 0 0 32px 8px rgb(0 217 255 / 0.25);
+
+  /* Custom animations */
+  --animate-fade-in: fade-in 0.3s ease-out forwards;
+  --animate-slide-up: slide-up 0.3s ease-out forwards;
+  --animate-pulse-glow: pulse-glow 2s ease-in-out infinite;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes pulse-glow {
+    0%,
+    100% {
+      box-shadow: 0 0 20px 4px rgb(0 217 255 / 0.2);
+    }
+    50% {
+      box-shadow: 0 0 28px 6px rgb(0 217 255 / 0.35);
+    }
   }
 }
 
+/* Logo gem subtle pulse (inline SVG) */
+@keyframes logo-gem-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.75;
+    transform: scale(1.08);
+  }
+}
+
+.logo-gem {
+  animation: logo-gem-pulse 2.5s ease-in-out infinite;
+  transform-origin: center;
+}
+
+/* Gradient presets & legacy aliases */
+:root {
+  --arka-gradient-card: linear-gradient(
+    135deg,
+    rgb(13 25 41 / 0.9) 0%,
+    rgb(26 41 66 / 0.95) 100%
+  );
+  --arka-gradient-card-hover: linear-gradient(
+    135deg,
+    rgb(26 41 66 / 0.95) 0%,
+    rgb(44 95 141 / 0.2) 100%
+  );
+  --arka-gradient-hero: linear-gradient(
+    180deg,
+    #0d1929 0%,
+    #1a2942 50%,
+    #0d1929 100%
+  );
+  --arka-gradient-accent: linear-gradient(90deg, #5b9bd5 0%, #00d9ff 100%);
+
+  /* Legacy/alias for components */
+  --background: var(--arka-bg-dark);
+  --foreground: var(--arka-text);
+  --primary: var(--arka-primary);
+  --primary-foreground: var(--arka-text);
+  --muted: var(--arka-bg-medium);
+  --muted-foreground: var(--arka-text-soft);
+}
+
+/* ==========================================================================
+   2. Base styling
+   ========================================================================== */
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  background: var(--background);
+  background: var(--arka-bg-dark);
   color: var(--foreground);
-  font-family: var(--font-sans), system-ui, sans-serif;
+  font-family: var(--font-inter, var(--font-sans));
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* Custom scrollbar: thin, arka-primary colored */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--arka-primary) var(--arka-bg-medium);
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--arka-bg-medium);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--arka-primary);
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--arka-cyan);
+}
+
+/* ==========================================================================
+   3. Utility classes
+   ========================================================================== */
+.arka-gradient-text {
+  background: linear-gradient(90deg, #5b9bd5 0%, #00d9ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.arka-card {
+  background: linear-gradient(
+    135deg,
+    rgb(13 25 41 / 0.6) 0%,
+    rgb(26 41 66 / 0.5) 100%
+  );
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgb(91 155 213 / 0.2);
+  border-radius: 12px;
+}
+
+.arka-button-primary {
+  background: linear-gradient(90deg, #5b9bd5 0%, #00d9ff 100%);
+  color: var(--arka-bg-dark);
+  font-weight: 600;
+  padding: 0.625rem 1.25rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease-out, transform 0.2s ease-out;
+}
+
+.arka-button-primary:hover {
+  box-shadow: 0 0 20px 4px rgb(0 217 255 / 0.35);
+  transform: translateY(-1px);
+}
+
+.arka-button-secondary {
+  background: transparent;
+  color: var(--arka-cyan);
+  font-weight: 600;
+  padding: 0.625rem 1.25rem;
+  border: 2px solid var(--arka-cyan);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease-out, color 0.2s ease-out;
+}
+
+.arka-button-secondary:hover {
+  background: rgb(0 217 255 / 0.1);
+  color: var(--arka-light);
+}
+
+/* ==========================================================================
+   4. Typography hierarchy
+   ========================================================================== */
+h1 {
+  font-size: 3.5rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+h1.arka-gradient-text {
+  background: linear-gradient(90deg, #5b9bd5 0%, #00d9ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+h2 {
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+@media (min-width: 768px) {
+  h1 {
+    font-size: 5rem;
+  }
+
+  h2 {
+    font-size: 3rem;
+  }
+
+  h3 {
+    font-size: 2rem;
+  }
+}
+
+/* Heading weights (600–700) */
+h4,
+h5,
+h6 {
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   5. Focus states (accessibility – arka-cyan)
+   ========================================================================== */
+:focus-visible {
+  outline: 2px solid var(--arka-cyan);
+  outline-offset: 2px;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--arka-cyan);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   6. Selection color (arka-primary at 30% opacity)
+   ========================================================================== */
+::selection {
+  background: rgb(91 155 213 / 0.3);
+  color: var(--arka-text);
+}
+
+::-moz-selection {
+  background: rgb(91 155 213 / 0.3);
+  color: var(--arka-text);
+}
+
+/* Accent/tagline: Georgia italic */
+.font-accent,
+[data-tagline] {
+  font-family: var(--font-accent);
+  font-style: italic;
 }
