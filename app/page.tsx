@@ -1,9 +1,21 @@
+import type { Metadata } from "next";
 import { Hero } from "@/components/landing/Hero";
 import { WhyArka } from "@/components/landing/WhyArka";
 import { PhaseCards } from "@/components/landing/PhaseCards";
 import { EcosystemDiagram } from "@/components/landing/EcosystemDiagram";
 import { Testimonials } from "@/components/landing/Testimonials";
 import { CtaSection } from "@/components/landing/CtaSection";
+
+export const metadata: Metadata = {
+  title: "Home",
+  description:
+    "ARKA Health — AI-powered clinical decision support for imaging appropriateness. Explore ARKA-CLIN, ARKA-ED, and ARKA-INS.",
+  openGraph: {
+    title: "ARKA Health | Imaging CDS",
+    description:
+      "AI-powered clinical decision support for imaging appropriateness. Explore ARKA-CLIN, ARKA-ED, and ARKA-INS.",
+  },
+};
 
 export default function Home() {
   return (

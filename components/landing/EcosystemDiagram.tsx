@@ -354,7 +354,12 @@ export function EcosystemDiagram() {
             viewBox={`0 0 ${DESKTOP.width} ${DESKTOP.height}`}
             className="w-full"
             style={{ minHeight: 320 }}
+            role="img"
+            aria-labelledby={`${desktopId}-diagram-title`}
           >
+            <title id={`${desktopId}-diagram-title`}>
+              ARKA ecosystem diagram: CLIN, ED, and INS solutions connected to shared knowledge base
+            </title>
             <TargetingGridPattern idPrefix={desktopId} />
             <rect
               width="100%"
@@ -435,19 +440,25 @@ export function EcosystemDiagram() {
           </svg>
         </motion.div>
 
-        {/* Mobile diagram */}
+        {/* Mobile diagram: vertical layout, scrollable if content overflows */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.1 }}
-          className="mx-auto mt-12 w-full max-w-[280px] md:hidden"
+          className="mx-auto mt-12 w-full max-w-[min(280px,100%)] overflow-x-hidden md:hidden"
         >
-          <svg
-            viewBox={`0 0 ${MOBILE.width} ${MOBILE.height}`}
-            className="w-full"
-            style={{ minHeight: 420 }}
-          >
+          <div className="u-scroll-touch max-h-[70dvh] overflow-y-auto overflow-x-hidden rounded-xl">
+            <svg
+              viewBox={`0 0 ${MOBILE.width} ${MOBILE.height}`}
+              className="w-full"
+              style={{ minHeight: 420 }}
+              role="img"
+              aria-labelledby={`${mobileId}-diagram-title`}
+            >
+            <title id={`${mobileId}-diagram-title`}>
+              ARKA ecosystem diagram: CLIN, ED, and INS solutions connected to shared knowledge base
+            </title>
             <TargetingGridPattern idPrefix={mobileId} />
             <rect
               width="100%"
@@ -522,7 +533,8 @@ export function EcosystemDiagram() {
                 tooltip={node.tooltip}
               />
             ))}
-          </svg>
+            </svg>
+          </div>
         </motion.div>
 
         <p className="mt-6 text-center text-xs text-arka-text-soft/80">

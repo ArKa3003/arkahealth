@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "ARKA-ED | ARKA Health",
+  title: "ARKA-ED | Educational Platform",
   description:
-    "Educational platform: case-based learning for imaging appropriateness. Practice with clinical vignettes and evidence-based feedback.",
+    "Case-based learning for imaging appropriateness. Practice with clinical vignettes, select imaging, and get evidence-based feedback aligned with ACR criteria.",
+  openGraph: {
+    title: "ARKA-ED | ARKA Health",
+    description:
+      "Educational platform for imaging appropriateness. Case-based learning with ACR criteria.",
+  },
 };
 
 export default function EdLayout({

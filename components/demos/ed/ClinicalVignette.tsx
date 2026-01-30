@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { PatientCard } from "./PatientCard";
 import { Card, CardHeader, CardTitle, CardContent } from "./ui/Card";
+import { TableScrollWrapper } from "@/components/ui/TableScrollWrapper";
 import { clsx } from "clsx";
 import type { Case, VitalSigns, LabResult } from "@/lib/demos/ed/types";
 
@@ -197,8 +198,8 @@ function VitalSignsDisplay({ vitals }: { vitals: VitalSigns }) {
 
 function LabResultsTable({ results }: { results: LabResult[] }) {
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-sm">
+    <TableScrollWrapper aria-label="Lab results table" className="rounded-lg border border-arka-primary/10">
+      <table className="w-full min-w-[320px] text-sm">
         <thead>
           <tr className="border-b border-arka-primary/20">
             <th className="text-left py-2 px-3 font-medium text-arka-text-soft">Test</th>
@@ -211,7 +212,7 @@ function LabResultsTable({ results }: { results: LabResult[] }) {
             <tr
               key={index}
               className={clsx(
-                "border-b border-arka-primary/10",
+                "border-b border-arka-primary/10 min-h-[44px]",
                 result.is_abnormal && "bg-red-500/10"
               )}
             >
@@ -232,7 +233,7 @@ function LabResultsTable({ results }: { results: LabResult[] }) {
           ))}
         </tbody>
       </table>
-    </div>
+    </TableScrollWrapper>
   );
 }
 

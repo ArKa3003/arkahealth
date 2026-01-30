@@ -139,9 +139,10 @@ export function OrderingInterface({
             <button
               type="button"
               onClick={() => setSearchQuery("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-arka-text-soft hover:text-arka-cyan"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-arka-text-soft hover:text-arka-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-cyan focus-visible:ring-offset-2"
+              aria-label="Clear search"
             >
-              <X className="w-4 h-4" />
+              <X className="w-4 h-4" aria-hidden />
             </button>
           )}
         </div>

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+  <defs>
+    <linearGradient id="arka-spinner-ring1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E8F4F8"/>
+      <stop offset="100%" stop-color="#5B9BD5"/>
+    </linearGradient>
+    <linearGradient id="arka-spinner-ring2" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#00D9FF"/>
+      <stop offset="100%" stop-color="#0A7E8C"/>
+    </linearGradient>
+  </defs>
+  <circle cx="24" cy="24" r="20" stroke="url(#arka-spinner-ring1)" stroke-width="2.5" stroke-dasharray="28 100" stroke-linecap="round" fill="none" opacity="0.9"/>
+  <circle cx="24" cy="24" r="12" stroke="url(#arka-spinner-ring2)" stroke-width="1.5" stroke-dasharray="18 58" stroke-linecap="round" fill="none" opacity="0.95"/>
+</svg>

@@ -48,9 +48,9 @@ const variantStyles = {
 };
 
 const sizeStyles = {
-  sm: "h-8 px-3 text-xs gap-1.5 rounded-md",
-  md: "h-10 px-4 text-sm gap-2 rounded-lg",
-  lg: "h-12 px-6 text-base gap-2.5 rounded-lg",
+  sm: "min-h-[44px] h-8 px-3 text-xs gap-1.5 rounded-md",
+  md: "min-h-[44px] h-10 px-4 text-sm gap-2 rounded-lg",
+  lg: "min-h-[44px] h-12 px-6 text-base gap-2.5 rounded-lg",
 };
 
 const iconSizes = { sm: "h-3.5 w-3.5", md: "h-4 w-4", lg: "h-5 w-5" };

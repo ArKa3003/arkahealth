@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "next lint",
+    "format": "prettier --write .",
+    "test:a11y": "npx lighthouse http://localhost:3000 --only-categories=accessibility --output=html --output-path=./.lighthouse/a11y-report.html --chrome-flags='--headless' --no-enable-error-reporting"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",
@@ -22,6 +24,7 @@
     "react-dom": "19.2.3"
   },
   "devDependencies": {
+    "prettier": "^3.4.2",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

@@ -88,6 +88,11 @@ export function Navbar() {
     }
   }, [pathname, router]);
 
+  /* Close mobile menu on route change */
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
   useEffect(() => {
     const onScroll = () => {
       if (ticking.current) return;
@@ -115,7 +120,7 @@ export function Navbar() {
         initial={{ y: 0 }}
         animate={{ y: navbarVisible ? 0 : "-100%" }}
         transition={{ type: "spring", damping: 25, stiffness: 200 }}
-        className="fixed left-0 right-0 top-0 z-50 border-b border-white/5 bg-arka-bg-dark/80 backdrop-blur-xl"
+        className="fixed left-0 right-0 top-0 z-50 border-b border-white/5 bg-arka-bg-dark/80 backdrop-blur-xl safe-area-top pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]"
       >
         <nav className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
           {/* Left */}
@@ -128,11 +133,12 @@ export function Navbar() {
                   aria-label="ARKA Home"
                 >
                   <Image
-                    src="/arka-logo.svg"
+                    src="/arka-icon.svg"
                     alt=""
                     width={28}
                     height={28}
-                    className="h-7 w-7"
+                    className="h-7 w-7 object-contain"
+                    unoptimized
                   />
                 </Link>
                 <span className="truncate font-semibold text-arka-text">
@@ -224,16 +230,17 @@ export function Navbar() {
             <button
               type="button"
               onClick={() => setMobileOpen(true)}
-              className="flex p-2 text-arka-text-muted transition hover:text-arka-cyan lg:hidden"
+              className="flex min-h-[44px] min-w-[44px] items-center justify-center p-2 text-arka-text-muted transition hover:text-arka-cyan active:text-arka-cyan lg:hidden touch-manipulation"
               aria-label="Open menu"
             >
-              <Menu className="h-6 w-6" />
+              <Menu className="h-6 w-6" aria-hidden />
             </button>
           </div>
         </nav>
       </motion.header>
 
       {/* Mobile overlay */}
+      {/* Full-screen mobile overlay: smooth open/close, touch-friendly */}
       <AnimatePresence>
         {mobileOpen && (
           <>
@@ -241,63 +248,63 @@ export function Navbar() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-[60] bg-arka-bg-dark/95 backdrop-blur-xl lg:hidden"
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              className="fixed inset-0 z-[60] bg-arka-bg-dark/98 backdrop-blur-xl lg:hidden safe-area-insets"
               onClick={() => setMobileOpen(false)}
               aria-hidden
             />
             <motion.aside
-              initial={{ opacity: 0, scale: 0.96 }}
+              initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.96 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="pointer-events-none fixed inset-0 z-[70] flex flex-col items-center justify-center gap-8 lg:hidden"
+              exit={{ opacity: 0, scale: 0.98 }}
+              transition={{ type: "spring", damping: 28, stiffness: 260 }}
+              className="pointer-events-none fixed inset-0 z-[70] flex flex-col items-center justify-center gap-6 lg:hidden safe-area-insets"
               aria-modal="true"
               role="dialog"
               aria-label="Mobile menu"
             >
-              <div className="pointer-events-auto flex flex-col items-center gap-8">
-              <button
-                type="button"
-                onClick={() => setMobileOpen(false)}
-                className="absolute right-4 top-4 p-2 text-arka-text-muted transition hover:text-arka-cyan"
-                aria-label="Close menu"
-              >
-                <X className="h-7 w-7" />
-              </button>
-              <ul className="flex flex-col items-center gap-6">
-                {demoNavLinks.map(({ href, label, icon }) => {
-                  const Icon = iconMap[icon];
-                  const isActive = pathname === href;
-                  return (
-                    <li key={href}>
-                      <Link
-                        href={href}
-                        onClick={() => setMobileOpen(false)}
-                        className={`flex items-center gap-3 text-lg font-medium transition hover:text-arka-cyan ${
-                          isActive ? "text-arka-cyan" : "text-arka-text-muted"
-                        }`}
-                      >
-                        <Icon className="h-5 w-5" />
-                        {label}
-                      </Link>
-                    </li>
-                  );
-                })}
-                <li>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      handleEcosystemClick();
-                      setMobileOpen(false);
-                    }}
-                    className="flex items-center gap-3 text-lg font-medium text-arka-text-muted transition hover:text-arka-cyan"
-                  >
-                    <LayoutGrid className="h-5 w-5" />
-                    Ecosystem Overview
-                  </button>
-                </li>
-              </ul>
+              <div className="pointer-events-auto flex flex-col items-center gap-6">
+                <button
+                  type="button"
+                  onClick={() => setMobileOpen(false)}
+                  className="absolute right-4 top-4 flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg p-2 text-arka-text-muted transition hover:bg-white/5 hover:text-arka-cyan active:bg-white/10 touch-manipulation"
+                  aria-label="Close menu"
+                >
+                  <X className="h-7 w-7" aria-hidden />
+                </button>
+                <ul className="flex flex-col items-center gap-1">
+                  {demoNavLinks.map(({ href, label, icon }) => {
+                    const Icon = iconMap[icon];
+                    const isActive = pathname === href;
+                    return (
+                      <li key={href} className="w-full max-w-[280px]">
+                        <Link
+                          href={href}
+                          onClick={() => setMobileOpen(false)}
+                          className={`flex min-h-[44px] w-full items-center justify-center gap-3 rounded-xl px-6 py-3 text-lg font-medium transition active:bg-white/5 touch-manipulation ${
+                            isActive ? "text-arka-cyan" : "text-arka-text-muted hover:text-arka-cyan"
+                          }`}
+                        >
+                          <Icon className="h-5 w-5 shrink-0" aria-hidden />
+                          {label}
+                        </Link>
+                      </li>
+                    );
+                  })}
+                  <li className="w-full max-w-[280px]">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleEcosystemClick();
+                        setMobileOpen(false);
+                      }}
+                      className="flex min-h-[44px] w-full items-center justify-center gap-3 rounded-xl px-6 py-3 text-lg font-medium text-arka-text-muted transition hover:text-arka-cyan active:bg-white/5 touch-manipulation"
+                    >
+                      <LayoutGrid className="h-5 w-5 shrink-0" aria-hidden />
+                      Ecosystem Overview
+                    </button>
+                  </li>
+                </ul>
               </div>
             </motion.aside>
           </>

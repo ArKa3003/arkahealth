@@ -194,7 +194,7 @@ export function PhaseCards() {
         <p className="mx-auto mt-2 max-w-2xl text-center text-arka-text-soft">
           Three modules, one ecosystem. Click to open each demo.
         </p>
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-12 grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {cards.map((card, i) => {
             const Icon = card.icon;
             const Decorative = card.Decorative;
@@ -212,7 +212,7 @@ export function PhaseCards() {
               >
                 <Link
                   href={card.href}
-                  className="group relative flex min-h-full w-full flex-col rounded-xl border border-arka-deep/40 bg-arka-bg-medium/80 p-6 shadow-sm transition-all duration-300 hover:-translate-y-2 hover:border-[var(--card-accent)] hover:shadow-[0_0_24px_6px_var(--card-glow)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-arka-cyan focus-visible:outline-offset-2"
+                  className="group relative flex min-h-full w-full flex-col rounded-xl border border-arka-deep/40 bg-arka-bg-medium/80 p-6 shadow-sm transition-all duration-300 hover:-translate-y-2 hover:border-[var(--card-accent)] hover:shadow-[0_0_24px_6px_var(--card-glow)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-arka-cyan focus-visible:outline-offset-2 active:scale-[0.99] touch-manipulation"
                   style={
                     {
                       "--card-accent": card.accentColor,

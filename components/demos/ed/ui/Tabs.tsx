@@ -56,7 +56,7 @@ export const TabsTrigger = React.forwardRef<
     <TabsPrimitive.Trigger
       ref={ref}
       className={clsx(
-        "inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-arka-bg-dark disabled:pointer-events-none disabled:opacity-50",
+        "inline-flex min-h-[44px] items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-arka-bg-dark disabled:pointer-events-none disabled:opacity-50 touch-manipulation",
         "data-[state=inactive]:text-arka-text-soft data-[state=inactive]:hover:text-arka-text",
         "data-[state=active]:bg-arka-cyan data-[state=active]:text-arka-bg-dark data-[state=active]:shadow-sm",
         className

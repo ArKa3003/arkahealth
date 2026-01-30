@@ -17,6 +17,7 @@ import {
 import { Button } from "./ui/Button";
 import { Card, CardHeader, CardTitle, CardContent } from "./ui/Card";
 import { Badge } from "./ui/Badge";
+import { TableScrollWrapper } from "@/components/ui/TableScrollWrapper";
 import { ACRRatingBadge, ACRRatingScale } from "./ACRRatingBadge";
 import { RadiationBadge } from "./RadiationBadge";
 import { clsx } from "clsx";
@@ -275,8 +276,8 @@ export function FeedbackPanel({
                 exit={{ height: 0, opacity: 0 }}
               >
                 <CardContent className="pt-0">
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
+                  <TableScrollWrapper aria-label="ACR ratings comparison" className="rounded-lg">
+                    <table className="w-full min-w-[360px] text-sm">
                       <thead>
                         <tr className="border-b border-arka-primary/20">
                           <th className="text-left py-2 px-2 font-medium text-arka-text-soft">
@@ -306,7 +307,7 @@ export function FeedbackPanel({
                               <tr
                                 key={opt.id}
                                 className={clsx(
-                                  "border-b border-arka-primary/10",
+                                  "border-b border-arka-primary/10 min-h-[44px]",
                                   isUserChoice && "bg-arka-cyan/10"
                                 )}
                               >
@@ -334,7 +335,7 @@ export function FeedbackPanel({
                           })}
                       </tbody>
                     </table>
-                  </div>
+                  </TableScrollWrapper>
                 </CardContent>
               </motion.div>
             )}

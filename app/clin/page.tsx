@@ -1,11 +1,17 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { ChevronDown, ChevronRight, Stethoscope, GraduationCap, Shield } from "lucide-react";
-import { ClinDemoContent } from "@/components/demos/clin/ClinDemoContent";
+import { DemoLoadingSkeleton } from "@/components/demos/DemoLoadingSkeleton";
 import { routes } from "@/lib/constants";
 import { useState } from "react";
+
+const ClinDemoContent = dynamic(
+  () => import("@/components/demos/clin/ClinDemoContent").then((m) => m.ClinDemoContent),
+  { loading: () => <DemoLoadingSkeleton /> }
+);
 
 const QUICK_LINKS = [
   { href: routes.ed, label: "ARKA-ED", icon: GraduationCap },
@@ -56,7 +62,7 @@ export default function ClinPage() {
           <button
             type="button"
             onClick={() => setAboutOpen((o) => !o)}
-            className="arka-card w-full flex items-center justify-between gap-4 rounded-xl border border-arka-primary/20 p-4 text-left transition-all hover:border-arka-cyan/30"
+            className="arka-card w-full flex min-h-[44px] items-center justify-between gap-4 rounded-xl border border-arka-primary/20 p-4 text-left transition-all hover:border-arka-cyan/30 touch-manipulation"
             aria-expanded={aboutOpen}
             aria-controls="about-arka-clin-panel"
             id="about-arka-clin-heading"

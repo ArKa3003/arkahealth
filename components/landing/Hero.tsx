@@ -108,6 +108,28 @@ function HeroParticles({ particles }: { particles: { id: number; row: number; co
   );
 }
 
+/** Subtle horizontal scan line that sweeps down the hero for ambient polish */
+function HeroScanLine() {
+  return (
+    <div
+      className="pointer-events-none absolute inset-0 overflow-hidden opacity-[0.06]"
+      aria-hidden
+    >
+      <motion.div
+        className="absolute left-0 right-0 top-0 h-px bg-gradient-to-r from-transparent via-arka-cyan to-transparent"
+        initial={{ y: 0 }}
+        animate={{ y: "100vh" }}
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          repeatDelay: 2,
+          ease: "linear",
+        }}
+      />
+    </div>
+  );
+}
+
 function DemoModal({
   open,
   onOpenChange,
@@ -131,10 +153,10 @@ function DemoModal({
             <Dialog.Close asChild>
               <button
                 type="button"
-                className="rounded-lg p-2 text-arka-text-soft transition hover:bg-arka-bg-dark hover:text-arka-text focus:outline-none focus:ring-2 focus:ring-arka-cyan focus:ring-offset-2 focus:ring-offset-arka-bg-medium"
-                aria-label="Close"
+                className="rounded-lg p-2 text-arka-text-soft transition hover:bg-arka-bg-dark hover:text-arka-text focus:outline-none focus-visible:ring-2 focus-visible:ring-arka-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-arka-bg-medium"
+                aria-label="Close dialog"
               >
-                <X className="h-5 w-5" />
+                <X className="h-5 w-5" aria-hidden />
               </button>
             </Dialog.Close>
           </div>
@@ -171,10 +193,11 @@ export function Hero() {
       <HeroGridPattern />
       <HeroRadarRings />
       <HeroParticles particles={particles} />
+      <HeroScanLine />
 
-      <div className="relative z-10 flex max-w-4xl flex-col items-center text-center">
+      <div className="relative z-10 flex w-full max-w-4xl flex-col items-center text-center px-2">
         <motion.div
-          className="mb-6 sm:mb-8"
+          className="mb-4 sm:mb-6 md:mb-8"
           initial={{ opacity: 0, scale: 0.92 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, ease: "easeOut" as const }}
@@ -183,7 +206,7 @@ export function Hero() {
             size="lg"
             variant="full"
             hideTagline
-            className="scale-90 sm:scale-100 md:scale-110 lg:scale-125"
+            className="scale-75 sm:scale-90 md:scale-100 lg:scale-110 xl:scale-125"
           />
         </motion.div>
 
@@ -191,7 +214,7 @@ export function Hero() {
           id="hero-heading"
           className="font-heading font-bold tracking-tight text-arka-text"
           style={{
-            fontSize: "clamp(1.75rem, 4vw + 1.5rem, 3.25rem)",
+            fontSize: "clamp(1.5rem, 5vw + 1.25rem, 3.25rem)",
             lineHeight: 1.15,
           }}
           initial={{ opacity: 0, y: 20 }}
@@ -230,7 +253,7 @@ export function Hero() {
         </motion.p>
 
         <motion.div
-          className="mt-8 flex w-full max-w-sm flex-col gap-3 sm:flex-row sm:justify-center sm:gap-4"
+          className="mt-6 sm:mt-8 flex w-full max-w-sm flex-col gap-3 sm:flex-row sm:justify-center sm:gap-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.5, ease: "easeOut" as const }}
@@ -238,16 +261,16 @@ export function Hero() {
           <button
             type="button"
             onClick={scrollToSolutions}
-            className="arka-button-primary inline-flex items-center justify-center px-6 py-3 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-arka-cyan focus:ring-offset-2 focus:ring-offset-arka-bg-dark"
+            className="arka-button-primary inline-flex min-h-[44px] items-center justify-center px-6 py-3 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-arka-cyan focus:ring-offset-2 focus:ring-offset-arka-bg-dark touch-manipulation"
           >
             Explore the Ecosystem
           </button>
           <button
             type="button"
             onClick={() => setDemoOpen(true)}
-            className="arka-button-secondary inline-flex items-center justify-center gap-2 px-6 py-3 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-arka-cyan focus:ring-offset-2 focus:ring-offset-arka-bg-dark"
+            className="arka-button-secondary inline-flex min-h-[44px] items-center justify-center gap-2 px-6 py-3 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-arka-cyan focus:ring-offset-2 focus:ring-offset-arka-bg-dark touch-manipulation"
           >
-            <Play className="h-4 w-4" aria-hidden />
+            <Play className="h-4 w-4 shrink-0" aria-hidden />
             Watch Demo
           </button>
         </motion.div>

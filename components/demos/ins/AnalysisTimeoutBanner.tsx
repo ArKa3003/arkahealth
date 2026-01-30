@@ -34,10 +34,10 @@ export function AnalysisTimeoutBanner({ onDismiss, className }: AnalysisTimeoutB
         <button
           type="button"
           onClick={onDismiss}
-          className="p-1 rounded hover:bg-white/10 transition-colors text-arka-text-soft"
-          aria-label="Dismiss"
+          className="p-1 rounded hover:bg-white/10 transition-colors text-arka-text-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-cyan focus-visible:ring-offset-2"
+          aria-label="Dismiss banner"
         >
-          <X className="h-4 w-4" />
+          <X className="h-4 w-4" aria-hidden />
         </button>
       )}
     </motion.div>
