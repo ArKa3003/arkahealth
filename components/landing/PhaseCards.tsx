@@ -206,7 +206,7 @@ export function PhaseCards() {
                 transition={{
                   duration: 0.45,
                   delay: i * 0.12,
-                  ease: [0.22, 1, 0.36, 1],
+                  ease: "easeOut" as const,
                 }}
                 className="flex min-h-0"
               >

@@ -177,7 +177,7 @@ export function Hero() {
           className="mb-6 sm:mb-8"
           initial={{ opacity: 0, scale: 0.92 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.6, ease: "easeOut" as const }}
         >
           <Logo
             size="lg"
@@ -196,7 +196,7 @@ export function Hero() {
           }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.5, delay: 0.15, ease: "easeOut" as const }}
         >
           rem
           <span className="arka-gradient-text">ARKA</span>
@@ -211,7 +211,7 @@ export function Hero() {
           }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.5, delay: 0.25, ease: "easeOut" as const }}
         >
           Advanced Radio-imaging Knowledge Architecture
         </motion.p>
@@ -224,7 +224,7 @@ export function Hero() {
           }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.5, delay: 0.35, ease: "easeOut" as const }}
         >
           AI-powered clinical decision support that never misses.
         </motion.p>
@@ -233,7 +233,7 @@ export function Hero() {
           className="mt-8 flex w-full max-w-sm flex-col gap-3 sm:flex-row sm:justify-center sm:gap-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.5, delay: 0.5, ease: "easeOut" as const }}
         >
           <button
             type="button"

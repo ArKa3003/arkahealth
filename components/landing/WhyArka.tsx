@@ -27,7 +27,7 @@ const benefits = [
 
 const fadeIn = {
   initial: { opacity: 0, y: 24 },
-  transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+  transition: { duration: 0.5, ease: "easeOut" as const },
 };
 
 export function WhyArka() {
