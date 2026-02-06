@@ -26,12 +26,12 @@ export function AppealRiskPredictor({ onGoBack, onResetDemo }: { onGoBack?: () =
   if (processing.isAnalyzing) {
     return (
       <div className="space-y-6">
-        <h2 className="font-heading text-2xl font-semibold text-arka-text">Appeal Risk Prediction</h2>
+        <h2 className="font-heading text-2xl font-semibold text-slate-900">Appeal Risk Prediction</h2>
         <Card variant="default">
           <CardContent className="p-8">
             <div className="flex flex-col items-center gap-4">
               <Gauge className="h-12 w-12 text-arka-deep animate-pulse" />
-              <p className="text-arka-text-muted font-medium">{processing.processingMessage ?? "Running prediction..."}</p>
+              <p className="text-slate-700 font-medium">{processing.processingMessage ?? "Running prediction..."}</p>
               <Progress value={processing.processingProgress} max={100} size="md" className="w-full max-w-xs" />
             </div>
           </CardContent>
@@ -43,9 +43,9 @@ export function AppealRiskPredictor({ onGoBack, onResetDemo }: { onGoBack?: () =
   if (!denialPrediction) {
     return (
       <div className="space-y-6">
-        <h2 className="font-heading text-2xl font-semibold text-arka-text">Appeal Risk Prediction</h2>
+        <h2 className="font-heading text-2xl font-semibold text-slate-900">Appeal Risk Prediction</h2>
         <Card variant="default">
-          <CardContent className="p-8 text-center text-arka-text-soft">Running prediction...</CardContent>
+          <CardContent className="p-8 text-center text-slate-600">Running prediction...</CardContent>
         </Card>
       </div>
     );
@@ -57,8 +57,8 @@ export function AppealRiskPredictor({ onGoBack, onResetDemo }: { onGoBack?: () =
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-heading text-2xl font-semibold text-arka-text">Appeal Risk Prediction</h2>
-          <p className="text-arka-text-soft text-sm">AI denial risk and recommendations.</p>
+          <h2 className="font-heading text-2xl font-semibold text-slate-900">Appeal Risk Prediction</h2>
+          <p className="text-slate-600 text-sm">AI denial risk and recommendations.</p>
         </div>
         {onGoBack && <Button variant="ghost" size="sm" onClick={onGoBack}>Go Back</Button>}
       </div>
@@ -73,10 +73,10 @@ export function AppealRiskPredictor({ onGoBack, onResetDemo }: { onGoBack?: () =
         <CardContent className="p-6">
           <div className="flex flex-wrap items-center gap-4">
             <Badge status={riskStatus} variant="solid" size="lg">{denialPrediction.riskLevel}</Badge>
-            <span className="text-arka-text-soft text-sm">Confidence: {denialPrediction.confidenceScore}%</span>
-            <span className="text-arka-text-soft text-sm">Predicted: {denialPrediction.predictedOutcome}</span>
+            <span className="text-slate-600 text-sm">Confidence: {denialPrediction.confidenceScore}%</span>
+            <span className="text-slate-600 text-sm">Predicted: {denialPrediction.predictedOutcome}</span>
           </div>
-          <p className="text-arka-text-muted text-sm mt-2">Similar cases: {denialPrediction.similarCasesApproved} approved, {denialPrediction.similarCasesDenied} denied.</p>
+          <p className="text-slate-700 text-sm mt-2">Similar cases: {denialPrediction.similarCasesApproved} approved, {denialPrediction.similarCasesDenied} denied.</p>
         </CardContent>
       </Card>
 
@@ -91,9 +91,9 @@ export function AppealRiskPredictor({ onGoBack, onResetDemo }: { onGoBack?: () =
           <CardContent className="p-6">
             <ul className="space-y-3">
               {denialPrediction.factors.slice(0, 5).map((f) => (
-                <li key={f.id} className="p-3 rounded-lg border border-white/10 bg-arka-bg-dark/30">
-                  <p className="text-sm font-medium text-arka-text">{f.name}</p>
-                  <p className="text-xs text-arka-text-soft mt-1">{f.description}</p>
+                <li key={f.id} className="p-3 rounded-lg border border-slate-200 bg-slate-50">
+                  <p className="text-sm font-medium text-slate-800">{f.name}</p>
+                  <p className="text-xs text-slate-600 mt-1">{f.description}</p>
                   {f.isAddressable && <p className="text-xs text-arka-cyan mt-1">Mitigation: {f.mitigationStrategy}</p>}
                 </li>
               ))}
@@ -110,7 +110,7 @@ export function AppealRiskPredictor({ onGoBack, onResetDemo }: { onGoBack?: () =
           <CardContent className="p-6">
             <ul className="space-y-2">
               {denialPrediction.recommendations.slice(0, 5).map((r, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm text-arka-text-muted">
+                <li key={i} className="flex items-start gap-2 text-sm text-slate-700">
                   <ChevronRight className="h-4 w-4 text-arka-deep flex-shrink-0 mt-0.5" />
                   {r}
                 </li>

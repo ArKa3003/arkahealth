@@ -18,8 +18,8 @@ export function Card({
     <div
       className={clsx(
         "arka-card rounded-xl p-4 sm:p-6 transition-all duration-200",
-        "bg-arka-bg-medium/50 border border-arka-primary/20",
-        variant === "bordered" && "border-arka-cyan/30",
+        "bg-white border border-slate-200",
+        variant === "bordered" && "border-teal-300",
         variant === "elevated" && "shadow-glow-sm",
         className
       )}
@@ -39,7 +39,7 @@ export function CardHeader({
   return (
     <div
       className={clsx(
-        "mb-4 sm:mb-6 border-b border-arka-primary/20 pb-4",
+        "mb-4 sm:mb-6 border-b border-slate-200 pb-4",
         className
       )}
     >
@@ -58,7 +58,7 @@ export function CardTitle({
   return (
     <h3
       className={clsx(
-        "text-lg sm:text-xl font-heading font-semibold text-arka-text",
+        "text-lg sm:text-xl font-heading font-semibold text-slate-900",
         className
       )}
     >
@@ -74,5 +74,5 @@ export function CardContent({
   children: ReactNode;
   className?: string;
 }) {
-  return <div className={clsx("text-arka-text-muted text-sm sm:text-base", className)}>{children}</div>;
+  return <div className={clsx("text-slate-700 text-sm sm:text-base", className)}>{children}</div>;
 }

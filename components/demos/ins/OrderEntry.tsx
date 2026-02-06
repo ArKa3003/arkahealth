@@ -43,17 +43,17 @@ function OrderCard({
             {icon}
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="font-heading font-semibold text-arka-text">
+            <h3 className="font-heading font-semibold text-slate-900">
               {order.imagingType} — {order.bodyPart}
             </h3>
-            <p className="text-sm text-arka-text-soft font-mono">{order.cptCode} {order.cptDescription}</p>
-            <p className="text-sm text-arka-text-muted mt-1 line-clamp-2">{order.clinicalIndication}</p>
+            <p className="text-sm text-slate-600 font-mono">{order.cptCode} {order.cptDescription}</p>
+            <p className="text-sm text-slate-700 mt-1 line-clamp-2">{order.clinicalIndication}</p>
             <div className="flex flex-wrap gap-2 mt-2">
               <Badge status="neutral" variant="subtle" size="sm">{order.urgency}</Badge>
               <Badge status="info" variant="subtle" size="sm">{order.orderingProvider.specialty}</Badge>
             </div>
           </div>
-          <ChevronRight className={cn("h-5 w-5 text-arka-text-soft flex-shrink-0", isSelected && "text-arka-deep")} />
+          <ChevronRight className={cn("h-5 w-5 text-slate-600 flex-shrink-0", isSelected && "text-arka-deep")} />
         </div>
       </CardContent>
     </Card>
@@ -73,15 +73,15 @@ export function OrderEntry() {
 
   if (!selectedPatientId) {
     return (
-      <p className="text-arka-text-soft">Select a patient in Step 1 first.</p>
+      <p className="text-slate-600">Select a patient in Step 1 first.</p>
     );
   }
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="font-heading text-2xl font-semibold text-arka-text mb-1">Order Entry</h2>
-        <p className="text-arka-text-soft text-sm">Select the imaging order to submit for prior authorization.</p>
+        <h2 className="font-heading text-2xl font-semibold text-slate-900 mb-1">Order Entry</h2>
+        <p className="text-slate-600 text-sm">Select the imaging order to submit for prior authorization.</p>
       </div>
       <div className="space-y-3">
         {ordersForPatient.map((order) => (

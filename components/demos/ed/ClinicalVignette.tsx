@@ -52,13 +52,13 @@ export function ClinicalVignette({
 
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-base flex items-center gap-2 text-arka-cyan">
+          <CardTitle className="text-base flex items-center gap-2 text-teal-700">
             <Stethoscope className="w-4 h-4" />
             History of Present Illness
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-arka-text-muted leading-relaxed whitespace-pre-wrap">
+          <p className="text-slate-800 leading-relaxed whitespace-pre-wrap">
             {caseData.clinical_vignette}
           </p>
         </CardContent>
@@ -67,10 +67,10 @@ export function ClinicalVignette({
       {caseData.patient_history && caseData.patient_history.length > 0 && (
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">Past Medical History</CardTitle>
+            <CardTitle className="text-base text-slate-900">Past Medical History</CardTitle>
           </CardHeader>
           <CardContent>
-            <ul className="list-disc list-inside space-y-1 text-arka-text-muted">
+            <ul className="list-disc list-inside space-y-1 text-slate-700">
               {caseData.patient_history.map((item, index) => (
                 <li key={index}>{item}</li>
               ))}
@@ -90,7 +90,7 @@ export function ClinicalVignette({
           isOpen={showPhysicalExam}
           onToggle={() => setShowPhysicalExam(!showPhysicalExam)}
         >
-          <p className="text-arka-text-muted leading-relaxed whitespace-pre-wrap">
+          <p className="text-slate-800 leading-relaxed whitespace-pre-wrap">
             {caseData.physical_exam}
           </p>
         </CollapsibleSection>
@@ -109,13 +109,13 @@ export function ClinicalVignette({
 
       <Card variant="bordered" className="border-arka-cyan/30">
         <CardHeader className="pb-3">
-          <CardTitle className="text-base flex items-center gap-2 text-arka-cyan">
+          <CardTitle className="text-base flex items-center gap-2 text-teal-700">
             <HelpCircle className="w-4 h-4" />
             Clinical Question
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-arka-text font-medium">
+          <p className="text-slate-800 font-medium">
             What is the most appropriate imaging study for this patient?
           </p>
         </CardContent>
@@ -171,7 +171,7 @@ function VitalSignsDisplay({ vitals }: { vitals: VitalSigns }) {
   return (
     <Card>
       <CardHeader className="pb-3">
-        <CardTitle className="text-base">Vital Signs</CardTitle>
+        <CardTitle className="text-base text-slate-900">Vital Signs</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
@@ -181,10 +181,10 @@ function VitalSignsDisplay({ vitals }: { vitals: VitalSigns }) {
               className="flex flex-col items-center p-3 bg-arka-bg-medium/50 rounded-lg"
             >
               <item.icon className={clsx("w-5 h-5 mb-1", item.color)} />
-              <span className="text-xs text-arka-text-soft">{item.label}</span>
-              <span className="font-semibold text-arka-text">
+              <span className="text-xs text-slate-500">{item.label}</span>
+              <span className="font-semibold text-slate-900">
                 {item.value}
-                <span className="text-xs font-normal text-arka-text-soft ml-0.5">
+                <span className="text-xs font-normal text-slate-600 ml-0.5">
                   {item.unit}
                 </span>
               </span>
@@ -202,9 +202,9 @@ function LabResultsTable({ results }: { results: LabResult[] }) {
       <table className="w-full min-w-[320px] text-sm">
         <thead>
           <tr className="border-b border-arka-primary/20">
-            <th className="text-left py-2 px-3 font-medium text-arka-text-soft">Test</th>
-            <th className="text-left py-2 px-3 font-medium text-arka-text-soft">Value</th>
-            <th className="text-left py-2 px-3 font-medium text-arka-text-soft">Reference</th>
+            <th className="text-left py-2 px-3 font-medium text-slate-700">Test</th>
+            <th className="text-left py-2 px-3 font-medium text-slate-700">Value</th>
+            <th className="text-left py-2 px-3 font-medium text-slate-700">Reference</th>
           </tr>
         </thead>
         <tbody>
@@ -216,19 +216,19 @@ function LabResultsTable({ results }: { results: LabResult[] }) {
                 result.is_abnormal && "bg-red-500/10"
               )}
             >
-              <td className="py-2 px-3 text-arka-text-muted">{result.name}</td>
+              <td className="py-2 px-3 text-slate-700">{result.name}</td>
               <td
                 className={clsx(
                   "py-2 px-3 font-medium",
-                  result.is_abnormal ? "text-red-400" : "text-arka-text"
+                  result.is_abnormal ? "text-red-600" : "text-slate-900"
                 )}
               >
                 {result.value} {result.unit}
                 {result.is_abnormal && (
-                  <AlertCircle className="w-3.5 h-3.5 inline ml-1 text-red-400" />
+                  <AlertCircle className="w-3.5 h-3.5 inline ml-1 text-red-500" />
                 )}
               </td>
-              <td className="py-2 px-3 text-arka-text-soft">{result.reference_range}</td>
+              <td className="py-2 px-3 text-slate-600">{result.reference_range}</td>
             </tr>
           ))}
         </tbody>
@@ -255,16 +255,16 @@ function CollapsibleSection({
       <button
         type="button"
         onClick={onToggle}
-        className="w-full flex items-center justify-between p-4 text-left hover:bg-arka-bg-medium/30 transition-colors rounded-xl"
+        className="w-full flex items-center justify-between p-4 text-left hover:bg-slate-50 transition-colors rounded-xl"
       >
         <div className="flex items-center gap-2">
           {icon}
-          <span className="font-medium text-arka-text">{title}</span>
+          <span className="font-medium text-slate-900">{title}</span>
         </div>
         {isOpen ? (
-          <ChevronUp className="w-5 h-5 text-arka-text-soft" />
+          <ChevronUp className="w-5 h-5 text-slate-500" />
         ) : (
-          <ChevronDown className="w-5 h-5 text-arka-text-soft" />
+          <ChevronDown className="w-5 h-5 text-slate-500" />
         )}
       </button>
       <AnimatePresence>

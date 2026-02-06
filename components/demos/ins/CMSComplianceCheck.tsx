@@ -18,8 +18,8 @@ export function CMSComplianceCheck({ onGoBack }: { onGoBack?: () => void }) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-heading text-2xl font-semibold text-arka-text">CMS Compliance Verification</h2>
-          <p className="text-arka-text-soft text-sm">Urgent/standard decision timelines and reporting readiness.</p>
+          <h2 className="font-heading text-2xl font-semibold text-slate-900">CMS Compliance Verification</h2>
+          <p className="text-slate-600 text-sm">Urgent/standard decision timelines and reporting readiness.</p>
         </div>
         {onGoBack && <Button variant="ghost" size="sm" onClick={onGoBack}>Go Back</Button>}
       </div>
@@ -31,7 +31,7 @@ export function CMSComplianceCheck({ onGoBack }: { onGoBack?: () => void }) {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6">
-          <p className="text-arka-text-muted text-sm">
+          <p className="text-slate-700 text-sm">
             CMS requires urgent decisions within 72 hours and standard within 7 days. This step verifies SLA compliance 
             and public reporting readiness (approval/denial rates, appeal outcomes, average decision times).
           </p>

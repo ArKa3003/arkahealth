@@ -20,10 +20,10 @@ export interface InsBadgeProps {
 
 const statusColors: Record<BadgeStatus, Record<BadgeVariant, string>> = {
   success: { solid: "bg-emerald-600 text-white", outline: "bg-transparent text-emerald-400 border-2 border-emerald-500", subtle: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" },
-  warning: { solid: "bg-amber-500 text-arka-bg-dark", outline: "bg-transparent text-amber-400 border-2 border-amber-500", subtle: "bg-amber-500/10 text-amber-400 border border-amber-500/20" },
-  error: { solid: "bg-red-600 text-white", outline: "bg-transparent text-red-400 border-2 border-red-500", subtle: "bg-red-500/10 text-red-400 border border-red-500/20" },
+  warning: { solid: "bg-amber-500 text-arka-bg-dark", outline: "bg-transparent text-amber-800 border-2 border-amber-500", subtle: "bg-amber-500/10 text-amber-800 border border-amber-500/20" },
+  error: { solid: "bg-red-600 text-white", outline: "bg-transparent text-red-800 border-2 border-red-500", subtle: "bg-red-500/10 text-red-900 border border-red-500/20" },
   info: { solid: "bg-arka-deep text-white", outline: "bg-transparent text-arka-cyan border-2 border-arka-deep", subtle: "bg-arka-deep/10 text-arka-cyan border border-arka-deep/20" },
-  neutral: { solid: "bg-arka-bg-medium text-arka-text-soft", outline: "bg-transparent text-arka-text-soft border-2 border-arka-bg-medium", subtle: "bg-white/5 text-arka-text-soft border border-white/10" },
+  neutral: { solid: "bg-arka-bg-medium text-arka-text-soft", outline: "bg-transparent text-arka-text-dark-soft border-2 border-arka-bg-medium", subtle: "bg-arka-pale/50 text-arka-text-dark-soft border border-arka-light" },
   processing: { solid: "bg-arka-cyan text-arka-bg-dark", outline: "bg-transparent text-arka-cyan border-2 border-arka-cyan", subtle: "bg-arka-cyan/10 text-arka-cyan border border-arka-cyan/20" },
 };
 

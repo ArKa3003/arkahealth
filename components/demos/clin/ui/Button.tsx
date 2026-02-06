@@ -38,7 +38,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           variant === "outline" &&
             "border-2 border-arka-cyan/50 bg-transparent text-arka-cyan hover:bg-arka-cyan/10",
           variant === "ghost" &&
-            "text-arka-text-muted hover:bg-white/5 hover:text-arka-cyan",
+            "text-arka-text-dark-muted hover:bg-arka-pale hover:text-arka-cyan",
           size === "sm" && "px-3 py-1.5 text-sm",
           size === "md" && "px-4 py-2 text-base",
           size === "lg" && "px-6 py-3 text-lg",

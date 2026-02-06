@@ -83,11 +83,11 @@ function PatientCard({
               {getInitials(patient.firstName, patient.lastName)}
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="font-heading text-lg font-semibold text-arka-text truncate">
+              <h3 className="font-heading text-lg font-semibold text-slate-900 truncate">
                 {patient.firstName} {patient.lastName}
               </h3>
-              <p className="text-sm text-arka-text-soft">{age} years old • {patient.gender === "male" ? "Male" : "Female"}</p>
-              <div className="flex items-center gap-1 mt-1 text-xs text-arka-text-soft">
+              <p className="text-sm text-slate-800">{age} years old • {patient.gender === "male" ? "Male" : "Female"}</p>
+              <div className="flex items-center gap-1 mt-1 text-xs text-slate-600">
                 <CreditCard className="h-3 w-3" />
                 <span className="font-mono">{patient.memberId}</span>
               </div>
@@ -95,18 +95,18 @@ function PatientCard({
           </div>
           <div className="space-y-2 mb-4">
             <div className="flex items-center gap-2">
-              <Building2 className="h-4 w-4 text-arka-text-soft" />
-              <span className="text-sm text-arka-text-muted">{patient.insurancePlan.name}</span>
+              <Building2 className="h-4 w-4 text-slate-600" />
+              <span className="text-sm text-slate-700">{patient.insurancePlan.name}</span>
             </div>
             <Badge status="info" variant="subtle" size="sm">
               {patient.insurancePlan.rbmVendor}
             </Badge>
           </div>
           {primaryDiagnosis && (
-            <div className="bg-arka-bg-dark/50 rounded-lg p-3 mb-4">
-              <p className="text-xs text-arka-text-soft mb-1">Primary Diagnosis</p>
-              <p className="text-sm font-medium text-arka-text">{primaryDiagnosis.condition}</p>
-              <p className="text-xs text-arka-text-soft font-mono">{primaryDiagnosis.icdCode}</p>
+            <div className="bg-arka-deep rounded-lg p-3 mb-4">
+              <p className="text-xs text-slate-200 mb-1">Primary Diagnosis</p>
+              <p className="text-sm font-medium text-white">{primaryDiagnosis.condition}</p>
+              <p className="text-xs text-slate-300 font-mono">{primaryDiagnosis.icdCode}</p>
             </div>
           )}
           <Button variant={isSelected ? "success" : "secondary"} size="sm" fullWidth>
@@ -131,8 +131,8 @@ export function PatientIntake() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="font-heading text-2xl font-semibold text-arka-text mb-1">Patient & Payer Selection</h2>
-        <p className="text-arka-text-soft text-sm">Select a patient scenario to run through the utilization management workflow.</p>
+        <h2 className="font-heading text-2xl font-semibold text-slate-900 mb-1">Patient & Payer Selection</h2>
+        <p className="text-slate-600 text-sm">Select a patient scenario to run through the utilization management workflow.</p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {patients.map((patient, i) => (

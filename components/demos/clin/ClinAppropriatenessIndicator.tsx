@@ -17,13 +17,13 @@ const config = {
   yellow: {
     label: "MAY BE APPROPRIATE",
     bg: "bg-amber-500/20 border-amber-500/50",
-    text: "text-amber-300",
+    text: "text-amber-800",
     icon: "?",
   },
   red: {
     label: "NOT APPROPRIATE",
     bg: "bg-red-500/20 border-red-500/50",
-    text: "text-red-300",
+    text: "text-red-900",
     icon: "✗",
   },
 };
@@ -51,12 +51,12 @@ export function ClinAppropriatenessIndicator({
       </div>
       {score > 0 ? (
         <div className="text-center">
-          <span className="text-xl sm:text-2xl font-bold text-arka-text">
-            {score} <span className="text-arka-text-soft font-semibold">/9</span>
+          <span className="text-xl sm:text-2xl font-bold text-slate-800">
+            {score} <span className="text-slate-600 font-semibold">/9</span>
           </span>
         </div>
       ) : (
-        <div className="text-arka-text-soft text-lg font-bold">N/A</div>
+        <div className="text-slate-600 text-lg font-bold">N/A</div>
       )}
     </div>
   );

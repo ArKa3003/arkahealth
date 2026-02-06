@@ -18,8 +18,8 @@ export function GoldCardCheck({ onGoBack }: { onGoBack?: () => void }) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-heading text-2xl font-semibold text-arka-text">Gold Card Check</h2>
-          <p className="text-arka-text-soft text-sm">Eligibility for expedited or bypass prior auth.</p>
+          <h2 className="font-heading text-2xl font-semibold text-slate-900">Gold Card Check</h2>
+          <p className="text-slate-600 text-sm">Eligibility for expedited or bypass prior auth.</p>
         </div>
         {onGoBack && <Button variant="ghost" size="sm" onClick={onGoBack}>Go Back</Button>}
       </div>
@@ -31,7 +31,7 @@ export function GoldCardCheck({ onGoBack }: { onGoBack?: () => void }) {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6">
-          <p className="text-arka-text-muted text-sm">
+          <p className="text-slate-700 text-sm">
             This demo step shows where Gold Card eligibility would be evaluated by payer (e.g., UHC, Aetna, BCBS). 
             Providers meeting approval-rate and volume thresholds may qualify for auto-approval or expedited review.
           </p>

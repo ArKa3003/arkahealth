@@ -42,7 +42,7 @@ function StepFallback() {
       role="status"
       aria-live="polite"
     >
-      <div className="animate-pulse text-arka-text-soft">Loading step…</div>
+      <div className="animate-pulse text-slate-600">Loading step…</div>
     </div>
   );
 }
@@ -85,12 +85,12 @@ function DemoModeSelector({
           <span
             className={cn(
               "font-medium text-sm",
-              value === m.id ? "text-arka-deep" : "text-arka-text-muted"
+              value === m.id ? "text-arka-deep" : "text-slate-700"
             )}
           >
             {m.label}
           </span>
-          <span className="text-xs text-arka-text-soft">{m.description}</span>
+          <span className="text-xs text-slate-600">{m.description}</span>
         </button>
       ))}
     </div>
@@ -189,11 +189,11 @@ export function InsDemoView() {
   return (
     <div className="space-y-6 sm:space-y-8">
       <div className="arka-card rounded-xl border border-arka-deep/20 px-4 py-4 lg:px-6">
-        <p className="text-xs font-medium text-arka-text-soft uppercase tracking-wide mb-2">
-          Demo mode
+        <p className="text-xs font-medium text-slate-700 uppercase tracking-wide mb-2">
+          DEMO MODE
         </p>
         <DemoModeSelector value={scenarioMode} onChange={handleModeChange} />
-        <p className="text-xs text-arka-text-soft mt-2" role="note">
+        <p className="text-xs text-slate-600 mt-2" role="note">
           Demonstration only — not for clinical use.
         </p>
       </div>
@@ -246,7 +246,7 @@ export function InsDemoView() {
               Previous
             </Button>
             <span
-              className="text-sm text-arka-text-soft"
+              className="text-sm text-slate-600"
               aria-live="polite"
             >
               Step {currentStep} of 10

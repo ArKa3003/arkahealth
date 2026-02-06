@@ -54,13 +54,13 @@ export interface CardTitleProps extends React.HTMLAttributes<HTMLHeadingElement>
 
 const CardTitle = React.forwardRef<HTMLHeadingElement, CardTitleProps>(
   ({ className, as: Component = "h3", ...props }, ref) => (
-    <Component ref={ref} className={cn("font-heading text-xl font-semibold leading-none tracking-tight text-arka-text", className)} {...props} />
+    <Component ref={ref} className={cn("font-heading text-xl font-semibold leading-none tracking-tight text-slate-900", className)} {...props} />
   )
 );
 CardTitle.displayName = "CardTitle";
 
 const CardDescription = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLParagraphElement>>(
-  ({ className, ...props }, ref) => <p ref={ref} className={cn("text-sm text-arka-text-soft leading-relaxed", className)} {...props} />
+  ({ className, ...props }, ref) => <p ref={ref} className={cn("text-sm text-slate-600 leading-relaxed", className)} {...props} />
 );
 CardDescription.displayName = "CardDescription";
 

@@ -36,9 +36,9 @@ export function ClinDemoContent() {
   return (
     <div className="space-y-6 sm:space-y-8">
       {/* FDA Banner */}
-      <div className="arka-card flex flex-wrap items-center justify-center gap-2 rounded-xl border border-arka-cyan/30 bg-arka-bg-medium/80 py-2.5 px-3 sm:px-4">
+      <div className="arka-card flex flex-wrap items-center justify-center gap-2 rounded-xl border border-arka-cyan/30 bg-arka-bg-alt py-2.5 px-3 sm:px-4">
         <Shield className="h-4 w-4 flex-shrink-0 text-arka-cyan" aria-hidden />
-        <span className="text-center text-sm font-medium text-arka-text-muted sm:text-left">
+        <span className="text-center text-sm font-medium text-arka-text-dark-muted sm:text-left">
           {FDA_COMPLIANCE.BANNER_TEXT}
         </span>
       </div>

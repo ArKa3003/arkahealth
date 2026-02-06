@@ -47,13 +47,13 @@ export function CtaSection() {
         >
           <Link
             href="#solutions"
-            className="arka-button-primary inline-flex items-center justify-center px-8 py-3 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-arka-teal focus:ring-offset-2 focus:ring-offset-arka-bg-light"
+            className="arka-button-primary inline-flex min-h-[44px] items-center justify-center px-8 py-3 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-arka-teal focus:ring-offset-2 focus:ring-offset-arka-bg-light touch-manipulation"
           >
             Explore solutions
           </Link>
           <Link
             href="#ecosystem"
-            className="arka-button-secondary inline-flex items-center justify-center px-8 py-3 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-arka-teal focus:ring-offset-2 focus:ring-offset-arka-bg-light"
+            className="arka-button-secondary inline-flex min-h-[44px] items-center justify-center px-8 py-3 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-arka-teal focus:ring-offset-2 focus:ring-offset-arka-bg-light touch-manipulation"
           >
             View ecosystem
           </Link>

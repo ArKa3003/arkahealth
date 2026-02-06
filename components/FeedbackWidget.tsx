@@ -133,7 +133,7 @@ export function FeedbackWidget() {
 
       {/* Slide-out panel */}
       <div
-        className="fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col bg-white shadow-2xl transition-transform duration-300 ease-out dark:bg-arka-bg-light"
+        className="fixed inset-y-0 right-0 z-50 flex w-full flex-col bg-white shadow-2xl transition-transform duration-300 ease-out dark:bg-arka-bg-light sm:max-w-md"
         style={{
           transform: panelVisible ? "translateX(0)" : "translateX(100%)",
           transitionDuration: `${PANEL_TRANSITION_MS}ms`,
@@ -150,7 +150,7 @@ export function FeedbackWidget() {
           <button
             type="button"
             onClick={closePanel}
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-arka-text-dark-muted transition-colors hover:bg-arka-pale hover:text-arka-text-dark focus:outline-none focus:ring-2 focus:ring-arka-teal focus:ring-offset-2"
+            className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-arka-text-dark-muted transition-colors hover:bg-arka-pale hover:text-arka-text-dark focus:outline-none focus:ring-2 focus:ring-arka-teal focus:ring-offset-2 touch-manipulation"
             aria-label="Close feedback"
           >
             <X className="h-5 w-5" />
@@ -182,10 +182,10 @@ export function FeedbackWidget() {
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5" noValidate>
                 {Object.keys(fieldErrors).length > 0 && (
-                  <div
-                    role="alert"
-                    className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800 dark:border-red-800 dark:bg-red-950/20 dark:text-red-200"
-                  >
+                <div
+                  role="alert"
+                  className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800 dark:border-red-800 dark:bg-red-950/50 dark:text-red-100"
+                >
                     Please fix the errors below before submitting.
                   </div>
                 )}

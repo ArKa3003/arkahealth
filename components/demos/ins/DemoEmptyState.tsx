@@ -35,8 +35,8 @@ export function DemoEmptyState({
           <div className="h-14 w-14 rounded-full bg-arka-deep/20 flex items-center justify-center mb-4">
             <UserPlus className="h-7 w-7 text-arka-deep" />
           </div>
-          <h3 className="font-heading text-lg font-semibold text-arka-text mb-2">{title}</h3>
-          <p className="text-arka-text-soft text-sm mb-5">{description}</p>
+          <h3 className="font-heading text-lg font-semibold text-slate-900 mb-2">{title}</h3>
+          <p className="text-slate-600 text-sm mb-5">{description}</p>
           <Button variant="primary" size="md" onClick={onGoToStep1} rightIcon={<ChevronRight className="h-4 w-4" />}>
             Go to Step 1 — Patient Selection
           </Button>

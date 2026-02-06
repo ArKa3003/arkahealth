@@ -60,15 +60,15 @@ function CaseCard({
           <CategoryIcon className="w-3 h-3" />
           {categoryConfig.label}
         </span>
-        <span className="text-xs text-arka-text-soft">
+        <span className="text-xs text-slate-600 font-medium">
           {DIFFICULTY_LABELS[caseData.difficulty]}
         </span>
       </div>
-      <h3 className="font-semibold text-arka-text line-clamp-2 mb-2">{caseData.title}</h3>
-      <p className="text-sm text-arka-text-muted line-clamp-2 italic">
+      <h3 className="font-semibold text-slate-900 line-clamp-2 mb-2">{caseData.title}</h3>
+      <p className="text-sm text-slate-800 line-clamp-2 italic">
         &ldquo;{caseData.chief_complaint}&rdquo;
       </p>
-      <div className="mt-3 flex items-center gap-2 text-xs text-arka-text-soft">
+      <div className="mt-3 flex items-center gap-2 text-xs text-teal-700 font-medium">
         <BookOpen className="w-3.5 h-3.5" />
         Start case
       </div>
@@ -112,8 +112,8 @@ export function EdDemoContent() {
           transition={{ duration: 0.25, ease: "easeOut" }}
           className="space-y-6"
         >
-          <h2 className="text-xl font-semibold text-arka-text">Case Library</h2>
-          <p className="text-arka-text-muted text-sm sm:text-base max-w-2xl">
+          <h2 className="text-xl font-semibold text-slate-900">Case Library</h2>
+          <p className="text-slate-600 text-sm sm:text-base max-w-2xl">
             Choose a clinical case to practice imaging appropriateness. Each case includes a
             vignette, imaging options, and evidence-based feedback.
           </p>

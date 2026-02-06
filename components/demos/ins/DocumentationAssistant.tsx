@@ -24,12 +24,12 @@ export function DocumentationAssistant({ onGoBack }: { onGoBack?: () => void }) 
   if (processing.isGenerating) {
     return (
       <div className="space-y-6">
-        <h2 className="font-heading text-2xl font-semibold text-arka-text">Documentation Assistant</h2>
+        <h2 className="font-heading text-2xl font-semibold text-slate-900">Documentation Assistant</h2>
         <Card variant="default">
           <CardContent className="p-8">
             <div className="flex flex-col items-center gap-4">
               <FileText className="h-12 w-12 text-arka-deep animate-pulse" />
-              <p className="text-arka-text-muted font-medium">{processing.processingMessage ?? "Generating justification..."}</p>
+              <p className="text-slate-700 font-medium">{processing.processingMessage ?? "Generating justification..."}</p>
               <Progress value={processing.processingProgress} max={100} size="md" className="w-full max-w-xs" />
             </div>
           </CardContent>
@@ -41,9 +41,9 @@ export function DocumentationAssistant({ onGoBack }: { onGoBack?: () => void }) 
   if (!generatedJustification) {
     return (
       <div className="space-y-6">
-        <h2 className="font-heading text-2xl font-semibold text-arka-text">Documentation Assistant</h2>
+        <h2 className="font-heading text-2xl font-semibold text-slate-900">Documentation Assistant</h2>
         <Card variant="default">
-          <CardContent className="p-8 text-center text-arka-text-soft">Generating...</CardContent>
+          <CardContent className="p-8 text-center text-slate-600">Generating...</CardContent>
         </Card>
       </div>
     );
@@ -53,8 +53,8 @@ export function DocumentationAssistant({ onGoBack }: { onGoBack?: () => void }) 
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-heading text-2xl font-semibold text-arka-text">Documentation Assistant</h2>
-          <p className="text-arka-text-soft text-sm">AI-generated clinical justification.</p>
+          <h2 className="font-heading text-2xl font-semibold text-slate-900">Documentation Assistant</h2>
+          <p className="text-slate-600 text-sm">AI-generated clinical justification.</p>
         </div>
         {onGoBack && <Button variant="ghost" size="sm" onClick={onGoBack}>Go Back</Button>}
       </div>
@@ -66,11 +66,11 @@ export function DocumentationAssistant({ onGoBack }: { onGoBack?: () => void }) 
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6">
-          <div className="prose prose-invert prose-sm max-w-none">
-            <p className="text-arka-text-muted whitespace-pre-wrap">{generatedJustification.narrative}</p>
+          <div className="prose prose-sm max-w-none prose-p:text-slate-700">
+            <p className="text-slate-700 whitespace-pre-wrap">{generatedJustification.narrative}</p>
           </div>
           {generatedJustification.keyPoints.length > 0 && (
-            <ul className="mt-4 space-y-1 text-sm text-arka-text-soft">
+            <ul className="mt-4 space-y-1 text-sm text-slate-600">
               {generatedJustification.keyPoints.map((k, i) => (
                 <li key={i}>• {k}</li>
               ))}

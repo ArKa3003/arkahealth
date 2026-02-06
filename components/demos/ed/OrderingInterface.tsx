@@ -123,23 +123,23 @@ export function OrderingInterface({
 
   return (
     <div className={clsx("flex flex-col h-full", className)}>
-      <div className="p-4 border-b border-arka-primary/20">
-        <h3 className="text-lg font-semibold text-arka-text mb-3">Order Imaging</h3>
+      <div className="p-4 border-b border-slate-200">
+        <h3 className="text-lg font-semibold text-slate-900 mb-3">Order Imaging</h3>
         <div className="relative mb-3">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-arka-text-soft" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
           <Input
             type="text"
             placeholder="Search imaging studies..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
+            className="pl-10 placeholder:text-slate-500"
             disabled={disabled}
           />
           {searchQuery && (
             <button
               type="button"
               onClick={() => setSearchQuery("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-arka-text-soft hover:text-arka-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-cyan focus-visible:ring-offset-2"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-teal-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
               aria-label="Clear search"
             >
               <X className="w-4 h-4" aria-hidden />
@@ -157,10 +157,10 @@ export function OrderingInterface({
                 onClick={() => setActiveModality(tab.value)}
                 disabled={disabled}
                 className={clsx(
-                  "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors",
+                  "flex min-h-[44px] items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors touch-manipulation",
                   isActive
-                    ? "bg-arka-cyan text-arka-bg-dark"
-                    : "bg-arka-bg-medium text-arka-text-soft hover:text-arka-text",
+                    ? "bg-teal-600 text-white"
+                    : "bg-slate-100 text-slate-600 hover:text-slate-900",
                   disabled && "opacity-50 cursor-not-allowed"
                 )}
               >
@@ -194,8 +194,8 @@ export function OrderingInterface({
               />
             ))}
             {filteredOptions.length === 0 && debouncedSearch && (
-              <div className="text-center py-8 text-arka-text-soft">
-                <Search className="w-8 h-8 mx-auto mb-2 text-arka-text-soft/50" />
+              <div className="text-center py-8 text-slate-600">
+                <Search className="w-8 h-8 mx-auto mb-2 text-slate-400" />
                 <p>No imaging studies match your search</p>
               </div>
             )}
@@ -204,10 +204,10 @@ export function OrderingInterface({
 
         <div className="relative py-4">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-arka-primary/20" />
+            <div className="w-full border-t border-slate-200" />
           </div>
           <div className="relative flex justify-center">
-            <span className="bg-arka-bg-dark px-3 text-sm text-arka-text-soft">or</span>
+            <span className="bg-white px-3 text-sm text-slate-500">or</span>
           </div>
         </div>
 
@@ -225,7 +225,7 @@ export function OrderingInterface({
         />
       </div>
 
-      <div className="border-t border-arka-primary/20 p-4 bg-arka-bg-medium/30">
+      <div className="border-t border-slate-200 p-4 bg-slate-50">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
             {selectionTotals.count > 0 ? (
@@ -237,7 +237,7 @@ export function OrderingInterface({
                 </Badge>
                 {!selectionTotals.isNoImaging && (
                   <>
-                    <span className="text-sm text-arka-text-muted flex items-center gap-1">
+                    <span className="text-sm text-slate-700 flex items-center gap-1">
                       <DollarSign className="w-3.5 h-3.5" />
                       ${selectionTotals.cost.toLocaleString()}
                     </span>
@@ -246,14 +246,14 @@ export function OrderingInterface({
                 )}
               </>
             ) : (
-              <span className="text-sm text-arka-text-soft">No selection</span>
+              <span className="text-sm text-slate-600">No selection</span>
             )}
           </div>
           {selectionTotals.count > 0 && !disabled && (
             <button
               type="button"
               onClick={clearSelection}
-              className="text-sm text-arka-text-soft hover:text-arka-cyan flex items-center gap-1"
+              className="text-sm text-slate-600 hover:text-teal-600 flex items-center gap-1"
             >
               <Trash2 className="w-3.5 h-3.5" />
               Clear
@@ -276,7 +276,7 @@ export function OrderingInterface({
           )}
         </Button>
         {mode === "learning" && !disabled && (
-          <p className="text-xs text-arka-text-soft text-center mt-2">
+          <p className="text-xs text-slate-600 text-center mt-2">
             Learning mode: You can try multiple times
           </p>
         )}

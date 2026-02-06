@@ -36,7 +36,7 @@ export function HintSystem({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Lightbulb className="w-5 h-5 text-arka-cyan" />
-          <h4 className="font-semibold text-arka-text">Hints</h4>
+          <h4 className="font-semibold text-slate-900">Hints</h4>
           <Badge variant="default" size="sm">
             {hintsRevealed}/{hintsAvailable}
           </Badge>
@@ -52,12 +52,12 @@ export function HintSystem({
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="arka-card border-arka-cyan/20 rounded-lg p-4 mb-2">
+            <div className="bg-teal-50 border border-teal-200 rounded-lg p-4 mb-2">
               <div className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-arka-cyan/20 text-arka-cyan flex items-center justify-center text-xs font-bold flex-shrink-0">
+                <div className="w-6 h-6 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center text-xs font-bold flex-shrink-0">
                   {index + 1}
                 </div>
-                <p className="text-arka-text-muted text-sm flex-1">{hint}</p>
+                <p className="text-slate-800 text-sm flex-1">{hint}</p>
               </div>
             </div>
           </motion.div>
@@ -77,11 +77,11 @@ export function HintSystem({
       )}
 
       {hintsRevealed >= hintsAvailable && hintsAvailable > 0 && (
-        <p className="text-xs text-arka-text-soft text-center">All hints revealed</p>
+        <p className="text-xs text-slate-600 text-center">All hints revealed</p>
       )}
 
       {disabled && (
-        <div className="flex items-center gap-2 text-sm text-arka-text-soft bg-arka-bg-medium rounded-lg px-3 py-2">
+        <div className="flex items-center gap-2 text-sm text-slate-600 bg-slate-100 rounded-lg px-3 py-2">
           <AlertCircle className="w-4 h-4" />
           Hints are not available in Quiz mode
         </div>

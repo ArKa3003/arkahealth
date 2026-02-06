@@ -103,14 +103,14 @@ export function DemoErrorState({
           <div className="flex items-start gap-2 mb-5">
             <HelpCircle className="h-5 w-5 text-arka-deep flex-shrink-0 mt-0.5" />
             <div>
-              <p className="font-medium text-arka-text-muted mb-2">Next steps</p>
-              <ul className="space-y-1.5 text-sm text-arka-text-soft">
+              <p className="font-medium text-arka-text-dark-muted mb-2">Next steps</p>
+              <ul className="space-y-1.5 text-sm text-arka-text-dark-soft">
                 {config.steps.map((step, i) => (
                   <li key={i} className="flex items-start gap-2">
                     <ChevronRight className="h-4 w-4 text-arka-deep flex-shrink-0 mt-0.5" />
                     <span
                       dangerouslySetInnerHTML={{
-                        __html: step.replace(/\*\*(.+?)\*\*/g, "<strong class='text-arka-text'>$1</strong>"),
+                        __html: step.replace(/\*\*(.+?)\*\*/g, "<strong class='text-arka-text-dark'>$1</strong>"),
                       }}
                     />
                   </li>

@@ -23,7 +23,7 @@ const variantStyles = {
     "focus-visible:ring-arka-deep",
   ].join(" "),
   secondary: [
-    "bg-transparent text-arka-text-muted border-2 border-arka-deep/50",
+    "bg-transparent text-slate-700 border-2 border-arka-deep/50",
     "hover:border-arka-deep hover:text-arka-cyan hover:bg-arka-deep/10",
     "active:bg-arka-deep/20",
     "focus-visible:ring-arka-deep",
@@ -41,8 +41,8 @@ const variantStyles = {
     "hover:bg-red-500 focus-visible:ring-red-500",
   ].join(" "),
   ghost: [
-    "bg-transparent text-arka-text-soft",
-    "hover:bg-white/5 hover:text-arka-text",
+    "bg-transparent text-slate-600",
+    "hover:bg-arka-pale hover:text-arka-cyan",
     "focus-visible:ring-arka-deep",
   ].join(" "),
 };

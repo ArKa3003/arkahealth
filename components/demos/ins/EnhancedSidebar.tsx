@@ -41,17 +41,17 @@ export function EnhancedSidebar({
       )}
     >
       <div className="p-4 border-b border-white/10">
-        <Link href={routes.home} className="flex items-center gap-2 font-heading text-lg font-semibold text-arka-text no-underline">
-          <span className="text-arka-deep">ARKA</span>
-          <span className="px-1.5 py-0.5 text-[10px] font-bold text-arka-bg-dark bg-arka-deep rounded">INS</span>
+        <Link href={routes.home} className="flex items-center gap-2 font-heading text-lg font-semibold text-white no-underline">
+          <span className="text-teal-300">ARKA</span>
+          <span className="px-1.5 py-0.5 text-[10px] font-bold text-arka-bg-dark bg-arka-teal rounded text-white">INS</span>
         </Link>
-        <p className="text-xs text-arka-text-soft mt-1">Utilization Management</p>
+        <p className="text-xs text-slate-300 mt-1">Utilization Management</p>
       </div>
 
       <div className="p-4 border-b border-white/10">
         <div className="flex items-center justify-between text-sm mb-2">
-          <span className="font-medium text-arka-text-muted">Step {currentStep} of {totalSteps}</span>
-          <span className="text-arka-text-soft">~{minutesRemaining} min left</span>
+          <span className="font-medium text-slate-200">Step {currentStep} of {totalSteps}</span>
+          <span className="text-slate-400">~{minutesRemaining} min left</span>
         </div>
         <Progress value={progress} max={100} size="sm" className="[&>div]:bg-arka-bg-dark" />
       </div>
@@ -69,7 +69,7 @@ export function EnhancedSidebar({
                 "w-full flex items-center gap-3 text-left rounded-lg px-3 py-2.5 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-arka-deep focus-visible:ring-offset-2 focus-visible:ring-offset-arka-bg-dark",
                 isCurrent && "bg-arka-deep/20 ring-1 ring-arka-deep/40",
                 !isCurrent && "hover:bg-white/5",
-                isCompleted && !isCurrent && "text-arka-text-soft"
+                isCompleted && !isCurrent && "text-slate-400"
               )}
               aria-current={isCurrent ? "step" : undefined}
               aria-label={`Step ${step.id}: ${step.name}${isCompleted ? ", completed" : isCurrent ? ", current step" : ""}`}
@@ -79,16 +79,16 @@ export function EnhancedSidebar({
                   "flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold",
                   isCompleted && !isCurrent && "bg-emerald-600 text-white",
                   isCurrent && "bg-arka-deep text-white",
-                  !isCompleted && !isCurrent && "bg-arka-bg-dark text-arka-text-soft"
+                  !isCompleted && !isCurrent && "bg-arka-bg-dark text-slate-400"
                 )}
               >
                 {isCompleted && !isCurrent ? <Check className="h-3.5 w-3.5" /> : step.id}
               </span>
-              <span className={cn("flex-1 min-w-0 text-sm font-medium truncate", isCurrent ? "text-arka-text" : "text-arka-text-muted")}>
+              <span className={cn("flex-1 min-w-0 text-sm font-medium truncate", isCurrent ? "text-slate-100" : "text-slate-300")}>
                 {step.name}
               </span>
               {step.isNew && (
-                <span className="shrink-0 inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-400">
+                <span className="shrink-0 inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-800">
                   <Sparkles className="h-2.5 w-2.5" /> NEW
                 </span>
               )}
@@ -103,7 +103,7 @@ export function EnhancedSidebar({
       </nav>
 
       <div className="p-4 border-t border-white/10">
-        <Button variant="ghost" size="sm" fullWidth onClick={onReset} className="text-arka-text-soft" leftIcon={<RotateCcw className="h-4 w-4" aria-hidden />} aria-label="Reset demo">
+        <Button variant="ghost" size="sm" fullWidth onClick={onReset} className="text-slate-400" leftIcon={<RotateCcw className="h-4 w-4" aria-hidden />} aria-label="Reset demo">
           Reset Demo
         </Button>
       </div>

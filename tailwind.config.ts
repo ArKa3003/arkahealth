@@ -21,9 +21,11 @@ const config: Config = {
         "arka-bg-medium": "#1E293B",
         "arka-bg-light": "#F8FAFC",
         "arka-bg-alt": "#F1F5F9",
+        /* Light text – use only on dark backgrounds (hero, nav, footer, dark cards) */
         "arka-text": "#FFFFFF",
         "arka-text-muted": "#F8FAFC",
         "arka-text-soft": "#E2E8F0",
+        /* Dark text – use on light backgrounds for WCAG AA contrast */
         "arka-text-dark": "#0F172A",
         "arka-text-dark-muted": "#475569",
         "arka-text-dark-soft": "#64748B",

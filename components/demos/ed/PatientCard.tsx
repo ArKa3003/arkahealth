@@ -35,10 +35,10 @@ export function PatientCard({
         />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-lg font-semibold text-arka-text">
+        <p className="text-lg font-semibold text-slate-900">
           {age}-year-old {sexLabel}
         </p>
-        <p className="mt-2 text-arka-text-muted italic leading-relaxed">
+        <p className="mt-2 text-slate-800 italic leading-relaxed">
           &ldquo;{chiefComplaint}&rdquo;
         </p>
       </div>

@@ -26,8 +26,8 @@ export function TimerBadge({ remaining, className }: TimerBadgeProps) {
       transition={{ repeat: Infinity, duration: 0.5 }}
       className={clsx(
         "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-mono font-semibold",
-        isDanger && "bg-red-500/20 text-red-300 border border-red-500/40",
-        isWarning && "bg-amber-500/20 text-amber-300 border border-amber-500/40",
+        isDanger && "bg-red-500/20 text-red-900 border border-red-500/40",
+        isWarning && "bg-amber-500/20 text-amber-800 border border-amber-500/40",
         !isDanger && !isWarning && "bg-arka-bg-medium text-arka-text-soft border border-arka-primary/20",
         className
       )}
@@ -63,7 +63,7 @@ export function TimeUpModal({ isOpen, onSubmit }: TimeUpModalProps) {
           transition={{ repeat: Infinity, duration: 0.5 }}
           className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-500/20 flex items-center justify-center border border-red-500/40"
         >
-          <Timer className="w-8 h-8 text-red-400" />
+          <Timer className="w-8 h-8 text-red-900" />
         </motion.div>
 
         <h3 className="text-xl font-bold text-arka-text mb-2">Time&apos;s Up!</h3>

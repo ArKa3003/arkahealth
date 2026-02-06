@@ -23,11 +23,11 @@ const MODALITY_CONFIG: Record<
   ct: { icon: Scan, label: "CT", color: "text-arka-primary", bgColor: "bg-arka-primary/20" },
   mri: { icon: Activity, label: "MRI", color: "text-emerald-400", bgColor: "bg-emerald-500/20" },
   ultrasound: { icon: Radio, label: "US", color: "text-cyan-400", bgColor: "bg-cyan-500/20" },
-  nuclear: { icon: Atom, label: "Nuclear", color: "text-amber-400", bgColor: "bg-amber-500/20" },
+  nuclear: { icon: Atom, label: "Nuclear", color: "text-amber-800", bgColor: "bg-amber-500/20" },
   fluoroscopy: { icon: Scan, label: "Fluoro", color: "text-rose-400", bgColor: "bg-rose-500/20" },
   mammography: { icon: Scan, label: "Mammo", color: "text-pink-400", bgColor: "bg-pink-500/20" },
   pet: { icon: Atom, label: "PET", color: "text-orange-400", bgColor: "bg-orange-500/20" },
-  none: { icon: CircleOff, label: "None", color: "text-arka-text-soft", bgColor: "bg-arka-bg-medium" },
+  none: { icon: CircleOff, label: "None", color: "text-slate-600", bgColor: "bg-slate-100" },
 };
 
 export interface ImagingOptionCardProps {
@@ -74,12 +74,12 @@ export function ImagingOptionCard({
       onClick={onSelect}
       disabled={disabled}
       className={clsx(
-        "w-full text-left rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-arka-cyan focus:ring-offset-2 focus:ring-offset-arka-bg-dark",
+        "w-full text-left rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-arka-cyan focus:ring-offset-2 focus:ring-offset-white",
         isSelected
           ? isSpecial
-            ? "border-arka-cyan bg-arka-cyan/10 shadow-glow-sm"
-            : "border-arka-cyan bg-arka-cyan/10 shadow-glow-sm"
-          : "border-arka-primary/20 bg-arka-bg-medium/50 hover:border-arka-cyan/40",
+            ? "border-teal-500 bg-teal-50 shadow-glow-sm"
+            : "border-teal-500 bg-teal-50 shadow-glow-sm"
+          : "border-slate-200 bg-white hover:border-teal-400",
         disabled && "opacity-50 cursor-not-allowed",
         className
       )}
@@ -87,22 +87,22 @@ export function ImagingOptionCard({
       <div className={clsx("p-4", isSpecial && "text-center py-6")}>
         {isSpecial ? (
           <div className="flex flex-col items-center gap-3">
-            <div
-              className={clsx(
-                "w-12 h-12 rounded-full flex items-center justify-center",
-                isSelected ? "bg-arka-cyan" : "bg-arka-bg-medium"
-              )}
-            >
+<div
+                className={clsx(
+                  "w-12 h-12 rounded-full flex items-center justify-center",
+                  isSelected ? "bg-teal-600" : "bg-slate-100"
+                )}
+              >
               <CircleOff
                 className={clsx(
                   "w-6 h-6",
-                  isSelected ? "text-arka-bg-dark" : "text-arka-text-soft"
+                  isSelected ? "text-white" : "text-slate-500"
                 )}
               />
             </div>
             <div>
-              <div className="font-semibold text-arka-text">{name}</div>
-              <div className="text-sm text-arka-text-soft">No radiation • No cost</div>
+              <div className="font-semibold text-slate-900">{name}</div>
+              <div className="text-sm text-slate-600">No radiation • No cost</div>
             </div>
           </div>
         ) : (
@@ -110,7 +110,7 @@ export function ImagingOptionCard({
             <div
               className={clsx(
                 "w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors",
-                isSelected ? "bg-arka-cyan border-arka-cyan" : "border-arka-primary/40"
+                isSelected ? "bg-teal-600 border-teal-600" : "border-slate-400"
               )}
             >
               {isSelected && (
@@ -118,13 +118,13 @@ export function ImagingOptionCard({
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                  className="w-2.5 h-2.5 rounded-full bg-arka-bg-dark"
+                  className="w-2.5 h-2.5 rounded-full bg-white"
                 />
               )}
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
-                <span className="font-medium text-arka-text truncate">
+                <span className="font-medium text-slate-900 truncate">
                   {shortName ?? name}
                 </span>
                 <span
@@ -139,10 +139,10 @@ export function ImagingOptionCard({
                 </span>
               </div>
               {description && (
-                <p className="text-xs text-arka-text-soft line-clamp-1 mb-2">{description}</p>
+                <p className="text-xs text-slate-600 line-clamp-1 mb-2">{description}</p>
               )}
               <div className="flex items-center gap-4">
-                <span className="text-sm text-arka-text-muted flex items-center gap-1">
+                <span className="text-sm text-slate-700 flex items-center gap-1">
                   <DollarSign className="w-3.5 h-3.5" />
                   ${costUsd.toLocaleString()}
                 </span>

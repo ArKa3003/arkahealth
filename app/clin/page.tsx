@@ -88,28 +88,28 @@ export default function ClinPage() {
             transition={{ duration: 0.25, ease: "easeOut" }}
             className="overflow-hidden"
           >
-            <div className="arka-card mt-2 rounded-xl border border-arka-light p-4 sm:p-6 space-y-4 font-sans text-arka-text-dark-muted">
+            <div className="arka-card mt-2 rounded-xl border border-arka-light p-4 sm:p-6 space-y-4 font-sans text-slate-800">
               <div>
-                <h3 className="font-semibold text-arka-text-dark mb-1">What it does</h3>
-                <p className="text-sm sm:text-base">
-                  ARKA-CLIN provides real-time clinical decision support for imaging appropriateness. 
-                  Enter a clinical scenario or choose a demo case to receive an evidence-based appropriateness 
+                <h3 className="font-semibold text-slate-900 mb-1">What it does</h3>
+                <p className="text-sm sm:text-base text-slate-800">
+                  ARKA-CLIN provides real-time clinical decision support for imaging appropriateness.
+                  Enter a clinical scenario or choose a demo case to receive an evidence-based appropriateness
                   score (1–9), transparent factor breakdown (SHAP-style), alternatives, and links to peer-reviewed evidence.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-arka-text-dark mb-1">Who it&apos;s for</h3>
-                <p className="text-sm sm:text-base">
-                  Ordering physicians, radiologists, and healthcare organizations who want to align 
-                  imaging orders with guidelines (e.g., ACR, RAND/UCLA) and reduce unnecessary imaging 
+                <h3 className="font-semibold text-slate-900 mb-1">Who it&apos;s for</h3>
+                <p className="text-sm sm:text-base text-slate-800">
+                  Ordering physicians, radiologists, and healthcare organizations who want to align
+                  imaging orders with guidelines (e.g., ACR, RAND/UCLA) and reduce unnecessary imaging
                   while supporting appropriate studies.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-arka-text-dark mb-1">How it fits in the ecosystem</h3>
-                <p className="text-sm sm:text-base">
-                  ARKA-CLIN is the core CDS module in the ARKA suite. It feeds into <strong className="text-arka-text-dark">ARKA-ED</strong> (emergency 
-                  department workflow) and <strong className="text-arka-text-dark">ARKA-INS</strong> (prior auth and payer alignment). 
+                <h3 className="font-semibold text-slate-900 mb-1">How it fits in the ecosystem</h3>
+                <p className="text-sm sm:text-base text-slate-800">
+                  ARKA-CLIN is the core CDS module in the ARKA suite. It feeds into <strong className="text-slate-900">ARKA-ED</strong> (emergency
+                  department workflow) and <strong className="text-slate-900">ARKA-INS</strong> (prior auth and payer alignment).
                   Together they support ordering, workflow, and reimbursement with one evidence base.
                 </p>
               </div>

@@ -225,7 +225,7 @@ export function CaseViewer({
         <div className="flex-1 flex flex-col min-h-0">
           {/* Desktop: split */}
           <div className="hidden lg:flex flex-1 min-h-0">
-            <div className="w-[60%] border-r border-arka-primary/20 overflow-y-auto">
+            <div className="w-[60%] border-r border-slate-200 overflow-y-auto bg-slate-50">
               <div className="p-6">
                 <ClinicalVignette
                   caseData={caseData}
@@ -235,7 +235,7 @@ export function CaseViewer({
                 />
               </div>
             </div>
-            <div className="w-[40%] flex flex-col bg-arka-bg-medium/30 min-h-0">
+            <div className="w-[40%] flex flex-col bg-white min-h-0 border-l border-slate-200">
               <AnimatePresence>
                 {showHintPanel && mode === "learning" && !isSubmitted && (
                   <motion.div

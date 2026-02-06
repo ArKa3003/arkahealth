@@ -7,7 +7,10 @@
 /* ==========================================================================
    1. CSS custom properties for all ARKA colors
    WCAG 2.1 AA: Normal text 4.5:1, large text 3:1.
-   ARKA palette: --arka-text on --arka-bg-dark ~15.8:1; --arka-cyan on --arka-bg-dark ~7.5:1 (large).
+   CONTRAST RULES:
+   - On white/light backgrounds (arka-bg-light, white, arka-pale): use --arka-text-dark, --arka-text-dark-muted, --arka-text-dark-soft.
+   - On dark backgrounds (arka-bg-dark, arka-navy, arka-bg-medium): use --arka-text, --arka-text-muted, --arka-text-soft.
+   - On teal/accent (arka-teal): use white text.
    ========================================================================== */
 :root {
   /* ARKA color palette: Navy primary, Teal accent, light backgrounds */
@@ -22,9 +25,11 @@
   --arka-bg-medium: #1e293b;
   --arka-bg-light: #f8fafc;
   --arka-bg-alt: #f1f5f9;
+  /* Light text – use ONLY on dark backgrounds */
   --arka-text: #ffffff;
   --arka-text-muted: #f8fafc;
   --arka-text-soft: #e2e8f0;
+  /* Dark text – use on light backgrounds for WCAG AA */
   --arka-text-dark: #0f172a;
   --arka-text-dark-muted: #475569;
   --arka-text-dark-soft: #64748b;

@@ -178,11 +178,16 @@ function DemoModal({
 
 export function Hero() {
   const [demoOpen, setDemoOpen] = useState(false);
+  const [logoKey, setLogoKey] = useState(0);
   const particles = useParticles();
 
   const scrollToSolutions = useCallback(() => {
     const el = document.getElementById("solutions");
     el?.scrollIntoView({ behavior: "smooth" });
+  }, []);
+
+  const handleLogoMouseEnter = useCallback(() => {
+    setLogoKey((k) => k + 1);
   }, []);
 
   return (
@@ -197,17 +202,19 @@ export function Hero() {
 
       <div className="relative z-10 flex w-full max-w-4xl flex-col items-center text-center px-2">
         <motion.div
-          className="mb-4 sm:mb-6 md:mb-8 flex justify-center"
+          className="mb-6 sm:mb-8 md:mb-10 flex justify-center w-full"
           initial={{ opacity: 0, scale: 0.92 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, ease: "easeOut" as const }}
+          onMouseEnter={handleLogoMouseEnter}
         >
           <ArkaAnimatedLogo
+            key={logoKey}
             width={800}
             height={900}
             animate={true}
             idleAnimations={true}
-            className="w-full max-w-[200px] sm:max-w-[240px] md:max-w-[280px] lg:max-w-[300px] h-auto"
+            className="w-full max-w-[350px] sm:max-w-[380px] md:max-w-[min(400px,48vw)] lg:max-w-[min(400px,50vw)] h-auto cursor-pointer"
           />
         </motion.div>
 

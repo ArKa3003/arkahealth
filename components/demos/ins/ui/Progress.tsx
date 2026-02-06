@@ -55,8 +55,8 @@ const Progress = React.forwardRef<
       >
         {showLabel && labelPosition === "top" && (
           <div className="flex justify-between w-full">
-            {label && <span className="text-sm text-arka-text-soft">{label}</span>}
-            <span className="text-sm font-medium text-arka-text-muted">{Math.round(percentage)}%</span>
+            {label && <span className="text-sm text-slate-600">{label}</span>}
+            <span className="text-sm font-medium text-slate-700">{Math.round(percentage)}%</span>
           </div>
         )}
         <ProgressPrimitive.Root
@@ -76,7 +76,7 @@ const Progress = React.forwardRef<
           </ProgressPrimitive.Indicator>
         </ProgressPrimitive.Root>
         {showLabel && labelPosition === "right" && (
-          <span className="text-sm font-medium text-arka-text-muted">{label ?? `${Math.round(percentage)}%`}</span>
+          <span className="text-sm font-medium text-slate-700">{label ?? `${Math.round(percentage)}%`}</span>
         )}
       </div>
     );

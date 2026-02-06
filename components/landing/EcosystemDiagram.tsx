@@ -529,7 +529,8 @@ export function EcosystemDiagram() {
         )}
 
         <p className="mt-6 text-center text-xs text-arka-text-dark-soft">
-          Hover to highlight connections · Click a phase to open its demo
+          <span className="hidden sm:inline">Hover to highlight connections · </span>
+          Click a phase to open its demo
         </p>
       </div>
     </section>

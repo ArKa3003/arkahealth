@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { clsx } from "clsx";
 import { Lightbulb, FileText, Copy } from "lucide-react";
 import type { ClinicalScenario, EvaluationResult } from "@/lib/demos/clin/types";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/Card";
@@ -59,8 +60,8 @@ export function ClinResultsView({
         role="alert"
         aria-live="polite"
       >
-        <p className="text-sm sm:text-base text-amber-200 font-medium">
-          <strong className="text-amber-100">Advisory Recommendation:</strong> This recommendation is advisory. Clinical judgment should always prevail. Final imaging decisions remain the responsibility of the ordering healthcare provider.
+        <p className="text-sm sm:text-base text-amber-900 font-medium">
+          <strong className="text-amber-800">Advisory Recommendation:</strong> This recommendation is advisory. Clinical judgment should always prevail. Final imaging decisions remain the responsibility of the ordering healthcare provider.
         </p>
       </div>
 
@@ -87,18 +88,18 @@ export function ClinResultsView({
               score={appropriatenessScore.value}
             />
             <div className="text-center w-full">
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-heading font-bold text-arka-text mb-2">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-heading font-bold text-slate-800 mb-2">
                 {oneLineRecommendation}
               </h2>
               <div className="flex flex-wrap items-center justify-center gap-2 mt-3">
-                <Badge variant="info" size="sm">
+                <Badge variant="infoOnLight" size="sm">
                   {coverageStatus.replace(/_/g, " ")}
                 </Badge>
-                <Badge variant="info" size="sm">
+                <Badge variant="infoOnLight" size="sm">
                   {confidenceLevel} confidence
                 </Badge>
               </div>
-              <p className="mt-3 text-sm text-arka-text-muted font-sans">
+              <p className="mt-3 text-sm text-slate-700 font-sans">
                 This guidance supports clinical decision-making. It does not constitute medical advice or replace physician judgment.
               </p>
             </div>
@@ -107,13 +108,13 @@ export function ClinResultsView({
         <CardContent className="p-4 sm:p-6 space-y-4">
           {/* AIIE Evidence Basis */}
           <div className="arka-card rounded-lg border border-arka-primary/20 p-4">
-            <h3 className="font-semibold text-arka-text mb-2">AIIE Evidence Basis</h3>
-            <p className="text-arka-text-muted text-sm sm:text-base mb-2">
-              <strong className="text-arka-text">Topic:</strong> {matchedCriteria.topic}
+            <h3 className="font-semibold text-slate-800 mb-2">AIIE Evidence Basis</h3>
+            <p className="text-slate-700 text-sm sm:text-base mb-2">
+              <strong className="text-slate-800">Topic:</strong> {matchedCriteria.topic}
               {matchedCriteria.variant && ` — ${matchedCriteria.variant}`}
             </p>
-            <p className="text-arka-text-muted text-sm">
-              <strong className="text-arka-text">Based on:</strong> {matchedCriteria.source}
+            <p className="text-slate-700 text-sm">
+              <strong className="text-slate-800">Based on:</strong> {matchedCriteria.source}
             </p>
           </div>
 
@@ -122,20 +123,20 @@ export function ClinResultsView({
             <button
               type="button"
               onClick={() => setReasoningExpanded(!reasoningExpanded)}
-              className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-white/5 transition-colors min-h-[44px] text-left"
+              className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-slate-100 transition-colors min-h-[44px] text-left"
               aria-expanded={reasoningExpanded}
             >
-              <h3 className="font-semibold text-arka-text">
+              <h3 className="font-semibold text-slate-800">
                 {reasoningExpanded ? "Hide" : "Show"} Detailed Clinical Reasoning
               </h3>
-              <span className="text-arka-text-soft" aria-hidden>
+              <span className="text-slate-600" aria-hidden>
                 {reasoningExpanded ? "▼" : "▶"}
               </span>
             </button>
             {reasoningExpanded && (
               <ul className="space-y-2 mt-3 pl-2">
                 {reasoning.map((reason, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-arka-text-muted">
+                  <li key={i} className="flex items-start gap-2 text-sm text-slate-700">
                     <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-arka-cyan" />
                     {reason}
                   </li>
@@ -158,30 +159,30 @@ export function ClinResultsView({
             <div className="flex items-center gap-2">
               <Lightbulb className="h-5 w-5 text-arka-cyan" aria-hidden />
               <div>
-                <h3 className="font-semibold text-arka-text">Why This Score? (SHAP Explanation)</h3>
-                <p className="text-sm text-arka-text-soft">Transparent scoring — see how each factor contributed</p>
+                <h3 className="font-semibold text-slate-800">Why This Score? (SHAP Explanation)</h3>
+                <p className="text-sm text-slate-700">Transparent scoring — see how each factor contributed</p>
               </div>
             </div>
-            <span className="text-arka-text-soft">{shapExpanded ? "▲" : "▼"}</span>
+            <span className="text-slate-600">{shapExpanded ? "▲" : "▼"}</span>
           </button>
           {shapExpanded && (
             <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-4">
               <div className="flex items-center justify-between p-3 bg-arka-bg-medium/50 rounded-lg">
-                <span className="text-arka-text-muted font-medium">Baseline Score:</span>
-                <span className="font-mono font-medium text-arka-text">{shap.baselineScore.toFixed(1)}</span>
+                <span className="text-slate-200 font-medium">Baseline Score:</span>
+                <span className="font-mono font-medium text-white">{shap.baselineScore.toFixed(1)}</span>
               </div>
               <div className="space-y-4">
                 {shap.factors.map((factor, idx) => (
                   <div key={idx} className="space-y-1">
                     <div className="flex items-center justify-between text-sm sm:text-base">
-                      <span className="font-medium text-arka-text-muted">{factor.name}</span>
+                      <span className="font-medium text-slate-700">{factor.name}</span>
                       <span
                         className={`font-mono font-medium ${
                           factor.contribution > 0
                             ? "text-arka-cyan"
                             : factor.contribution < 0
-                              ? "text-red-400"
-                              : "text-arka-text-soft"
+                              ? "text-red-600"
+                              : "text-slate-600"
                         }`}
                       >
                         {factor.contribution > 0 ? "+" : ""}
@@ -201,11 +202,11 @@ export function ClinResultsView({
                           }}
                         />
                       </div>
-                      <span className="text-xs text-arka-text-soft w-24 truncate" title={factor.value}>
+                      <span className="text-xs text-slate-600 w-24 truncate" title={factor.value}>
                         {factor.value}
                       </span>
                     </div>
-                    <p className="text-xs sm:text-sm text-arka-text-soft mt-1">{factor.explanation}</p>
+                    <p className="text-xs sm:text-sm text-slate-700 mt-1">{factor.explanation}</p>
                     {showCitations && (
                       <p className="text-xs text-arka-cyan flex items-center gap-1 font-medium mt-1">
                         <FileText className="h-3 w-3" />
@@ -216,8 +217,8 @@ export function ClinResultsView({
                 ))}
               </div>
               <div className="flex items-center justify-between p-3 bg-arka-bg-medium rounded-lg">
-                <span className="text-arka-text-muted">Final Score:</span>
-                <span className="font-mono font-bold text-arka-text text-lg">{shap.finalScore} / 9</span>
+                <span className="text-slate-200">Final Score:</span>
+                <span className="font-mono font-bold text-white text-lg">{shap.finalScore} / 9</span>
               </div>
               <button
                 type="button"
@@ -236,12 +237,12 @@ export function ClinResultsView({
       {alternatives.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-arka-text">Alternative Recommendations</CardTitle>
+            <CardTitle className="text-slate-800">Alternative Recommendations</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-arka-text-muted text-sm sm:text-base mb-4">
+            <p className="text-slate-700 text-sm sm:text-base mb-4">
               Based on AIIE evidence, consider these alternatives to{" "}
-              <strong className="text-arka-text">{scenario.proposedImaging.modality}</strong>:
+              <strong className="text-slate-800">{scenario.proposedImaging.modality}</strong>:
             </p>
             <div className="space-y-4">
               {alternatives.map((alt, i) => (
@@ -251,7 +252,7 @@ export function ClinResultsView({
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2 mb-2">
-                      <span className="font-medium text-arka-text">{alt.procedure}</span>
+                      <span className="font-medium text-slate-800">{alt.procedure}</span>
                       <Badge
                         variant={alt.rating >= 7 ? "success" : alt.rating >= 4 ? "warning" : "error"}
                         size="sm"
@@ -259,10 +260,10 @@ export function ClinResultsView({
                         {alt.rating}/9
                       </Badge>
                     </div>
-                    <p className="text-sm text-arka-text-muted mb-2">{alt.reasoning}</p>
+                    <p className="text-sm text-slate-700 mb-2">{alt.reasoning}</p>
                     <div className="flex flex-wrap gap-2 text-xs">
-                      <span className="text-arka-text-soft">Cost: {alt.costComparison}</span>
-                      <span className="text-arka-text-soft">Radiation: {alt.radiationComparison}</span>
+                      <span className="text-slate-600">Cost: {alt.costComparison}</span>
+                      <span className="text-slate-600">Radiation: {alt.radiationComparison}</span>
                     </div>
                   </div>
                   <Button
@@ -294,7 +295,7 @@ export function ClinResultsView({
       {warnings.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-arka-text">Alerts & Warnings</CardTitle>
+            <CardTitle className="text-slate-800">Alerts & Warnings</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
@@ -318,7 +319,18 @@ export function ClinResultsView({
                   >
                     {w.type.replace(/-/g, " ")}
                   </Badge>
-                  <p className="mt-2 text-sm font-medium text-arka-text-muted">{w.message}</p>
+                  <p
+                    className={clsx(
+                      "mt-2 text-sm font-medium",
+                      w.severity === "warning"
+                        ? "text-amber-900"
+                        : w.severity === "critical"
+                          ? "text-red-900"
+                          : "text-slate-700"
+                    )}
+                  >
+                    {w.message}
+                  </p>
                 </div>
               ))}
             </div>
@@ -329,13 +341,13 @@ export function ClinResultsView({
       {/* Evidence & Guidelines */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-arka-text">
+          <CardTitle className="text-slate-800">
             Evidence & Guidelines
-            <span className="ml-2 text-sm font-normal text-arka-text-soft">(Independent review source)</span>
+            <span className="ml-2 text-sm font-normal text-slate-700">(Independent review source)</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-arka-text-muted text-sm mb-4">
+          <p className="text-slate-700 text-sm mb-4">
             The following resources support this recommendation and allow you to independently verify the clinical basis:
           </p>
           <div className="space-y-2">
@@ -351,14 +363,14 @@ export function ClinResultsView({
                   {link.type === "guideline" ? "📋" : link.type === "study" ? "📄" : "✓"}
                 </span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-arka-cyan hover:underline truncate">{link.title}</p>
+                  <p className="text-sm font-medium text-teal-700 hover:underline truncate">{link.title}</p>
                 </div>
               </a>
             ))}
           </div>
           <div className="mt-4 p-3 arka-card rounded-lg">
-            <p className="text-sm text-arka-text-muted">
-              <strong className="text-arka-text">Transparency Notice:</strong> AIIE uses RAND/UCLA methodology with peer-reviewed evidence. All scoring factors are transparent. You maintain complete authority over clinical decisions.
+            <p className="text-sm text-slate-700">
+              <strong className="text-slate-800">Transparency Notice:</strong> AIIE uses RAND/UCLA methodology with peer-reviewed evidence. All scoring factors are transparent. You maintain complete authority over clinical decisions.
             </p>
           </div>
         </CardContent>
@@ -379,8 +391,8 @@ export function ClinResultsView({
       </div>
 
       {/* Methodology badge */}
-      <div className="inline-flex flex-wrap items-center gap-2 rounded-lg border border-arka-primary/30 bg-arka-bg-medium/50 px-3 py-2 text-sm text-arka-text-muted">
-        <span className="font-semibold text-arka-text">AIIE v{FDA_COMPLIANCE.VERSION.aiie}</span>
+      <div className="inline-flex flex-wrap items-center gap-2 rounded-lg border border-arka-primary/30 bg-arka-bg-alt px-3 py-2 text-sm text-slate-700">
+        <span className="font-semibold text-slate-800">AIIE v{FDA_COMPLIANCE.VERSION.aiie}</span>
         <span aria-hidden>|</span>
         <span>{FDA_COMPLIANCE.VERSION.methodology}</span>
         <span aria-hidden>|</span>

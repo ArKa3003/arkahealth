@@ -116,10 +116,10 @@ export function FeedbackPanel({
           "border border-arka-primary/20"
         )}
       >
-        <ResultIcon className="w-12 h-12 mx-auto mb-3 text-arka-text" />
-        <h3 className="text-xl font-bold text-arka-text mb-1">{getResultMessage()}</h3>
-        <div className="flex items-center justify-center gap-2 text-arka-text-muted">
-          <span className="text-3xl font-bold text-arka-text">{animatedScore}</span>
+        <ResultIcon className="w-12 h-12 mx-auto mb-3 text-white" />
+        <h3 className="text-xl font-bold text-white mb-1">{getResultMessage()}</h3>
+        <div className="flex items-center justify-center gap-2 text-slate-200">
+          <span className="text-3xl font-bold text-white">{animatedScore}</span>
           <span className="text-lg">/100</span>
         </div>
       </div>
@@ -157,11 +157,11 @@ export function FeedbackPanel({
               {selectedOptions.map((opt) => (
                 <div
                   key={opt.id}
-                  className="flex items-center justify-between py-2 border-b border-arka-primary/10 last:border-0"
+                  className="flex items-center justify-between py-2 border-b border-slate-200 last:border-0"
                 >
-                  <span className="font-medium text-arka-text">{opt.short_name}</span>
+                  <span className="font-medium text-slate-900">{opt.short_name}</span>
                   <div className="flex items-center gap-3">
-                    <span className="text-sm text-arka-text-muted">
+                    <span className="text-sm text-slate-600">
                       ${opt.typical_cost_usd.toLocaleString()}
                     </span>
                     <RadiationBadge doseMsv={opt.radiation_msv} />
@@ -169,22 +169,22 @@ export function FeedbackPanel({
                 </div>
               ))}
               {feedback.rationale && (
-                <p className="text-sm text-arka-text-soft italic pt-2 border-t border-arka-primary/10">
+                <p className="text-sm text-slate-600 italic pt-2 border-t border-slate-200">
                   &ldquo;{feedback.rationale}&rdquo;
                 </p>
               )}
             </>
           ) : (
-            <p className="text-arka-text-soft">No Imaging Selected</p>
+            <p className="text-slate-600">No Imaging Selected</p>
           )}
         </CardContent>
       </Card>
 
       {/* Better Choice (if not correct) */}
       {!feedback.isCorrect && optimalOptions.length > 0 && (
-        <Card variant="bordered" className="border-arka-cyan/30">
+        <Card variant="bordered" className="border-teal-300">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base flex items-center gap-2 text-arka-cyan">
+            <CardTitle className="text-base flex items-center gap-2 text-teal-700">
               <Star className="w-4 h-4" />
               Better Choice
               {feedback.optimalAcrRating != null && (
@@ -199,11 +199,11 @@ export function FeedbackPanel({
                 className="flex items-center justify-between py-2"
               >
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-arka-cyan" />
-                  <span className="font-medium text-arka-text">{opt.short_name}</span>
+                  <CheckCircle className="w-4 h-4 text-teal-600" />
+                  <span className="font-medium text-slate-900">{opt.short_name}</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-sm text-arka-text-muted">
+                  <span className="text-sm text-slate-600">
                     ${opt.typical_cost_usd.toLocaleString()}
                   </span>
                   <RadiationBadge doseMsv={opt.radiation_msv} />
@@ -218,12 +218,12 @@ export function FeedbackPanel({
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-base flex items-center gap-2">
-            <BookOpen className="w-4 h-4 text-arka-cyan" />
+            <BookOpen className="w-4 h-4 text-teal-600" />
             Why?
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-arka-text-muted leading-relaxed whitespace-pre-wrap">
+          <p className="text-slate-700 leading-relaxed whitespace-pre-wrap">
             {feedback.explanation}
           </p>
         </CardContent>
@@ -234,15 +234,15 @@ export function FeedbackPanel({
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-base flex items-center gap-2">
-              <Lightbulb className="w-4 h-4 text-arka-cyan" />
+              <Lightbulb className="w-4 h-4 text-teal-600" />
               Key Teaching Points
             </CardTitle>
           </CardHeader>
           <CardContent>
             <ol className="space-y-2">
               {feedback.teachingPoints.map((point, index) => (
-                <li key={index} className="flex items-start gap-3 text-arka-text-muted">
-                  <span className="w-6 h-6 rounded-full bg-arka-cyan/20 text-arka-cyan flex items-center justify-center text-xs font-bold flex-shrink-0">
+                <li key={index} className="flex items-start gap-3 text-slate-700">
+                  <span className="w-6 h-6 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center text-xs font-bold flex-shrink-0">
                     {index + 1}
                   </span>
                   <span>{point}</span>
@@ -259,13 +259,13 @@ export function FeedbackPanel({
           <button
             type="button"
             onClick={() => setShowAllComparison(!showAllComparison)}
-            className="w-full p-4 flex items-center justify-between text-left hover:bg-arka-bg-medium/30 transition-colors rounded-xl"
+            className="w-full p-4 flex items-center justify-between text-left hover:bg-slate-50 transition-colors rounded-xl"
           >
-            <span className="font-medium text-arka-text">All Options Comparison</span>
+            <span className="font-medium text-slate-900">All Options Comparison</span>
             {showAllComparison ? (
-              <ChevronUp className="w-5 h-5 text-arka-text-soft" />
+              <ChevronUp className="w-5 h-5 text-slate-500" />
             ) : (
-              <ChevronDown className="w-5 h-5 text-arka-text-soft" />
+              <ChevronDown className="w-5 h-5 text-slate-500" />
             )}
           </button>
           <AnimatePresence>
@@ -279,17 +279,17 @@ export function FeedbackPanel({
                   <TableScrollWrapper aria-label="ACR ratings comparison" className="rounded-lg">
                     <table className="w-full min-w-[360px] text-sm">
                       <thead>
-                        <tr className="border-b border-arka-primary/20">
-                          <th className="text-left py-2 px-2 font-medium text-arka-text-soft">
+                        <tr className="border-b border-slate-200">
+                          <th className="text-left py-2 px-2 font-medium text-slate-700">
                             Option
                           </th>
-                          <th className="text-center py-2 px-2 font-medium text-arka-text-soft">
+                          <th className="text-center py-2 px-2 font-medium text-slate-700">
                             ACR
                           </th>
-                          <th className="text-right py-2 px-2 font-medium text-arka-text-soft">
+                          <th className="text-right py-2 px-2 font-medium text-slate-700">
                             Cost
                           </th>
-                          <th className="text-right py-2 px-2 font-medium text-arka-text-soft">
+                          <th className="text-right py-2 px-2 font-medium text-slate-700">
                             Radiation
                           </th>
                         </tr>
@@ -307,12 +307,12 @@ export function FeedbackPanel({
                               <tr
                                 key={opt.id}
                                 className={clsx(
-                                  "border-b border-arka-primary/10 min-h-[44px]",
-                                  isUserChoice && "bg-arka-cyan/10"
+                                  "border-b border-slate-200 min-h-[44px]",
+                                  isUserChoice && "bg-teal-50"
                                 )}
                               >
                                 <td className="py-2 px-2">
-                                  <span className={clsx(isUserChoice && "font-medium text-arka-text")}>
+                                  <span className={clsx(isUserChoice && "font-medium text-slate-900")}>
                                     {opt.short_name}
                                     {isUserChoice && (
                                       <Badge variant="success" size="sm" className="ml-2">
@@ -324,10 +324,10 @@ export function FeedbackPanel({
                                 <td className="py-2 px-2 text-center">
                                   <ACRRatingBadge rating={rating.acrRating} size="sm" />
                                 </td>
-                                <td className="py-2 px-2 text-right text-arka-text-muted">
+                                <td className="py-2 px-2 text-right text-slate-600">
                                   ${opt.typical_cost_usd.toLocaleString()}
                                 </td>
-                                <td className="py-2 px-2 text-right text-arka-text-muted">
+                                <td className="py-2 px-2 text-right text-slate-600">
                                   {opt.radiation_msv} mSv
                                 </td>
                               </tr>

@@ -25,12 +25,12 @@ export function RBMCriteriaMapper({ onGoBack }: { onGoBack?: () => void }) {
   if (processing.isAnalyzing) {
     return (
       <div className="space-y-6">
-        <h2 className="font-heading text-2xl font-semibold text-arka-text">RBM Criteria Mapping</h2>
+        <h2 className="font-heading text-2xl font-semibold text-slate-900">RBM Criteria Mapping</h2>
         <Card variant="default">
           <CardContent className="p-8">
             <div className="flex flex-col items-center gap-4">
               <BookOpen className="h-12 w-12 text-arka-deep animate-pulse" />
-              <p className="text-arka-text-muted font-medium">{processing.processingMessage ?? "Loading criteria..."}</p>
+              <p className="text-slate-700 font-medium">{processing.processingMessage ?? "Loading criteria..."}</p>
               <Progress value={processing.processingProgress} max={100} size="md" className="w-full max-w-xs" />
             </div>
           </CardContent>
@@ -42,9 +42,9 @@ export function RBMCriteriaMapper({ onGoBack }: { onGoBack?: () => void }) {
   if (!rbmCriteriaMatch) {
     return (
       <div className="space-y-6">
-        <h2 className="font-heading text-2xl font-semibold text-arka-text">RBM Criteria Mapping</h2>
+        <h2 className="font-heading text-2xl font-semibold text-slate-900">RBM Criteria Mapping</h2>
         <Card variant="default">
-          <CardContent className="p-8 text-center text-arka-text-soft">Loading...</CardContent>
+          <CardContent className="p-8 text-center text-slate-600">Loading...</CardContent>
         </Card>
       </div>
     );
@@ -56,8 +56,8 @@ export function RBMCriteriaMapper({ onGoBack }: { onGoBack?: () => void }) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-heading text-2xl font-semibold text-arka-text">RBM Criteria Mapping</h2>
-          <p className="text-arka-text-soft text-sm">{rbmCriteriaMatch.specificGuideline} — {rbmCriteriaMatch.guidelineReference}</p>
+          <h2 className="font-heading text-2xl font-semibold text-slate-900">RBM Criteria Mapping</h2>
+          <p className="text-slate-600 text-sm">{rbmCriteriaMatch.specificGuideline} — {rbmCriteriaMatch.guidelineReference}</p>
         </div>
         {onGoBack && <Button variant="ghost" size="sm" onClick={onGoBack}>Go Back</Button>}
       </div>
@@ -69,7 +69,7 @@ export function RBMCriteriaMapper({ onGoBack }: { onGoBack?: () => void }) {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6">
-          <p className="text-arka-text-muted text-sm mb-4">
+          <p className="text-slate-700 text-sm mb-4">
             Requirements met: {rbmCriteriaMatch.requirementsMetCount} / {rbmCriteriaMatch.requirementsTotalCount}
           </p>
           <ul className="space-y-2">
@@ -77,8 +77,8 @@ export function RBMCriteriaMapper({ onGoBack }: { onGoBack?: () => void }) {
               <li key={c.id} className="flex items-start gap-3 p-2 rounded-lg border border-white/10">
                 {c.matched ? <Check className="h-4 w-4 text-emerald-500 flex-shrink-0 mt-0.5" /> : <X className="h-4 w-4 text-red-400 flex-shrink-0 mt-0.5" />}
                 <div>
-                  <p className="text-sm text-arka-text">{c.description}</p>
-                  {c.evidenceProvided && <p className="text-xs text-arka-text-soft mt-1">Evidence: {c.evidenceProvided}</p>}
+                  <p className="text-sm text-slate-800">{c.description}</p>
+                  {c.evidenceProvided && <p className="text-xs text-slate-600 mt-1">Evidence: {c.evidenceProvided}</p>}
                 </div>
               </li>
             ))}

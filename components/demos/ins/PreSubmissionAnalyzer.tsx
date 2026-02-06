@@ -27,12 +27,12 @@ export function PreSubmissionAnalyzer({ onGoBack }: { onGoBack?: () => void }) {
   if (processing.isAnalyzing) {
     return (
       <div className="space-y-6">
-        <h2 className="font-heading text-2xl font-semibold text-arka-text">Pre-Submission Analysis</h2>
+        <h2 className="font-heading text-2xl font-semibold text-slate-900">Pre-Submission Analysis</h2>
         <Card variant="default">
           <CardContent className="p-8">
             <div className="flex flex-col items-center gap-4">
               <FileSearch className="h-12 w-12 text-arka-deep animate-pulse" />
-              <p className="text-arka-text-muted font-medium">{processing.processingMessage ?? "Analyzing..."}</p>
+              <p className="text-slate-700 font-medium">{processing.processingMessage ?? "Analyzing..."}</p>
               <Progress value={processing.processingProgress} max={100} size="md" className="w-full max-w-xs" />
             </div>
           </CardContent>
@@ -44,9 +44,9 @@ export function PreSubmissionAnalyzer({ onGoBack }: { onGoBack?: () => void }) {
   if (!preSubmissionAnalysis) {
     return (
       <div className="space-y-6">
-        <h2 className="font-heading text-2xl font-semibold text-arka-text">Pre-Submission Analysis</h2>
+        <h2 className="font-heading text-2xl font-semibold text-slate-900">Pre-Submission Analysis</h2>
         <Card variant="default">
-          <CardContent className="p-8 text-center text-arka-text-soft">
+          <CardContent className="p-8 text-center text-slate-600">
             No analysis yet. Run analysis (or wait for auto-run).
           </CardContent>
         </Card>
@@ -62,8 +62,8 @@ export function PreSubmissionAnalyzer({ onGoBack }: { onGoBack?: () => void }) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-heading text-2xl font-semibold text-arka-text">Pre-Submission Analysis</h2>
-          <p className="text-arka-text-soft text-sm">Documentation completeness and readiness for submission.</p>
+          <h2 className="font-heading text-2xl font-semibold text-slate-900">Pre-Submission Analysis</h2>
+          <p className="text-slate-600 text-sm">Documentation completeness and readiness for submission.</p>
         </div>
         {onGoBack && <Button variant="ghost" size="sm" onClick={onGoBack}>Go Back</Button>}
       </div>
@@ -81,7 +81,7 @@ export function PreSubmissionAnalyzer({ onGoBack }: { onGoBack?: () => void }) {
               {preSubmissionAnalysis.documentationScore}
             </div>
             <div>
-              <p className="text-arka-text-muted text-sm">Ready for submission</p>
+              <p className="text-slate-700 text-sm">Ready for submission</p>
               <Badge status={preSubmissionAnalysis.readyForSubmission ? "success" : "warning"} variant="solid" size="md" className="mt-1">
                 {preSubmissionAnalysis.readyForSubmission ? "Yes" : "No — address gaps first"}
               </Badge>
@@ -103,8 +103,8 @@ export function PreSubmissionAnalyzer({ onGoBack }: { onGoBack?: () => void }) {
               {preSubmissionAnalysis.gaps.map((gap) => (
                 <li key={gap.id} className={cn("p-3 rounded-lg border", severityColor(gap.severity) === "error" && "border-red-500/30 bg-red-500/5", severityColor(gap.severity) === "warning" && "border-amber-500/30 bg-amber-500/5", severityColor(gap.severity) === "info" && "border-arka-deep/30 bg-arka-deep/5")}>
                   <Badge status={severityColor(gap.severity) as "error" | "warning" | "info"} variant="subtle" size="sm" className="mb-2">{gap.severity}</Badge>
-                  <p className="text-sm text-arka-text">{gap.description}</p>
-                  <p className="text-xs text-arka-text-soft mt-1">{gap.suggestedAction}</p>
+                  <p className="text-sm text-slate-800">{gap.description}</p>
+                  <p className="text-xs text-slate-600 mt-1">{gap.suggestedAction}</p>
                 </li>
               ))}
             </ul>
@@ -123,7 +123,7 @@ export function PreSubmissionAnalyzer({ onGoBack }: { onGoBack?: () => void }) {
           <CardContent className="p-6">
             <ul className="space-y-2">
               {preSubmissionAnalysis.suggestions.slice(0, 5).map((s, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm text-arka-text-muted">
+                <li key={i} className="flex items-start gap-2 text-sm text-slate-700">
                   <ChevronRight className="h-4 w-4 text-arka-deep flex-shrink-0 mt-0.5" />
                   {s}
                 </li>
