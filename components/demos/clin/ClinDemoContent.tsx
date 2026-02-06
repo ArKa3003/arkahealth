@@ -2,24 +2,21 @@
 
 import { useState, useCallback } from "react";
 import { Shield } from "lucide-react";
-import { SplashScreen } from "./SplashScreen";
 import { evaluateImaging } from "@/lib/demos/clin/evaluate-imaging";
 import { getDemoScenario, getAllDemoScenarios } from "@/lib/demos/clin/demo-scenarios";
 import type { ClinicalScenario } from "@/lib/demos/clin/types";
 import type { EvaluationResult } from "@/lib/demos/clin/types";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/Card";
 import { Button } from "./ui/Button";
-import { Badge } from "./ui/Badge";
 import { FDA_COMPLIANCE } from "@/lib/demos/clin/constants/fda-compliance";
 import { ClinResultsView } from "./ClinResultsView";
+import { ClinicalScenarioForm } from "./ClinicalScenarioForm";
 
 export function ClinDemoContent() {
-  const [showSplash, setShowSplash] = useState(true);
   const [result, setResult] = useState<EvaluationResult | null>(null);
   const [currentScenario, setCurrentScenario] = useState<ClinicalScenario | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleContinue = useCallback(() => setShowSplash(false), []);
   const handleNewEvaluation = useCallback(() => {
     setResult(null);
     setCurrentScenario(null);
@@ -33,10 +30,6 @@ export function ClinDemoContent() {
     setResult(evaluationResult);
     setIsLoading(false);
   };
-
-  if (showSplash) {
-    return <SplashScreen onContinue={handleContinue} />;
-  }
 
   const scenarios = getAllDemoScenarios();
 
@@ -53,7 +46,7 @@ export function ClinDemoContent() {
       {isLoading ? (
         <div className="flex flex-col items-center gap-4 py-12">
           <div className="h-10 w-10 animate-spin rounded-full border-2 border-arka-cyan border-t-transparent" />
-          <p className="text-arka-text-muted font-medium">Analyzing scenario...</p>
+          <p className="text-arka-text-dark-muted font-medium">Analyzing scenario...</p>
           <div className="arka-card h-48 w-full max-w-2xl animate-pulse rounded-xl opacity-60" />
         </div>
       ) : result && currentScenario ? (
@@ -68,18 +61,18 @@ export function ClinDemoContent() {
           <section aria-labelledby="evaluation-title">
             <h2
               id="evaluation-title"
-              className="text-xl sm:text-2xl font-heading font-semibold text-arka-text mb-2"
+              className="text-xl sm:text-2xl font-heading font-semibold text-arka-text-dark mb-2"
             >
               Imaging Appropriateness Evaluation
             </h2>
-            <p className="text-arka-text-muted text-base">
-              Choose a demo scenario to receive evidence-based recommendations from the ARKA Imaging Intelligence Engine (AIIE).
+            <p className="text-arka-text-dark-muted text-base">
+              Choose a demo scenario or enter a clinical scenario below to receive evidence-based recommendations from the ARKA Imaging Intelligence Engine (AIIE).
             </p>
           </section>
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-arka-text">Quick Demo Scenarios</CardTitle>
+              <CardTitle className="text-arka-text-dark">Quick Demo Scenarios</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
@@ -91,15 +84,17 @@ export function ClinDemoContent() {
                       const scenario = getDemoScenario(key);
                       if (scenario) handleEvaluate(scenario);
                     }}
-                    className="arka-card text-left p-4 rounded-xl border border-arka-primary/20 bg-arka-bg-medium/50 hover:border-arka-cyan/40 hover:bg-arka-bg-medium/80 transition-all min-h-[44px] w-full touch-manipulation"
+                    className="arka-card text-left p-4 rounded-xl border border-arka-primary/20 bg-arka-bg-alt hover:border-arka-cyan/40 hover:bg-arka-pale transition-all min-h-[44px] w-full touch-manipulation"
                   >
-                    <h4 className="font-medium text-arka-text mb-1 text-base">{title}</h4>
-                    <p className="text-sm text-arka-text-soft">{description}</p>
+                    <h4 className="font-medium text-arka-text-dark mb-1 text-base">{title}</h4>
+                    <p className="text-sm text-arka-text-dark-muted">{description}</p>
                   </button>
                 ))}
               </div>
             </CardContent>
           </Card>
+
+          <ClinicalScenarioForm onEvaluate={handleEvaluate} />
         </div>
       )}
     </div>

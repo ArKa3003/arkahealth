@@ -6,6 +6,7 @@ import { Footer } from "@/components/navigation/Footer";
 import { MainWithDemoNav } from "@/components/navigation/MainWithDemoNav";
 import { ThemeProvider } from "@/components/shared/ThemeProvider";
 import { RouteAnnouncer } from "@/components/accessibility/RouteAnnouncer";
+import { FeedbackWidget } from "@/components/FeedbackWidget";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -24,7 +25,7 @@ export const metadata: Metadata = {
     template: "%s | ARKA Health",
   },
   description:
-    "Evidence-based clinical decision support for imaging appropriateness. AI-powered CDS for radiologists and physicians.",
+    "Evidence-based clinical decision support for imaging appropriateness. Cutting-Edge CDS for radiologists and physicians.",
   keywords: ["imaging", "CDS", "clinical decision support", "radiology", "appropriateness", "ARKA"],
   authors: [{ name: "ARKA Health" }],
   openGraph: {
@@ -65,7 +66,7 @@ export default function RootLayout({
       >
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-arka-cyan focus:px-4 focus:py-2 focus:text-arka-bg-dark focus:outline-none focus:ring-2 focus:ring-arka-cyan"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-arka-teal focus:px-4 focus:py-2 focus:text-white focus:outline-none focus:ring-2 focus:ring-arka-teal"
         >
           Skip to main content
         </a>
@@ -75,6 +76,7 @@ export default function RootLayout({
             <Navbar />
             <MainWithDemoNav>{children}</MainWithDemoNav>
             <Footer />
+            <FeedbackWidget />
           </div>
         </ThemeProvider>
       </body>

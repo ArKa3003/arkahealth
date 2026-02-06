@@ -38,7 +38,7 @@ export function WhyArka() {
     <section
       ref={ref}
       id="why-arka"
-      className="border-t border-arka-deep/50 bg-arka-bg-dark px-4 py-24 sm:px-6 lg:px-8"
+      className="scroll-mt-14 border-t border-arka-light bg-arka-bg-alt px-4 py-24 sm:px-6 lg:px-8"
       aria-labelledby="why-arka-heading"
     >
       <div className="mx-auto max-w-6xl">
@@ -47,7 +47,7 @@ export function WhyArka() {
           initial={fadeIn.initial}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={fadeIn.transition}
-          className="text-center text-2xl font-bold text-arka-text sm:text-3xl"
+          className="text-center text-2xl font-bold text-arka-text-dark sm:text-3xl"
         >
           Why ARKA?
         </motion.h2>
@@ -55,9 +55,9 @@ export function WhyArka() {
           initial={fadeIn.initial}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ ...fadeIn.transition, delay: 0.08 }}
-          className="mx-auto mt-4 max-w-2xl text-center text-lg text-arka-text-soft"
+          className="mx-auto mt-4 max-w-2xl text-center text-lg text-arka-text-dark-muted"
         >
-          Like Gungnir — the spear that never misses — ARKA delivers precision
+          Like Gungnir – Odin&apos;s spear that never misses – ARKA delivers precision
           you can trust. One platform, one standard of care.
         </motion.p>
 
@@ -73,15 +73,15 @@ export function WhyArka() {
                   ...fadeIn.transition,
                   delay: 0.12 + i * 0.1,
                 }}
-                className="flex flex-col items-center rounded-xl border border-arka-deep/40 bg-arka-bg-medium/60 px-6 py-8 text-center"
+                className="flex flex-col items-center rounded-xl border border-arka-light bg-white px-6 py-8 text-center shadow-card transition-all duration-300 hover:-translate-y-2 hover:border-arka-teal/40 hover:shadow-card-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-arka-teal focus-visible:outline-offset-2 active:scale-[0.99]"
               >
-                <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-arka-cyan/15 text-arka-cyan">
+                <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-arka-teal/15 text-arka-teal">
                   <Icon className="h-6 w-6" aria-hidden />
                 </span>
-                <h3 className="mt-4 text-lg font-semibold text-arka-text">
+                <h3 className="mt-4 text-lg font-semibold text-arka-text-dark">
                   {benefit.title}
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed text-arka-text-soft">
+                <p className="mt-2 text-sm leading-relaxed text-arka-text-dark-muted">
                   {benefit.description}
                 </p>
               </motion.div>

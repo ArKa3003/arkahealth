@@ -67,7 +67,7 @@ export function Navbar() {
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [navbarVisible, setNavbarVisible] = useState(true);
+  const [scrolled, setScrolled] = useState(false);
   const lastScrollY = useRef(0);
   const ticking = useRef(false);
 
@@ -99,28 +99,24 @@ export function Navbar() {
       ticking.current = true;
       requestAnimationFrame(() => {
         const y = window.scrollY;
-        const delta = y - lastScrollY.current;
-        if (Math.abs(delta) < 10) {
-          ticking.current = false;
-          return;
-        }
-        if (delta > 0) setNavbarVisible(false);
-        else setNavbarVisible(true);
+        setScrolled(y > 8);
         lastScrollY.current = y;
         ticking.current = false;
       });
     };
     window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   return (
     <>
-      <motion.header
-        initial={{ y: 0 }}
-        animate={{ y: navbarVisible ? 0 : "-100%" }}
-        transition={{ type: "spring", damping: 25, stiffness: 200 }}
-        className="fixed left-0 right-0 top-0 z-50 border-b border-white/5 bg-arka-bg-dark/80 backdrop-blur-xl safe-area-top pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]"
+      <header
+        className={`fixed left-0 right-0 top-0 z-50 safe-area-top pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] transition-all duration-200 ${
+          scrolled
+            ? "border-b border-arka-navy/10 bg-arka-navy/95 shadow-md backdrop-blur-md"
+            : "border-b border-white/10 bg-arka-navy/90 backdrop-blur-xl"
+        }`}
       >
         <nav className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
           {/* Left */}
@@ -237,7 +233,7 @@ export function Navbar() {
             </button>
           </div>
         </nav>
-      </motion.header>
+      </header>
 
       {/* Mobile overlay */}
       {/* Full-screen mobile overlay: smooth open/close, touch-friendly */}

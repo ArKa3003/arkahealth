@@ -5,10 +5,10 @@ import { motion } from "framer-motion";
 import { useState, useCallback, useId } from "react";
 import { routes } from "@/lib/constants";
 
-const ARKA_CYAN = "#00d9ff";
-const ARKA_CYAN_GLOW = "rgba(0, 217, 255, 0.4)";
-const GLASS_FILL = "rgba(13, 25, 41, 0.75)";
-const GLASS_STROKE = "rgba(0, 217, 255, 0.35)";
+const ARKA_TEAL = "#14b8a6";
+const ARKA_TEAL_GLOW = "rgba(20, 184, 166, 0.4)";
+const GLASS_FILL = "rgba(255, 255, 255, 0.9)";
+const GLASS_STROKE = "rgba(20, 184, 166, 0.35)";
 
 type NodeId = "arka" | "clin" | "ed" | "ins" | null;
 
@@ -39,14 +39,24 @@ const nodes = [
   },
 ] as const;
 
-/* Desktop layout: center (ARKA), left (CLIN), top-right (ED), bottom-right (INS) */
+/* Desktop layout: center (ARKA), CLIN/ED/INS equidistant at 120° (triangle) */
+const DESKTOP_RADIUS = 115;
 const DESKTOP = {
   width: 640,
   height: 320,
   center: { x: 220, y: 160 },
-  clin: { x: 60, y: 160 },
-  ed: { x: 420, y: 60 },
-  ins: { x: 420, y: 260 },
+  clin: {
+    x: 220 - DESKTOP_RADIUS,
+    y: 160,
+  },
+  ed: {
+    x: 220 + DESKTOP_RADIUS * 0.5,
+    y: 160 - DESKTOP_RADIUS * (Math.sqrt(3) / 2),
+  },
+  ins: {
+    x: 220 + DESKTOP_RADIUS * 0.5,
+    y: 160 + DESKTOP_RADIUS * (Math.sqrt(3) / 2),
+  },
 };
 
 /* Mobile layout: vertical stack — ARKA center, CLIN above, ED/INS below */
@@ -123,9 +133,9 @@ function TargetingGridPattern({ idPrefix }: { idPrefix: string }) {
         x2="100%"
         y2="0%"
       >
-        <stop offset="0%" stopColor={ARKA_CYAN} stopOpacity="0.3" />
-        <stop offset="50%" stopColor={ARKA_CYAN} stopOpacity="1" />
-        <stop offset="100%" stopColor={ARKA_CYAN} stopOpacity="0.3" />
+        <stop offset="0%" stopColor={ARKA_TEAL} stopOpacity="0.3" />
+        <stop offset="50%" stopColor={ARKA_TEAL} stopOpacity="1" />
+        <stop offset="100%" stopColor={ARKA_TEAL} stopOpacity="0.3" />
       </linearGradient>
       <filter id={`${idPrefix}-glow`} x="-50%" y="-50%" width="200%" height="200%">
         <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur" />
@@ -155,7 +165,7 @@ function AnimatedDashedPath({
       <motion.path
         d={d}
         fill="none"
-        stroke={ARKA_CYAN}
+        stroke={ARKA_TEAL}
         strokeWidth={isHighlighted ? 4 : 2}
         strokeLinecap="round"
         strokeDasharray={`${dashLength} ${dashLength}`}
@@ -166,7 +176,7 @@ function AnimatedDashedPath({
         }}
         transition={{ duration: 0.2 }}
         style={{
-          filter: isHighlighted ? `drop-shadow(0 0 8px ${ARKA_CYAN_GLOW})` : undefined,
+          filter: isHighlighted ? `drop-shadow(0 0 8px ${ARKA_TEAL_GLOW})` : undefined,
         }}
       />
       {/* Flowing dashed line (data/insight flow) */}
@@ -201,7 +211,6 @@ function NodeCircle({
   onMouseEnter,
   onMouseLeave,
   href,
-  tooltip,
 }: {
   cx: number;
   cy: number;
@@ -215,9 +224,7 @@ function NodeCircle({
   href: string;
   tooltip: string;
 }) {
-  const [showTooltip, setShowTooltip] = useState(false);
-
-  const content = (
+  return (
     <g
       role={isCenter ? undefined : "link"}
       tabIndex={isCenter ? undefined : 0}
@@ -233,14 +240,8 @@ function NodeCircle({
           onClick();
         }
       }}
-      onMouseEnter={() => {
-        onMouseEnter();
-        setShowTooltip(true);
-      }}
-      onMouseLeave={() => {
-        onMouseLeave();
-        setShowTooltip(false);
-      }}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
     >
       {/* Glassmorphism circle */}
       <motion.circle
@@ -248,47 +249,26 @@ function NodeCircle({
         cy={cy}
         r={r}
         fill={GLASS_FILL}
-        stroke={isHighlighted ? ARKA_CYAN : GLASS_STROKE}
+        stroke={isHighlighted ? ARKA_TEAL : GLASS_STROKE}
         strokeWidth={isHighlighted ? 2.5 : 1.5}
         animate={{
-          filter: isHighlighted ? `drop-shadow(0 0 12px ${ARKA_CYAN_GLOW})` : "none",
+          filter: isHighlighted ? `drop-shadow(0 0 12px ${ARKA_TEAL_GLOW})` : "none",
         }}
         transition={{ duration: 0.2 }}
         style={{ backdropFilter: "blur(8px)" }}
       />
-      <title>{tooltip}</title>
       <text
         x={cx}
-        y={cy + (isCenter ? 0 : 0)}
+        y={cy}
         textAnchor="middle"
         dominantBaseline="middle"
-        className="select-none font-semibold fill-[var(--arka-text)]"
+        className="select-none font-semibold fill-[var(--arka-text-dark)]"
         style={{ fontSize: isCenter ? 14 : 12 }}
       >
         {label}
       </text>
-      {showTooltip && !isCenter && (
-        <g>
-          <foreignObject
-            x={cx + r + 8}
-            y={cy - 24}
-            width="200"
-            height="48"
-            style={{ overflow: "visible" }}
-          >
-            <div
-              className="absolute left-0 top-0 z-10 rounded-lg border border-arka-cyan/30 bg-arka-bg-medium/95 px-3 py-2 text-xs text-arka-text shadow-lg backdrop-blur-sm"
-              style={{ whiteSpace: "normal", width: 200 }}
-            >
-              {tooltip}
-            </div>
-          </foreignObject>
-        </g>
-      )}
     </g>
   );
-
-  return content;
 }
 
 export function EcosystemDiagram() {
@@ -316,7 +296,7 @@ export function EcosystemDiagram() {
   return (
     <section
       id="ecosystem"
-      className="relative border-t border-arka-deep/50 bg-arka-bg-dark px-4 py-24 sm:px-6 lg:px-8"
+      className="scroll-mt-14 relative border-t border-arka-light bg-arka-bg-alt px-4 py-24 sm:px-6 lg:px-8"
       aria-labelledby="ecosystem-heading"
     >
       <div className="relative mx-auto max-w-4xl">
@@ -325,7 +305,7 @@ export function EcosystemDiagram() {
           initial={{ opacity: 0, y: 8 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center text-2xl font-bold text-arka-text sm:text-3xl"
+          className="text-center text-2xl font-bold text-arka-text-dark sm:text-3xl"
         >
           One Ecosystem. Three Solutions.
         </motion.h2>
@@ -334,11 +314,11 @@ export function EcosystemDiagram() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.05 }}
-          className="mx-auto mt-4 max-w-2xl text-center text-sm leading-relaxed text-arka-text-soft sm:text-base"
+          className="mx-auto mt-4 max-w-2xl text-center text-sm leading-relaxed text-arka-text-dark-muted sm:text-base"
         >
           ARKA integrates clinical decision support, medical education, and
           utilization management into a unified platform. Insights from one phase
-          inform and improve the others — creating a cutting edge and evolving
+          inform and improve the others — creating a Cutting-Edge and evolving
           healthcare ecosystem.
         </motion.p>
 
@@ -348,7 +328,7 @@ export function EcosystemDiagram() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.1 }}
-          className="mx-auto mt-12 hidden w-full max-w-[640px] md:block"
+          className="relative z-10 mx-auto mt-12 hidden w-full max-w-[640px] md:block"
         >
           <svg
             viewBox={`0 0 ${DESKTOP.width} ${DESKTOP.height}`}
@@ -365,7 +345,7 @@ export function EcosystemDiagram() {
               width="100%"
               height="100%"
               fill={`url(#${desktopId}-targeting-grid)`}
-              className="text-arka-cyan"
+              className="text-arka-teal"
               opacity="0.15"
             />
 
@@ -391,7 +371,7 @@ export function EcosystemDiagram() {
               x={DESKTOP.center.x}
               y={DESKTOP.center.y + 48}
               textAnchor="middle"
-              className="fill-arka-cyan/80 text-[10px] font-medium uppercase tracking-wider"
+              className="fill-arka-teal/80 text-[10px] font-medium uppercase tracking-wider"
             >
               Shared knowledge base
             </text>
@@ -446,7 +426,7 @@ export function EcosystemDiagram() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.1 }}
-          className="mx-auto mt-12 w-full max-w-[min(280px,100%)] overflow-x-hidden md:hidden"
+          className="relative z-10 mx-auto mt-12 w-full max-w-[min(280px,100%)] overflow-x-hidden md:hidden"
         >
           <div className="u-scroll-touch max-h-[70dvh] overflow-y-auto overflow-x-hidden rounded-xl">
             <svg
@@ -464,7 +444,7 @@ export function EcosystemDiagram() {
               width="100%"
               height="100%"
               fill={`url(#${mobileId}-targeting-grid)`}
-              className="text-arka-cyan"
+              className="text-arka-teal"
               opacity="0.15"
             />
 
@@ -488,7 +468,7 @@ export function EcosystemDiagram() {
               x={MOBILE.center.x}
               y={MOBILE.center.y + 44}
               textAnchor="middle"
-              className="fill-arka-cyan/80 text-[9px] font-medium uppercase tracking-wider"
+              className="fill-arka-teal/80 text-[9px] font-medium uppercase tracking-wider"
             >
               Shared knowledge base
             </text>
@@ -537,7 +517,18 @@ export function EcosystemDiagram() {
           </div>
         </motion.div>
 
-        <p className="mt-6 text-center text-xs text-arka-text-soft/80">
+        {/* Single tooltip below both diagrams: one description only, does not overlap content */}
+        {hoveredNode && hoveredNode !== "arka" && (
+          <div
+            className="relative z-0 mx-auto mt-4 max-w-md rounded-lg border border-arka-teal/30 bg-arka-navy px-4 py-3 text-center text-sm text-arka-text shadow-lg"
+            role="tooltip"
+            aria-live="polite"
+          >
+            {nodes.find((n) => n.id === hoveredNode)?.tooltip}
+          </div>
+        )}
+
+        <p className="mt-6 text-center text-xs text-arka-text-dark-soft">
           Hover to highlight connections · Click a phase to open its demo
         </p>
       </div>

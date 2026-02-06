@@ -32,7 +32,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={disabled || isLoading}
         className={clsx(
-          "inline-flex items-center justify-center rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-arka-cyan focus:ring-offset-2 focus:ring-offset-arka-bg-dark disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]",
+          "inline-flex items-center justify-center rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-arka-cyan focus:ring-offset-2 focus:ring-offset-arka-bg-dark disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] touch-manipulation",
           variant === "primary" && "arka-button-primary",
           variant === "secondary" && "arka-button-secondary",
           variant === "outline" &&

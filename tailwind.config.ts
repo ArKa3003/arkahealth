@@ -10,16 +10,23 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        "arka-primary": "#5B9BD5",
-        "arka-cyan": "#00D9FF",
-        "arka-deep": "#2C5F8D",
-        "arka-light": "#A8D5E2",
-        "arka-pale": "#E8F4F8",
-        "arka-bg-dark": "#0D1929",
-        "arka-bg-medium": "#1A2942",
+        "arka-primary": "#0F172A",
+        "arka-navy": "#0F172A",
+        "arka-teal": "#14B8A6",
+        "arka-cyan": "#14B8A6",
+        "arka-deep": "#1E293B",
+        "arka-light": "#E2E8F0",
+        "arka-pale": "#F1F5F9",
+        "arka-bg-dark": "#0F172A",
+        "arka-bg-medium": "#1E293B",
+        "arka-bg-light": "#F8FAFC",
+        "arka-bg-alt": "#F1F5F9",
         "arka-text": "#FFFFFF",
-        "arka-text-muted": "#E8F4F8",
-        "arka-text-soft": "#B8D8E8",
+        "arka-text-muted": "#F8FAFC",
+        "arka-text-soft": "#E2E8F0",
+        "arka-text-dark": "#0F172A",
+        "arka-text-dark-muted": "#475569",
+        "arka-text-dark-soft": "#64748B",
       },
       fontFamily: {
         sans: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
@@ -39,19 +46,21 @@ const config: Config = {
         DEFAULT: "ease-out",
       },
       boxShadow: {
-        glow: "0 0 20px 4px rgb(0 217 255 / 0.2)",
-        "glow-sm": "0 0 12px 2px rgb(0 217 255 / 0.15)",
-        "glow-lg": "0 0 32px 8px rgb(0 217 255 / 0.25)",
+        glow: "0 0 20px 4px rgb(20 184 166 / 0.2)",
+        "glow-sm": "0 0 12px 2px rgb(20 184 166 / 0.15)",
+        "glow-lg": "0 0 32px 8px rgb(20 184 166 / 0.25)",
+        card: "0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.08)",
+        "card-hover": "0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.06)",
       },
       backgroundImage: {
         "gradient-card":
-          "linear-gradient(135deg, rgb(13 25 41 / 0.9) 0%, rgb(26 41 66 / 0.95) 100%)",
+          "linear-gradient(135deg, #ffffff 0%, #F8FAFC 100%)",
         "gradient-card-hover":
-          "linear-gradient(135deg, rgb(26 41 66 / 0.95) 0%, rgb(44 95 141 / 0.2) 100%)",
+          "linear-gradient(135deg, #F8FAFC 0%, #ffffff 100%)",
         "gradient-hero":
-          "linear-gradient(180deg, #0D1929 0%, #1A2942 50%, #0D1929 100%)",
+          "linear-gradient(180deg, #0F172A 0%, #1E293B 50%, #0F172A 100%)",
         "gradient-accent":
-          "linear-gradient(90deg, #5B9BD5 0%, #00D9FF 100%)",
+          "linear-gradient(90deg, #0F172A 0%, #14B8A6 100%)",
       },
       keyframes: {
         fadeIn: {

@@ -1,0 +1,182 @@
+/* ARKA Logo - CSS-only animations. Import this file when using ArkaAnimatedLogoCSS. */
+
+/* Path lengths for stroke-dasharray/offset animations */
+:root {
+  --arka-circle-outer-length: 1570.8;
+  --arka-circle-inner-length: 1476.5;
+  --arka-arc-path-length: 497;
+  --arka-underline-path-length: 302;
+  --arka-corner-l-length: 90;
+}
+
+/* Spear entrance */
+@keyframes arka-spear-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(-100%) scale(1.02);
+  }
+  84% {
+    opacity: 1;
+    transform: translateY(0) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Ring draw-on */
+@keyframes arka-ring-draw {
+  from {
+    stroke-dashoffset: var(--arka-stroke-length, 1570);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Arc draw-on */
+@keyframes arka-arc-draw {
+  from {
+    stroke-dashoffset: var(--arka-arc-length, 497);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Medical symbol entrance + float */
+@keyframes arka-symbol-enter {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(0);
+  }
+  100% {
+    opacity: 0.15;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes arka-symbol-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+/* Letter fade-in */
+@keyframes arka-letter-enter {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* CT scanner scale-in */
+@keyframes arka-ct-scale {
+  from {
+    opacity: 0.7;
+    transform: scale(0);
+  }
+  to {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+}
+
+/* Tagline fade-in */
+@keyframes arka-tagline-enter {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Underline draw-on */
+@keyframes arka-underline-draw {
+  from {
+    stroke-dashoffset: var(--arka-underline-length, 302);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Corner L draw-on, then fade to 0.3 */
+@keyframes arka-corner-draw {
+  from {
+    stroke-dashoffset: var(--arka-corner-length, 90);
+    opacity: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+    opacity: 0.3;
+  }
+}
+
+/* Precision dot scale-in */
+@keyframes arka-dot-scale {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+/* Idle: ring rotation */
+@keyframes arka-ring-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Idle: root subtle scale */
+@keyframes arka-root-breath {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.005);
+  }
+}
+
+/* Idle: spear dot pulse */
+@keyframes arka-dot-pulse {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Will-change for GPU acceleration */
+.arka-animated {
+  will-change: transform, opacity;
+}
+
+.arka-gpu {
+  transform: translateZ(0);
+}
+
+/* Respect user preference for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  [data-animate="true"] [style*="animation"],
+  [data-animate="true"] *[style*="animation"] {
+    animation: none !important;
+  }
+}

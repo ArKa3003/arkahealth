@@ -9,11 +9,11 @@ import { CtaSection } from "@/components/landing/CtaSection";
 export const metadata: Metadata = {
   title: "Home",
   description:
-    "ARKA Health — AI-powered clinical decision support for imaging appropriateness. Explore ARKA-CLIN, ARKA-ED, and ARKA-INS.",
+    "ARKA Health — Cutting-Edge clinical decision support for imaging appropriateness. Explore ARKA-CLIN, ARKA-ED, and ARKA-INS.",
   openGraph: {
     title: "ARKA Health | Imaging CDS",
     description:
-      "AI-powered clinical decision support for imaging appropriateness. Explore ARKA-CLIN, ARKA-ED, and ARKA-INS.",
+      "Cutting-Edge clinical decision support for imaging appropriateness. Explore ARKA-CLIN, ARKA-ED, and ARKA-INS.",
   },
 };
 

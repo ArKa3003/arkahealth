@@ -16,10 +16,10 @@ const cards = [
     title: "ARKA-CLIN",
     subtitle: "For Medical Professionals",
     description:
-      "AI-powered clinical decision support for radiologists and physicians. Optimize imaging protocols with precision.",
+      "Cutting-Edge clinical decision support for radiologists and physicians. Optimize imaging protocols with precision.",
     href: "/clin",
     icon: Stethoscope,
-    accentColor: "#5B9BD5",
+    accentColor: "#14B8A6",
     Decorative: ScanLinesPattern,
     patternId: "scan-lines",
   },
@@ -31,7 +31,7 @@ const cards = [
       "Interactive learning platform for mastering radiology protocols and imaging appropriateness criteria.",
     href: "/ed",
     icon: GraduationCap,
-    accentColor: "#00D9FF",
+    accentColor: "#14B8A6",
     Decorative: NeuralPattern,
     patternId: "neural",
   },
@@ -43,7 +43,7 @@ const cards = [
       "Streamlined utilization review tools ensuring appropriate imaging while reducing administrative burden.",
     href: "/ins",
     icon: Shield,
-    accentColor: "#2C5F8D",
+    accentColor: "#0F172A",
     Decorative: DocumentPattern,
     patternId: "document",
   },
@@ -181,17 +181,17 @@ export function PhaseCards() {
     <section
       id="solutions"
       ref={ref}
-      className="border-t border-arka-deep/50 bg-arka-bg-medium/40 px-4 py-24 sm:px-6 lg:px-8"
+      className="scroll-mt-14 border-t border-arka-light bg-white px-4 py-24 sm:px-6 lg:px-8"
       aria-labelledby="phase-cards-heading"
     >
       <div className="mx-auto max-w-6xl">
         <h2
           id="phase-cards-heading"
-          className="text-center text-2xl font-bold text-arka-text sm:text-3xl"
+          className="text-center text-2xl font-bold text-arka-text-dark sm:text-3xl"
         >
           Explore the platform
         </h2>
-        <p className="mx-auto mt-2 max-w-2xl text-center text-arka-text-soft">
+        <p className="mx-auto mt-2 max-w-2xl text-center text-arka-text-dark-muted">
           Three modules, one ecosystem. Click to open each demo.
         </p>
         <div className="mt-12 grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -212,13 +212,7 @@ export function PhaseCards() {
               >
                 <Link
                   href={card.href}
-                  className="group relative flex min-h-full w-full flex-col rounded-xl border border-arka-deep/40 bg-arka-bg-medium/80 p-6 shadow-sm transition-all duration-300 hover:-translate-y-2 hover:border-[var(--card-accent)] hover:shadow-[0_0_24px_6px_var(--card-glow)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-arka-cyan focus-visible:outline-offset-2 active:scale-[0.99] touch-manipulation"
-                  style={
-                    {
-                      "--card-accent": card.accentColor,
-                      "--card-glow": `${card.accentColor}40`,
-                    } as React.CSSProperties
-                  }
+                  className="group relative flex min-h-full w-full flex-col rounded-xl border border-arka-light bg-white p-6 shadow-card transition-all duration-300 hover:-translate-y-2 hover:border-arka-teal/40 hover:shadow-card-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-arka-teal focus-visible:outline-offset-2 active:scale-[0.99] touch-manipulation"
                 >
                   <Decorative id={`${card.id}-${card.patternId}`} />
                   <span
@@ -227,7 +221,7 @@ export function PhaseCards() {
                   >
                     <Icon className="h-5 w-5" aria-hidden />
                   </span>
-                  <h3 className="relative mt-4 text-lg font-semibold text-arka-text">
+                  <h3 className="relative mt-4 text-lg font-semibold text-arka-text-dark">
                     {card.title}
                   </h3>
                   <p
@@ -236,7 +230,7 @@ export function PhaseCards() {
                   >
                     {card.subtitle}
                   </p>
-                  <p className="relative mt-3 flex-1 text-sm leading-relaxed text-arka-text-soft">
+                  <p className="relative mt-3 flex-1 text-sm leading-relaxed text-arka-text-dark-muted">
                     {card.description}
                   </p>
                   <span

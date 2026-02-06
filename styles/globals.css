@@ -10,31 +10,45 @@
    ARKA palette: --arka-text on --arka-bg-dark ~15.8:1; --arka-cyan on --arka-bg-dark ~7.5:1 (large).
    ========================================================================== */
 :root {
-  /* ARKA color palette (use anywhere via var(--arka-*)) */
-  --arka-primary: #5b9bd5;
-  --arka-cyan: #00d9ff;
-  --arka-deep: #2c5f8d;
-  --arka-light: #a8d5e2;
-  --arka-pale: #e8f4f8;
-  --arka-bg-dark: #0d1929;
-  --arka-bg-medium: #1a2942;
+  /* ARKA color palette: Navy primary, Teal accent, light backgrounds */
+  --arka-primary: #0f172a;
+  --arka-navy: #0f172a;
+  --arka-teal: #14b8a6;
+  --arka-cyan: #14b8a6;
+  --arka-deep: #1e293b;
+  --arka-light: #e2e8f0;
+  --arka-pale: #f1f5f9;
+  --arka-bg-dark: #0f172a;
+  --arka-bg-medium: #1e293b;
+  --arka-bg-light: #f8fafc;
+  --arka-bg-alt: #f1f5f9;
   --arka-text: #ffffff;
-  --arka-text-muted: #e8f4f8;
-  --arka-text-soft: #b8d8e8;
+  --arka-text-muted: #f8fafc;
+  --arka-text-soft: #e2e8f0;
+  --arka-text-dark: #0f172a;
+  --arka-text-dark-muted: #475569;
+  --arka-text-dark-soft: #64748b;
 }
 
 @theme {
   /* ARKA color palette (Tailwind theme) */
-  --color-arka-primary: #5b9bd5;
-  --color-arka-cyan: #00d9ff;
-  --color-arka-deep: #2c5f8d;
-  --color-arka-light: #a8d5e2;
-  --color-arka-pale: #e8f4f8;
-  --color-arka-bg-dark: #0d1929;
-  --color-arka-bg-medium: #1a2942;
+  --color-arka-primary: #0f172a;
+  --color-arka-navy: #0f172a;
+  --color-arka-teal: #14b8a6;
+  --color-arka-cyan: #14b8a6;
+  --color-arka-deep: #1e293b;
+  --color-arka-light: #e2e8f0;
+  --color-arka-pale: #f1f5f9;
+  --color-arka-bg-dark: #0f172a;
+  --color-arka-bg-medium: #1e293b;
+  --color-arka-bg-light: #f8fafc;
+  --color-arka-bg-alt: #f1f5f9;
   --color-arka-text: #ffffff;
-  --color-arka-text-muted: #e8f4f8;
-  --color-arka-text-soft: #b8d8e8;
+  --color-arka-text-muted: #f8fafc;
+  --color-arka-text-soft: #e2e8f0;
+  --color-arka-text-dark: #0f172a;
+  --color-arka-text-dark-muted: #475569;
+  --color-arka-text-dark-soft: #64748b;
 
   /* Typography: headings & body use Inter, accent/tagline use Georgia */
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
@@ -46,10 +60,12 @@
   --transition-timing-function: ease-out;
   --ease-arka: ease-out;
 
-  /* Glow shadow (arka-cyan at 20% opacity) */
-  --shadow-glow: 0 0 20px 4px rgb(0 217 255 / 0.2);
-  --shadow-glow-sm: 0 0 12px 2px rgb(0 217 255 / 0.15);
-  --shadow-glow-lg: 0 0 32px 8px rgb(0 217 255 / 0.25);
+  /* Glow shadow (teal at 20% opacity) */
+  --shadow-glow: 0 0 20px 4px rgb(20 184 166 / 0.2);
+  --shadow-glow-sm: 0 0 12px 2px rgb(20 184 166 / 0.15);
+  --shadow-glow-lg: 0 0 32px 8px rgb(20 184 166 / 0.25);
+  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.08);
+  --shadow-card-hover: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.06);
 
   /* Custom animations */
   --animate-fade-in: fade-in 0.3s ease-out forwards;
@@ -79,10 +95,10 @@
   @keyframes pulse-glow {
     0%,
     100% {
-      box-shadow: 0 0 20px 4px rgb(0 217 255 / 0.2);
+      box-shadow: 0 0 20px 4px rgb(20 184 166 / 0.2);
     }
     50% {
-      box-shadow: 0 0 28px 6px rgb(0 217 255 / 0.35);
+      box-shadow: 0 0 28px 6px rgb(20 184 166 / 0.35);
     }
   }
 }
@@ -121,29 +137,29 @@
 :root {
   --arka-gradient-card: linear-gradient(
     135deg,
-    rgb(13 25 41 / 0.9) 0%,
-    rgb(26 41 66 / 0.95) 100%
+    #ffffff 0%,
+    #f8fafc 100%
   );
   --arka-gradient-card-hover: linear-gradient(
     135deg,
-    rgb(26 41 66 / 0.95) 0%,
-    rgb(44 95 141 / 0.2) 100%
+    #f8fafc 0%,
+    #ffffff 100%
   );
   --arka-gradient-hero: linear-gradient(
     180deg,
-    #0d1929 0%,
-    #1a2942 50%,
-    #0d1929 100%
+    #0f172a 0%,
+    #1e293b 50%,
+    #0f172a 100%
   );
-  --arka-gradient-accent: linear-gradient(90deg, #5b9bd5 0%, #00d9ff 100%);
+  --arka-gradient-accent: linear-gradient(90deg, #0f172a 0%, #14b8a6 100%);
 
-  /* Legacy/alias for components */
-  --background: var(--arka-bg-dark);
-  --foreground: var(--arka-text);
-  --primary: var(--arka-primary);
+  /* Main content: light background, dark text */
+  --background: var(--arka-bg-light);
+  --foreground: var(--arka-text-dark);
+  --primary: var(--arka-navy);
   --primary-foreground: var(--arka-text);
-  --muted: var(--arka-bg-medium);
-  --muted-foreground: var(--arka-text-soft);
+  --muted: var(--arka-bg-alt);
+  --muted-foreground: var(--arka-text-dark-soft);
 }
 
 /* ==========================================================================
@@ -155,7 +171,7 @@ html {
 }
 
 body {
-  background: var(--arka-bg-dark);
+  background: var(--arka-bg-light);
   color: var(--foreground);
   font-family: var(--font-inter, var(--font-sans));
   font-weight: 400;
@@ -216,7 +232,7 @@ body {
 /* Custom scrollbar: thin, arka-primary colored */
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--arka-primary) var(--arka-bg-medium);
+  scrollbar-color: var(--arka-teal) var(--arka-bg-alt);
 }
 
 *::-webkit-scrollbar {
@@ -225,43 +241,38 @@ body {
 }
 
 *::-webkit-scrollbar-track {
-  background: var(--arka-bg-medium);
+  background: var(--arka-bg-alt);
 }
 
 *::-webkit-scrollbar-thumb {
-  background: var(--arka-primary);
+  background: var(--arka-teal);
   border-radius: 4px;
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  background: var(--arka-cyan);
+  background: #0d9488;
 }
 
 /* ==========================================================================
    3. Utility classes
    ========================================================================== */
 .arka-gradient-text {
-  background: linear-gradient(90deg, #5b9bd5 0%, #00d9ff 100%);
+  background: linear-gradient(90deg, #0f172a 0%, #14b8a6 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .arka-card {
-  background: linear-gradient(
-    135deg,
-    rgb(13 25 41 / 0.6) 0%,
-    rgb(26 41 66 / 0.5) 100%
-  );
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgb(91 155 213 / 0.2);
+  background: #ffffff;
+  box-shadow: var(--shadow-card);
+  border: 1px solid rgb(15 23 42 / 0.08);
   border-radius: 12px;
 }
 
 .arka-button-primary {
-  background: linear-gradient(90deg, #5b9bd5 0%, #00d9ff 100%);
-  color: var(--arka-bg-dark);
+  background: linear-gradient(90deg, #0f172a 0%, #14b8a6 100%);
+  color: #ffffff;
   font-weight: 600;
   padding: 0.625rem 1.25rem;
   border: none;
@@ -271,7 +282,7 @@ body {
 }
 
 .arka-button-primary:hover {
-  box-shadow: 0 0 20px 4px rgb(0 217 255 / 0.35);
+  box-shadow: 0 0 20px 4px rgb(20 184 166 / 0.35);
   transform: translateY(-2px) scale(1.02);
 }
 
@@ -281,18 +292,18 @@ body {
 
 .arka-button-secondary {
   background: transparent;
-  color: var(--arka-cyan);
+  color: var(--arka-teal);
   font-weight: 600;
   padding: 0.625rem 1.25rem;
-  border: 2px solid var(--arka-cyan);
+  border: 2px solid var(--arka-teal);
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.2s ease-out, color 0.2s ease-out, transform 0.2s ease-out;
 }
 
 .arka-button-secondary:hover {
-  background: rgb(0 217 255 / 0.1);
-  color: var(--arka-light);
+  background: rgb(20 184 166 / 0.1);
+  color: #0d9488;
   transform: translateY(-1px);
 }
 
@@ -307,8 +318,8 @@ body {
 
 .arka-card:hover {
   transform: translateY(-4px);
-  box-shadow: var(--shadow-glow-sm), 0 12px 24px -8px rgb(0 0 0 / 0.25);
-  border-color: rgb(91 155 213 / 0.35);
+  box-shadow: var(--shadow-card-hover), 0 12px 24px -8px rgb(0 0 0 / 0.1);
+  border-color: rgb(20 184 166 / 0.3);
 }
 
 /* Link underline animation (for footer/nav links) */
@@ -324,7 +335,7 @@ body {
   bottom: -2px;
   width: 0;
   height: 2px;
-  background: var(--arka-cyan);
+  background: var(--arka-teal);
   transition: width 0.2s ease-out;
 }
 
@@ -339,13 +350,13 @@ body {
 }
 
 .arka-input:focus {
-  border-color: var(--arka-cyan);
-  box-shadow: 0 0 0 3px rgb(0 217 255 / 0.2);
+  border-color: var(--arka-teal);
+  box-shadow: 0 0 0 3px rgb(20 184 166 / 0.2);
   outline: none;
 }
 
 .arka-input:focus-visible {
-  outline: 2px solid var(--arka-cyan);
+  outline: 2px solid var(--arka-teal);
   outline-offset: 2px;
 }
 
@@ -359,7 +370,7 @@ h1 {
 }
 
 h1.arka-gradient-text {
-  background: linear-gradient(90deg, #5b9bd5 0%, #00d9ff 100%);
+  background: linear-gradient(90deg, #0f172a 0%, #14b8a6 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -402,7 +413,7 @@ h6 {
    5. Focus states (accessibility – arka-cyan)
    ========================================================================== */
 :focus-visible {
-  outline: 2px solid var(--arka-cyan);
+  outline: 2px solid var(--arka-teal);
   outline-offset: 2px;
 }
 
@@ -412,7 +423,7 @@ input:focus-visible,
 textarea:focus-visible,
 select:focus-visible,
 [tabindex]:focus-visible {
-  outline: 2px solid var(--arka-cyan);
+  outline: 2px solid var(--arka-teal);
   outline-offset: 2px;
 }
 
@@ -420,13 +431,13 @@ select:focus-visible,
    6. Selection color (arka-primary at 30% opacity)
    ========================================================================== */
 ::selection {
-  background: rgb(91 155 213 / 0.3);
-  color: var(--arka-text);
+  background: rgb(20 184 166 / 0.3);
+  color: var(--arka-text-dark);
 }
 
 ::-moz-selection {
-  background: rgb(91 155 213 / 0.3);
-  color: var(--arka-text);
+  background: rgb(20 184 166 / 0.3);
+  color: var(--arka-text-dark);
 }
 
 /* Accent/tagline: Georgia italic */

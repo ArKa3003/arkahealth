@@ -13,28 +13,28 @@ export default function NotFound() {
         unoptimized
         priority
       />
-      <span className="text-4xl font-bold text-arka-cyan/90">404</span>
-      <h1 className="mt-2 text-2xl font-bold text-arka-text sm:text-3xl">
+      <span className="text-4xl font-bold text-arka-teal/90">404</span>
+      <h1 className="mt-2 text-2xl font-bold text-arka-text-dark sm:text-3xl">
         Page not found
       </h1>
-      <p className="mt-2 max-w-md text-arka-text-soft">
+      <p className="mt-2 max-w-md text-arka-text-dark-muted">
         The page you&apos;re looking for doesn&apos;t exist or has been moved.
       </p>
       <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
         <Link
           href="/"
-          className="arka-button-primary inline-flex min-h-[44px] items-center justify-center px-6 py-3 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-arka-cyan focus:ring-offset-2 focus:ring-offset-arka-bg-dark"
+          className="arka-button-primary inline-flex min-h-[44px] items-center justify-center px-6 py-3 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-arka-teal focus:ring-offset-2 focus:ring-offset-arka-bg-light"
         >
           Back to Home
         </Link>
         <Link
           href="/clin"
-          className="arka-button-secondary inline-flex min-h-[44px] items-center justify-center px-6 py-3 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-arka-cyan focus:ring-offset-2 focus:ring-offset-arka-bg-dark"
+          className="arka-button-secondary inline-flex min-h-[44px] items-center justify-center px-6 py-3 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-arka-teal focus:ring-offset-2 focus:ring-offset-arka-bg-light"
         >
           Explore demos
         </Link>
       </div>
-      <p className="mt-10 text-sm text-arka-text-soft/80">
+      <p className="mt-10 text-sm text-arka-text-dark-soft">
         <span className="font-accent italic">remARKAbly precise.</span> © 2026 ARKA.
       </p>
     </div>

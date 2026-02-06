@@ -3,7 +3,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import * as Dialog from "@radix-ui/react-dialog";
-import { Logo } from "@/components/shared/Logo";
+import { ArkaAnimatedLogo } from "@/components/ArkaAnimatedLogo";
 import { Play, X } from "lucide-react";
 
 const PARTICLE_ROWS = 12;
@@ -187,7 +187,7 @@ export function Hero() {
 
   return (
     <section
-      className="relative flex min-h-[100dvh] flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-arka-bg-dark via-arka-bg-medium/80 to-arka-bg-dark px-4 py-16 sm:px-6 sm:py-20 lg:px-8"
+      className="relative flex min-h-[100dvh] flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-arka-navy via-arka-bg-medium/80 to-arka-navy px-4 py-16 sm:px-6 sm:py-20 lg:px-8"
       aria-labelledby="hero-heading"
     >
       <HeroGridPattern />
@@ -197,33 +197,25 @@ export function Hero() {
 
       <div className="relative z-10 flex w-full max-w-4xl flex-col items-center text-center px-2">
         <motion.div
-          className="mb-4 sm:mb-6 md:mb-8"
+          className="mb-4 sm:mb-6 md:mb-8 flex justify-center"
           initial={{ opacity: 0, scale: 0.92 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, ease: "easeOut" as const }}
         >
-          <Logo
-            size="lg"
-            variant="full"
-            hideTagline
-            className="scale-75 sm:scale-90 md:scale-100 lg:scale-110 xl:scale-125"
+          <ArkaAnimatedLogo
+            width={800}
+            height={900}
+            animate={true}
+            idleAnimations={true}
+            className="w-full max-w-[200px] sm:max-w-[240px] md:max-w-[280px] lg:max-w-[300px] h-auto"
           />
         </motion.div>
 
         <motion.h1
           id="hero-heading"
-          className="font-heading font-bold tracking-tight text-arka-text"
-          style={{
-            fontSize: "clamp(1.5rem, 5vw + 1.25rem, 3.25rem)",
-            lineHeight: 1.15,
-          }}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.15, ease: "easeOut" as const }}
+          className="sr-only"
         >
-          rem
-          <span className="arka-gradient-text">ARKA</span>
-          bly precise
+          remARKAbly precise
         </motion.h1>
 
         <motion.p
@@ -249,7 +241,7 @@ export function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.35, ease: "easeOut" as const }}
         >
-          AI-powered clinical decision support that never misses.
+          Cutting-Edge clinical decision support that never misses.
         </motion.p>
 
         <motion.div

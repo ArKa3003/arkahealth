@@ -12,7 +12,7 @@ const socialPlaceholders = [
 
 export function Footer() {
   return (
-    <footer className="safe-area-bottom border-t border-arka-deep/50 bg-arka-bg-medium/40 dark:border-neutral-800 dark:bg-neutral-900/50">
+    <footer className="safe-area-bottom border-t border-arka-deep/50 bg-arka-navy dark:border-neutral-800 dark:bg-arka-navy">
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8 safe-area-left safe-area-right">
         <div className="flex flex-col gap-8 sm:gap-10">
           {/* Top row: logo + nav + social */}

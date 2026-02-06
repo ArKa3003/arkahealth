@@ -17,7 +17,7 @@ export function CtaSection() {
     <section
       ref={ref}
       id="cta"
-      className="border-t border-arka-deep/50 bg-arka-bg-dark px-4 py-24 sm:px-6 lg:px-8"
+      className="scroll-mt-14 border-t border-arka-light bg-arka-bg-alt px-4 py-24 sm:px-6 lg:px-8"
       aria-labelledby="cta-heading"
     >
       <div className="mx-auto max-w-3xl text-center">
@@ -26,7 +26,7 @@ export function CtaSection() {
           initial={fadeIn.initial}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={fadeIn.transition}
-          className="text-2xl font-bold text-arka-text sm:text-3xl"
+          className="text-2xl font-bold text-arka-text-dark sm:text-3xl"
         >
           Ready to experience precision?
         </motion.h2>
@@ -34,7 +34,7 @@ export function CtaSection() {
           initial={fadeIn.initial}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ ...fadeIn.transition, delay: 0.08 }}
-          className="mt-4 text-arka-text-soft"
+          className="mt-4 text-arka-text-dark-muted"
         >
           Explore the ARKA ecosystem and see how evidence-based CDS can
           transform your imaging workflow.
@@ -47,13 +47,13 @@ export function CtaSection() {
         >
           <Link
             href="#solutions"
-            className="arka-button-primary inline-flex items-center justify-center px-8 py-3 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-arka-cyan focus:ring-offset-2 focus:ring-offset-arka-bg-dark"
+            className="arka-button-primary inline-flex items-center justify-center px-8 py-3 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-arka-teal focus:ring-offset-2 focus:ring-offset-arka-bg-light"
           >
             Explore solutions
           </Link>
           <Link
             href="#ecosystem"
-            className="arka-button-secondary inline-flex items-center justify-center px-8 py-3 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-arka-cyan focus:ring-offset-2 focus:ring-offset-arka-bg-dark"
+            className="arka-button-secondary inline-flex items-center justify-center px-8 py-3 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-arka-teal focus:ring-offset-2 focus:ring-offset-arka-bg-light"
           >
             View ecosystem
           </Link>
