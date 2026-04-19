@@ -7,8 +7,10 @@ import {
   Stethoscope,
   GraduationCap,
   Shield,
+  TreePine,
   ArrowRight,
 } from "lucide-react";
+import { routes } from "@/lib/constants";
 
 const cards = [
   {
@@ -17,7 +19,7 @@ const cards = [
     subtitle: "For Medical Professionals",
     description:
       "Cutting-Edge clinical decision support for radiologists and physicians. Optimize imaging protocols with precision.",
-    href: "/clin",
+    href: routes.clin,
     icon: Stethoscope,
     accentColor: "#14B8A6",
     Decorative: ScanLinesPattern,
@@ -29,7 +31,7 @@ const cards = [
     subtitle: "For Medical Students & Residents",
     description:
       "Interactive learning platform for mastering radiology protocols and imaging appropriateness criteria.",
-    href: "/ed",
+    href: routes.ed,
     icon: GraduationCap,
     accentColor: "#14B8A6",
     Decorative: NeuralPattern,
@@ -41,11 +43,23 @@ const cards = [
     subtitle: "For Radiology Benefit Managers",
     description:
       "Streamlined utilization review tools ensuring appropriate imaging while reducing administrative burden.",
-    href: "/ins",
+    href: routes.ins,
     icon: Shield,
     accentColor: "#0F172A",
     Decorative: DocumentPattern,
     patternId: "document",
+  },
+  {
+    id: "rural",
+    title: "Rural Platform",
+    subtitle: "Rural Imaging Crisis",
+    description:
+      "Resource-aware CDS, teleradiology, training, reimbursement, network, AI, and population intelligence for rural access.",
+    href: routes.rural,
+    icon: TreePine,
+    accentColor: "#0d9488",
+    Decorative: HillsPattern,
+    patternId: "hills",
   },
 ] as const;
 
@@ -112,6 +126,28 @@ function NeuralPattern({ id: patternId }: { id: string }) {
               y2="28"
               stroke="currentColor"
               strokeWidth="0.5"
+            />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill={`url(#${patternId})`} />
+      </svg>
+    </div>
+  );
+}
+
+function HillsPattern({ id: patternId }: { id: string }) {
+  return (
+    <div
+      className="pointer-events-none absolute inset-0 overflow-hidden rounded-xl opacity-[0.07]"
+      aria-hidden
+    >
+      <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 80">
+        <defs>
+          <pattern id={patternId} width="120" height="40" patternUnits="userSpaceOnUse">
+            <path
+              d="M0 32 Q20 8 40 28 T80 24 T120 30 L120 40 L0 40 Z"
+              fill="currentColor"
+              className="text-slate-400"
             />
           </pattern>
         </defs>
@@ -192,9 +228,9 @@ export function PhaseCards() {
           Explore the platform
         </h2>
         <p className="mx-auto mt-2 max-w-2xl text-center text-arka-text-dark-muted">
-          Three modules, one ecosystem. Click to open each demo.
+          Four platform areas, one ecosystem. Click to open each demo.
         </p>
-        <div className="mt-12 grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-12 grid w-full grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
           {cards.map((card, i) => {
             const Icon = card.icon;
             const Decorative = card.Decorative;

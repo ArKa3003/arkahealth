@@ -45,6 +45,9 @@ export const routes = {
   clin: "/clin",
   ed: "/ed",
   ins: "/ins",
+  rural: "/rural",
+  ruralCds: "/rural/cds",
+  ruralTele: "/rural/tele",
 } as const;
 
 export const navLinks = [
@@ -52,12 +55,14 @@ export const navLinks = [
   { href: routes.clin, label: "ARKA-CLIN" },
   { href: routes.ed, label: "ARKA-ED" },
   { href: routes.ins, label: "ARKA-INS" },
+  { href: routes.rural, label: "Rural Platform" },
 ] as const;
 
 export const demoNavLinks = [
   { href: routes.clin, label: "ARKA-CLIN", icon: "Stethoscope" },
   { href: routes.ed, label: "ARKA-ED", icon: "GraduationCap" },
   { href: routes.ins, label: "ARKA-INS", icon: "Shield" },
+  { href: routes.rural, label: "Rural Platform", icon: "TreePine" },
 ] as const;
 
 export const phaseCards = [
@@ -82,4 +87,14 @@ export const phaseCards = [
     href: routes.ins,
     icon: "Shield",
   },
+  {
+    id: "rural",
+    title: "Rural Platform",
+    description: "Rural imaging crisis hub — CDS, tele, training, and analytics.",
+    href: routes.rural,
+    icon: "TreePine",
+  },
 ] as const;
+
+/** Shown in site footer and compliance surfaces; bump when AIIE model or factor set changes materially. */
+export const AIIE_ENGINE_VERSION = "2.0.0" as const;

@@ -5,10 +5,17 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { Logo } from "@/components/shared/Logo";
 import { demoNavLinks, routes } from "@/lib/constants";
+import { RURAL_NAV_LINKS } from "@/lib/demos/rural/constants";
 import {
   Stethoscope,
   GraduationCap,
   Shield,
+  TreePine,
+  Radio,
+  DollarSign,
+  Network,
+  Brain,
+  BarChart3,
   Menu,
   X,
   ChevronDown,
@@ -21,13 +28,28 @@ const iconMap = {
   Stethoscope,
   GraduationCap,
   Shield,
+  TreePine,
 } as const;
 
-const DEMO_PATHS = [routes.clin, routes.ed, routes.ins] as const;
+/** Seven strategic pillars (excludes rural hub). */
+const RURAL_PILLAR_LINKS = RURAL_NAV_LINKS.slice(1);
+
+const ruralPillarIconMap = {
+  Stethoscope,
+  Radio,
+  GraduationCap,
+  DollarSign,
+  Network,
+  Brain,
+  BarChart3,
+} as const;
+
+const DEMO_PATHS = [routes.clin, routes.ed, routes.ins, routes.rural] as const;
 const pathToLabel: Record<string, string> = {
   [routes.clin]: "ARKA-CLIN",
   [routes.ed]: "ARKA-ED",
   [routes.ins]: "ARKA-INS",
+  [routes.rural]: "Rural Platform",
 };
 
 function NavLinkWithHoverUnderline({
@@ -78,6 +100,7 @@ export function Navbar() {
   const otherDemos = currentDemo
     ? demoNavLinks.filter((l) => l.href !== currentDemo)
     : [];
+  const isRuralDemo = pathname.startsWith(routes.rural);
 
   const handleEcosystemClick = useCallback(() => {
     if (pathname === routes.home) {
@@ -161,7 +184,7 @@ export function Navbar() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -8 }}
                         transition={{ duration: 0.15 }}
-                        className="absolute left-0 top-full z-50 mt-1 min-w-[160px] rounded-lg border border-white/10 bg-arka-bg-medium/95 py-1 shadow-xl backdrop-blur-xl"
+                        className="absolute left-0 top-full z-50 mt-1 min-w-[220px] max-h-[min(70vh,520px)] overflow-y-auto rounded-lg border border-white/10 bg-arka-bg-medium/95 py-1 shadow-xl backdrop-blur-xl"
                       >
                         {otherDemos.map(({ href, label, icon }) => {
                           const Icon = iconMap[icon];
@@ -171,12 +194,47 @@ export function Navbar() {
                                 href={href}
                                 className="flex items-center gap-2 px-3 py-2 text-sm text-arka-text-muted transition hover:bg-white/5 hover:text-arka-cyan"
                               >
-                                <Icon className="h-4 w-4" />
+                                <Icon className="h-4 w-4 shrink-0" />
                                 {label}
                               </Link>
                             </li>
                           );
                         })}
+                        {isRuralDemo && (
+                          <>
+                            <li
+                              className="mx-2 my-1 border-t border-white/10 pt-2"
+                              role="presentation"
+                            />
+                            <li className="px-3 pb-1 pt-0.5">
+                              <span className="text-[10px] font-semibold uppercase tracking-wider text-arka-text-soft">
+                                Rural pillars
+                              </span>
+                            </li>
+                            {RURAL_PILLAR_LINKS.map(({ href, label, icon }) => {
+                              const Icon =
+                                ruralPillarIconMap[
+                                  icon as keyof typeof ruralPillarIconMap
+                                ];
+                              const active = pathname === href;
+                              return (
+                                <li key={href}>
+                                  <Link
+                                    href={href}
+                                    className={`flex items-center gap-2 px-3 py-1.5 text-sm transition hover:bg-white/5 hover:text-arka-cyan ${
+                                      active
+                                        ? "text-arka-cyan"
+                                        : "text-arka-text-muted"
+                                    }`}
+                                  >
+                                    <Icon className="h-4 w-4 shrink-0" />
+                                    <span className="leading-snug">{label}</span>
+                                  </Link>
+                                </li>
+                              );
+                            })}
+                          </>
+                        )}
                       </motion.ul>
                     )}
                   </AnimatePresence>
@@ -268,7 +326,7 @@ export function Navbar() {
                 >
                   <X className="h-7 w-7" aria-hidden />
                 </button>
-                <ul className="flex flex-col items-center gap-1">
+                <ul className="flex max-h-[min(75vh,560px)] flex-col items-center gap-1 overflow-y-auto">
                   {demoNavLinks.map(({ href, label, icon }) => {
                     const Icon = iconMap[icon];
                     const isActive = pathname === href;
@@ -287,6 +345,39 @@ export function Navbar() {
                       </li>
                     );
                   })}
+                  {isRuralDemo && (
+                    <>
+                      <li className="my-2 w-full max-w-[280px] border-t border-white/10 pt-4" role="presentation" />
+                      <li className="mb-1 w-full max-w-[280px] text-center">
+                        <span className="text-xs font-semibold uppercase tracking-wider text-arka-text-soft">
+                          Rural pillars
+                        </span>
+                      </li>
+                      {RURAL_PILLAR_LINKS.map(({ href, label, icon }) => {
+                        const Icon =
+                          ruralPillarIconMap[
+                            icon as keyof typeof ruralPillarIconMap
+                          ];
+                        const isActive = pathname === href;
+                        return (
+                          <li key={href} className="w-full max-w-[280px]">
+                            <Link
+                              href={href}
+                              onClick={() => setMobileOpen(false)}
+                              className={`flex min-h-[40px] w-full items-center justify-center gap-2 rounded-xl px-5 py-2 text-base font-medium transition active:bg-white/5 touch-manipulation ${
+                                isActive
+                                  ? "text-arka-cyan"
+                                  : "text-arka-text-muted hover:text-arka-cyan"
+                              }`}
+                            >
+                              <Icon className="h-4 w-4 shrink-0" aria-hidden />
+                              <span className="text-center leading-snug">{label}</span>
+                            </Link>
+                          </li>
+                        );
+                      })}
+                    </>
+                  )}
                   <li className="w-full max-w-[280px]">
                     <button
                       type="button"

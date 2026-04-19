@@ -4,6 +4,7 @@ import "@/styles/globals.css";
 import { Navbar } from "@/components/navigation/Navbar";
 import { Footer } from "@/components/navigation/Footer";
 import { MainWithDemoNav } from "@/components/navigation/MainWithDemoNav";
+import { FDAComplianceProvider } from "@/components/shared/compliance/FDAComplianceProvider";
 import { ThemeProvider } from "@/components/shared/ThemeProvider";
 import { RouteAnnouncer } from "@/components/accessibility/RouteAnnouncer";
 import { FeedbackWidget } from "@/components/FeedbackWidget";
@@ -42,6 +43,11 @@ export const metadata: Metadata = {
     title: "ARKA Health | Imaging CDS",
     description: "Evidence-based clinical decision support for imaging appropriateness.",
   },
+  other: {
+    "fda-compliance-mode": "non-device-cds",
+    "cms-0057-f-compliant": "true",
+    "arka-platform-version": "unified-2.0",
+  },
   icons: {
     icon: [{ url: "/arka-icon.svg", type: "image/svg+xml" }],
     apple: [{ url: "/arka-icon.svg", type: "image/svg+xml" }],
@@ -60,7 +66,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html
+      lang="en"
+      className="dark"
+      suppressHydrationWarning
+      data-fda-compliance-mode="non-device-cds"
+      data-cms-0057-f-compliant="true"
+      data-arka-platform-version="unified-2.0"
+    >
       <body
         className={`${inter.variable} font-sans min-h-screen antialiased overflow-x-hidden`}
       >
@@ -71,13 +84,15 @@ export default function RootLayout({
           Skip to main content
         </a>
         <ThemeProvider>
-          <RouteAnnouncer />
-          <div className="flex min-h-screen min-h-dvh flex-col overflow-x-hidden">
-            <Navbar />
-            <MainWithDemoNav>{children}</MainWithDemoNav>
-            <Footer />
-            <FeedbackWidget />
-          </div>
+          <FDAComplianceProvider>
+            <RouteAnnouncer />
+            <div className="flex min-h-screen min-h-dvh flex-col overflow-x-hidden">
+              <Navbar />
+              <MainWithDemoNav>{children}</MainWithDemoNav>
+              <Footer />
+              <FeedbackWidget />
+            </div>
+          </FDAComplianceProvider>
         </ThemeProvider>
       </body>
     </html>

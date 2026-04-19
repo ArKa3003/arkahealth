@@ -8,6 +8,14 @@ const PAGE_TITLES: Record<string, string> = {
   "/clin": "ARKA-CLIN Clinical Decision Support",
   "/ed": "ARKA-ED Educational Platform",
   "/ins": "ARKA-INS Utilization Management",
+  "/rural": "Rural Platform",
+  "/rural/cds": "ARKA-RURAL CDS",
+  "/rural/tele": "ARKA-TELE Teleradiology",
+  "/rural/training": "ARKA-ED Rural Training",
+  "/rural/reimbursement": "ARKA-INS Rural Reimbursement",
+  "/rural/network": "Hub-and-Spoke Network Manager",
+  "/rural/ai": "AI Diagnostics — Rural",
+  "/rural/intelligence": "Rural Data Intelligence",
 };
 
 export function RouteAnnouncer() {

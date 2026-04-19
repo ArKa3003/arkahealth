@@ -9,6 +9,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: baseUrl + routes.clin, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.9 },
     { url: baseUrl + routes.ed, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.9 },
     { url: baseUrl + routes.ins, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.9 },
+    { url: baseUrl + routes.rural, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.85 },
   ];
   return staticPages;
 }

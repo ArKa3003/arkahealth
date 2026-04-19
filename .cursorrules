@@ -1,0 +1,32 @@
+# ARKA Monorepo — Cursor Rules
+
+## Scope isolation
+- Do NOT modify files under app/clin/, app/ed/, components/clin/, or components/ed/ unless explicitly instructed.
+- ARKA-INS work lives under app/ins/, app/api/ins/, app/api/cds-services/arka-ins-*, components/ins/, and lib/davinci/, lib/cards/.
+- Shared code lives under lib/aiie/, lib/fhir/, lib/supabase/, components/shared/.
+
+## AIIE engine
+- If lib/aiie/scoring-engine.ts already exists (from ARKA-CLIN), IMPORT from it — do NOT overwrite.
+- Only add INS-specific helpers as sibling files: denial-risk.ts, gold-card.ts, oop-estimator.ts.
+- Never duplicate the scoring logic.
+
+## Supabase naming
+- All ARKA-INS tables are prefixed `ins_` (ins_providers, ins_pa_history, ins_gold_card_scores, ins_oop_estimates, ins_shoppable_sites, ins_validation_events).
+- Never modify CLIN or ED tables.
+- No PHI in any table. Patient identifiers always hashed with SHA-256.
+
+## FDA compliance
+- ARKA-INS is an FDA Non-Device Clinical Decision Support tool under Section 520(o)(1)(E) of the FD&C Act (21st Century Cures Act).
+- Every CDS card detail field ends with: "This recommendation is provided by ARKA Imaging Intelligence Engine, an FDA Non-Device Clinical Decision Support tool under the 21st Century Cures Act. The ordering clinician retains full responsibility for the final decision."
+- Every user-facing page includes the FDA Non-Device CDS banner.
+
+## Code style
+- TypeScript strict mode. No `any`. Every exported function has JSDoc.
+- Use shadcn/ui primitives, Tailwind for styling, no custom CSS files.
+- All API routes return within 800ms p95.
+- Error handling: never throw from lib functions; return { data, error } tuples.
+
+## CMS-0057-F alignment
+- PA decisions must return within simulated 72h standard / 24h expedited SLA.
+- Denial reasons must be specific (tied to AIIE factors), never boilerplate.
+- Appeal deadline set to 180 days per the final rule.
