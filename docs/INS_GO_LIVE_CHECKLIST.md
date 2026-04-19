@@ -16,7 +16,7 @@ Use this before declaring ARKA-INS production-ready for payers, investors, or re
 - [ ] Good Faith Estimate PDF/block generates correctly (`lib/ins/gfe.ts`, `/api/ins/oop/estimate`)
 - [ ] Gold Card scorer handles zero-history edge case (`lib/aiie/gold-card.ts`)
 - [ ] OOP estimator handles missing coverage fields (`lib/aiie/oop-estimator.ts`)
-- [ ] All API p95 &lt; 800ms (measure with k6 against production; see `ins_request_logs_p95_24h`)
+- [ ] All API p95 < 800ms (measure with k6 against production; see `ins_request_logs_p95_24h`)
 - [ ] No PHI in logs, no PHI in Supabase (only hashed identifiers where required)
 - [ ] `DEMO_MODE` works with Supabase offline (`lib/demo/demo-mode.ts`)
 - [ ] CORS configured for `sandbox.cds-hooks.org` (CDS route headers + Vercel origin policy as needed)
