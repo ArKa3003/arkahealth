@@ -32,8 +32,8 @@ jobs:
 
   # TODO(ins-sandbox): pre-existing INS fixture issue. Re-enable as blocking after Phase 9 of ARKA_CDS_HOOKS_UNIFIED_PLAYBOOK.md fixes Supabase fixtures.
   cds-sandbox:
+    name: cds-sandbox
     runs-on: ubuntu-latest
-    continue-on-error: true
     needs: quality
     steps:
       - uses: actions/checkout@v4
@@ -57,6 +57,9 @@ jobs:
           done
           echo "Server did not become ready"
           exit 1
-      - run: npm run test:sandbox
+      # Step-level (not job-level): job-level continue-on-error still renders the job red in the UI (actions/runner#2347).
+      - name: CDS sandbox harness (non-blocking)
+        continue-on-error: true
+        run: npm run test:sandbox
         env:
           CDS_SANDBOX_BASE_URL: http://127.0.0.1:3000
