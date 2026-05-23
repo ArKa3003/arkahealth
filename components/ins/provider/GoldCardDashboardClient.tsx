@@ -16,6 +16,15 @@ import {
 import { Award, Clock, FileCheck2, Landmark, Sparkles, TrendingUp } from "lucide-react";
 
 import { DemoModeWatermark } from "@/components/ins/DemoModeWatermark";
+import { InterestingCaseBadge } from "@/components/ins/provider/InterestingCaseBadge";
+import { SchedulingIntentBanner } from "@/components/ins/provider/SchedulingIntentBanner";
+import { PriorImagingControlSheetGate } from "@/components/shared/PriorImagingControlSheet";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { TableScrollWrapper } from "@/components/ui/TableScrollWrapper";
 import type { GoldCardPortfolioRow } from "@/lib/aiie/gold-card";
 import { routes } from "@/lib/constants";
@@ -23,7 +32,10 @@ import {
   buildAiieScoreHistogram,
   rankNearMilestones,
 } from "@/lib/ins/gold-card-dashboard-helpers";
+import { buildGoldCardPriorImagingSnapshot } from "@/lib/ins/gold-card-prior-imaging-demo";
 import { REVIEWER_DEMO_PROVIDER_ID } from "@/lib/ins/reviewer-queue";
+import type { RarityAssessment } from "@/lib/aiie/interesting-case";
+import type { AIIEOrder } from "@/lib/types/aiie";
 import type { ValidationMetricsApiResponse } from "@/lib/validation/metrics";
 
 type PortfolioResponse = {
@@ -60,10 +72,15 @@ function formatDate(iso: string | null | undefined): string {
   return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
 }
 
+export interface GoldCardDashboardClientProps {
+  /** When true, rendered inside the provider hub tabs (no full-page chrome). */
+  embedded?: boolean;
+}
+
 /**
  * Provider-facing gold card portfolio dashboard (SMART-launched or standalone demo).
  */
-export function GoldCardDashboardClient() {
+export function GoldCardDashboardClient({ embedded = false }: GoldCardDashboardClientProps) {
   const searchParams = useSearchParams();
   const providerFromQuery = searchParams.get("providerId")?.trim();
 
@@ -76,6 +93,12 @@ export function GoldCardDashboardClient() {
   const [loadError, setLoadError] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [chartReady, setChartReady] = React.useState(false);
+  const [detailCpt, setDetailCpt] = React.useState<string | null>(null);
+  const [detailRarity, setDetailRarity] = React.useState<RarityAssessment | null>(null);
+  const [detailTotalOrders, setDetailTotalOrders] = React.useState<number | undefined>(undefined);
+  const [rarityLoading, setRarityLoading] = React.useState(false);
+  const [teachingMarking, setTeachingMarking] = React.useState(false);
+  const [teachingDone, setTeachingDone] = React.useState(false);
 
   React.useEffect(() => {
     setChartReady(true);
@@ -164,17 +187,128 @@ export function GoldCardDashboardClient() {
   const fteEq = metrics?.administrativeBurdenReduction.fteEquivalent ?? 0;
   const adminLaborUsd = metrics?.costAvoidanceStackUsd.adminLaborAvoidedUsd ?? 0;
 
+  const detailSnapshot = React.useMemo(
+    () => (detailCpt ? buildGoldCardPriorImagingSnapshot(detailCpt) : null),
+    [detailCpt],
+  );
+  const detailProposed: AIIEOrder = React.useMemo(
+    () => ({
+      cpt: detailCpt ?? undefined,
+      modality: "CT",
+      bodyPart: "Chest",
+      procedure: detailCpt ? `CT Chest (${detailCpt})` : "CT Chest",
+    }),
+    [detailCpt],
+  );
+
+  React.useEffect(() => {
+    if (!detailCpt || !detailSnapshot) {
+      setDetailRarity(null);
+      setDetailTotalOrders(undefined);
+      setTeachingDone(false);
+      return;
+    }
+
+    let cancelled = false;
+    async function assessRarity() {
+      setRarityLoading(true);
+      setDetailRarity(null);
+      try {
+        const base = typeof window !== "undefined" ? window.location.origin : "";
+        const res = await fetch(`${base}/api/ins/interesting-case/assess`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            snapshot: detailSnapshot,
+            order: detailProposed,
+            demographics: { ageYears: 52, sex: "female" as const, regionBucket: "rural-midwest" },
+            redFlags: {
+              cancerHistory: true,
+              neurologicalDeficit: true,
+              fever: false,
+              weightLoss: false,
+              trauma: false,
+              immunocompromised: false,
+              ivDrugUse: false,
+              osteoporosis: false,
+              ageOver50: true,
+              ageUnder18: false,
+              progressiveSymptoms: true,
+              bladderBowelDysfunction: false,
+              suddenOnset: false,
+            },
+          }),
+        });
+        if (!res.ok) {
+          return;
+        }
+        const json = (await res.json()) as {
+          rarity?: RarityAssessment;
+          totalOrders?: number;
+        };
+        if (!cancelled) {
+          setDetailRarity(json.rarity ?? null);
+          setDetailTotalOrders(json.rarity?.corpusTotal ?? json.totalOrders);
+        }
+      } finally {
+        if (!cancelled) {
+          setRarityLoading(false);
+        }
+      }
+    }
+    void assessRarity();
+    return () => {
+      cancelled = true;
+    };
+  }, [detailCpt, detailSnapshot, detailProposed]);
+
+  const handleMarkInteresting = React.useCallback(async () => {
+    if (!detailSnapshot || !detailRarity?.interesting) {
+      return;
+    }
+    setTeachingMarking(true);
+    try {
+      const base = typeof window !== "undefined" ? window.location.origin : "";
+      const res = await fetch(`${base}/api/ins/teaching-queue`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-provider-id": effectiveProviderId,
+        },
+        body: JSON.stringify({
+          patientHash: detailSnapshot.patientHash,
+          rarity: detailRarity,
+          snapshot: detailSnapshot,
+          addedBy: effectiveProviderId,
+        }),
+      });
+      if (res.ok) {
+        setTeachingDone(true);
+      }
+    } finally {
+      setTeachingMarking(false);
+    }
+  }, [detailSnapshot, detailRarity, effectiveProviderId]);
+
   return (
-    <div className="flex min-h-screen flex-col bg-slate-100">
+    <div className={embedded ? "flex flex-col bg-slate-100" : "flex min-h-screen flex-col bg-slate-100"}>
       <DemoModeWatermark />
-      <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 backdrop-blur">
+      <header
+        className={
+          embedded
+            ? "border-b border-slate-200 bg-white"
+            : "sticky top-0 z-20 border-b border-slate-200 bg-white/95 backdrop-blur"
+        }
+      >
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-[11px] font-medium uppercase tracking-wide text-slate-500">
               <Link href={routes.ins} className="text-arka-teal hover:underline">
                 ARKA-INS
               </Link>
-              <span className="text-slate-400"> / Provider / Gold Card</span>
+              <span className="text-slate-400">
+                {embedded ? " / Provider dashboard / Gold Card" : " / Provider / Gold Card"}
+              </span>
             </p>
             <h1 className="text-xl font-semibold text-slate-900">Gold card portfolio</h1>
             <p className="mt-1 max-w-2xl text-sm text-slate-600">
@@ -203,6 +337,7 @@ export function GoldCardDashboardClient() {
           </div>
         ) : (
           <div className="flex flex-col gap-8">
+            <SchedulingIntentBanner />
             <section aria-labelledby="summary-heading">
               <h2 id="summary-heading" className="sr-only">
                 Summary metrics
@@ -285,7 +420,11 @@ export function GoldCardDashboardClient() {
                     ) : (
                       <>
                         {portfolio.map((row) => (
-                          <tr key={`${row.cptCode}-${row.payerId}`} className="hover:bg-slate-50/80">
+                          <tr
+                            key={`${row.cptCode}-${row.payerId}`}
+                            className="cursor-pointer hover:bg-slate-50/80"
+                            onClick={() => setDetailCpt(row.cptCode)}
+                          >
                             <td className="px-4 py-3 font-mono text-slate-900">{row.cptCode}</td>
                             <td className="px-4 py-3 text-slate-800">{payerLabel(row.payerId)}</td>
                             <td className="px-4 py-3">
@@ -451,6 +590,41 @@ export function GoldCardDashboardClient() {
           </div>
         )}
       </div>
+
+      <Dialog open={detailCpt !== null} onOpenChange={(open) => !open && setDetailCpt(null)}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              CPT {detailCpt} — prior imaging
+            </DialogTitle>
+          </DialogHeader>
+          {rarityLoading ?
+            <p className="text-xs text-slate-500">Checking case rarity…</p>
+          : null}
+          {detailRarity?.interesting && !teachingDone ?
+            <InterestingCaseBadge
+              rarity={detailRarity}
+              totalOrders={detailTotalOrders}
+              onMarkInteresting={() => void handleMarkInteresting()}
+              marking={teachingMarking}
+            />
+          : null}
+          {teachingDone ?
+            <p className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-900">
+              Added to the teaching queue (de-identified). Education committee can review when connected to Supabase.
+            </p>
+          : null}
+          {detailSnapshot ?
+            <PriorImagingControlSheetGate
+              snapshot={detailSnapshot}
+              proposed={detailProposed}
+              variant="mini"
+              product="INS"
+              onOverride={() => {}}
+            />
+          : null}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

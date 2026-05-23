@@ -2,10 +2,11 @@
 
 import {
   createContext,
-  useContext,
-  useState,
   useCallback,
+  useContext,
   useEffect,
+  useSyncExternalStore,
+  useState,
   type ReactNode,
 } from "react";
 
@@ -20,7 +21,9 @@ type ThemeContextValue = {
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 function applyTheme(t: Theme) {
-  if (typeof document === "undefined") return;
+  if (typeof document === "undefined") {
+    return;
+  }
   document.documentElement.classList.remove("light", "dark");
   if (t === "system") {
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -30,29 +33,42 @@ function applyTheme(t: Theme) {
   }
 }
 
+function subscribeSystemTheme(onStoreChange: () => void): () => void {
+  const mq = window.matchMedia("(prefers-color-scheme: dark)");
+  mq.addEventListener("change", onStoreChange);
+  return () => mq.removeEventListener("change", onStoreChange);
+}
+
+function getSystemThemeSnapshot(): "light" | "dark" {
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+function getSystemThemeServerSnapshot(): "light" | "dark" {
+  return "dark";
+}
+
+/**
+ * Resolves the effective light/dark theme from user preference and OS setting.
+ */
+function useResolvedTheme(theme: Theme): "light" | "dark" {
+  const systemTheme = useSyncExternalStore(
+    subscribeSystemTheme,
+    getSystemThemeSnapshot,
+    getSystemThemeServerSnapshot,
+  );
+  if (theme === "system") {
+    return systemTheme;
+  }
+  return theme === "light" ? "light" : "dark";
+}
+
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>("dark");
-  const [resolved, setResolved] = useState<"light" | "dark">("dark");
+  const resolved = useResolvedTheme(theme);
 
   useEffect(() => {
     applyTheme(theme);
-    const isDark =
-      theme === "system"
-        ? window.matchMedia("(prefers-color-scheme: dark)").matches
-        : theme === "dark";
-    setResolved(isDark ? "dark" : "light");
-  }, [theme]);
-
-  useEffect(() => {
-    if (theme !== "system") return;
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    const handler = () => {
-      applyTheme("system");
-      setResolved(mq.matches ? "dark" : "light");
-    };
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
-  }, [theme]);
+  }, [theme, resolved]);
 
   const setTheme = useCallback((t: Theme) => setThemeState(t), []);
 
@@ -65,6 +81,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
 export function useTheme() {
   const ctx = useContext(ThemeContext);
-  if (!ctx) throw new Error("useTheme must be used within ThemeProvider");
+  if (!ctx) {
+    throw new Error("useTheme must be used within ThemeProvider");
+  }
   return ctx;
 }

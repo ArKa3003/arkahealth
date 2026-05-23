@@ -101,6 +101,15 @@ export function Footer() {
                 |
               </span>
               <Link
+                href="/action-plan"
+                className="arka-link-underline font-medium text-arka-cyan hover:text-white"
+              >
+                Action Plan
+              </Link>
+              <span className="hidden text-arka-deep/50 sm:inline" aria-hidden>
+                |
+              </span>
+              <Link
                 href="/api/cds-services"
                 className="arka-link-underline font-medium text-arka-cyan hover:text-white"
               >

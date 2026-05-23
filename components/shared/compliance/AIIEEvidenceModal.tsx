@@ -10,16 +10,21 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import type { MNAIResult } from "@/lib/coding/mnai";
+
+import { MNAIAlignmentPanel } from "./MNAIAlignmentPanel";
 
 export interface AIIEEvidenceModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** Optional live MNAI from the current order for the alignment tab. */
+  mnai?: MNAIResult;
 }
 
 /**
  * Full-screen compliance and methodology reference for ARKA Imaging Intelligence Engine (AIIE) and ARKA-INS.
  */
-export function AIIEEvidenceModal({ open, onOpenChange }: AIIEEvidenceModalProps) {
+export function AIIEEvidenceModal({ open, onOpenChange, mnai }: AIIEEvidenceModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
@@ -40,6 +45,7 @@ export function AIIEEvidenceModal({ open, onOpenChange }: AIIEEvidenceModalProps
           <Tabs defaultValue="fda" className="flex min-h-0 flex-1 flex-col">
             <TabsList className="no-scrollbar mb-0 h-auto w-full shrink-0 flex-wrap justify-start gap-1 overflow-x-auto bg-slate-100 p-2 dark:bg-slate-900">
               <TabsTrigger value="fda">FDA Compliance</TabsTrigger>
+              <TabsTrigger value="mnai">Medical-Necessity Alignment</TabsTrigger>
               <TabsTrigger value="methodology">AIIE Methodology</TabsTrigger>
               <TabsTrigger value="data">Data Sources</TabsTrigger>
               <TabsTrigger value="cms">CMS-0057-F</TabsTrigger>
@@ -84,6 +90,10 @@ export function AIIEEvidenceModal({ open, onOpenChange }: AIIEEvidenceModalProps
                   explicit in the UI and in API card text.
                 </p>
               </div>
+            </TabsContent>
+
+            <TabsContent value="mnai" className="mt-3 flex min-h-0 flex-1 flex-col overflow-y-auto">
+              <MNAIAlignmentPanel mnai={mnai} />
             </TabsContent>
 
             <TabsContent value="methodology" className="mt-3 flex min-h-0 flex-1 flex-col overflow-y-auto">

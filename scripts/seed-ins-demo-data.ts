@@ -16,9 +16,18 @@ import path from "node:path";
 
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
+import {
+  buildAgeSexRegionKey,
+  buildCptCombo,
+  buildIcd10Combo,
+  buildRedFlagCombo,
+} from "@/lib/aiie/interesting-case";
+import { buildGoldCardPriorImagingSnapshot } from "@/lib/ins/gold-card-prior-imaging-demo";
 import { REVIEWER_DEMO_PROVIDER_ID } from "@/lib/ins/reviewer-queue";
+import type { AIIEOrder } from "@/lib/types/aiie";
 
 const DEMO_NAME_PREFIX = "[ARKA-DEMO]";
+const NIL_UUID = "00000000-0000-0000-0000-000000000000";
 
 /** Mirrors `lib/aiie/gold-card.ts` Wilson lower bound (conservative approval proportion). */
 const Z = 1.96;
@@ -110,6 +119,13 @@ function assert(condition: boolean, msg: string): asserts condition {
 function patientHash(seed: string): string {
   return createHash("sha256").update(seed, "utf8").digest("hex");
 }
+
+function demoOrderHash(index: number): string {
+  return patientHash(`arka-ins-lifecycle-demo|order|${index}`);
+}
+
+const LIFECYCLE_LINKED_COUNT = 80;
+const SCHEDULING_STATUSES = ["pending", "in_progress", "scheduled", "sla_breached", "cancelled"] as const;
 
 interface ProviderSeedRow {
   id: string;
@@ -306,6 +322,12 @@ function buildValidationEvents(
   amount_usd: number | null;
   minutes_saved: number | null;
   occurred_at: string;
+  icd10_combo: string;
+  cpt_combo: string;
+  age_bucket: string;
+  sex: string;
+  region_bucket: string;
+  redflag_combo: string;
 }> {
   const types = [
     "pa_submitted",
@@ -325,6 +347,12 @@ function buildValidationEvents(
     amount_usd: number | null;
     minutes_saved: number | null;
     occurred_at: string;
+    icd10_combo: string;
+    cpt_combo: string;
+    age_bucket: string;
+    sex: string;
+    region_bucket: string;
+    redflag_combo: string;
   }> = [];
 
   const now = Date.now();
@@ -345,6 +373,19 @@ function buildValidationEvents(
       : event_type === "pa_submitted" ? Math.round(10 + rand() * 15)
       : null;
 
+    const cpt_code = CPT_POOL[i % CPT_POOL.length]!;
+    const snapshot = buildGoldCardPriorImagingSnapshot(cpt_code);
+    const order: AIIEOrder = {
+      cpt: cpt_code,
+      modality: "MRI",
+      procedure: `Demo ${cpt_code}`,
+    };
+    const { age_bucket, sex, region_bucket } = buildAgeSexRegionKey({
+      ageYears: 40 + (i % 25),
+      sex: i % 2 === 0 ? "female" : "male",
+      regionBucket: STATES[i % STATES.length],
+    });
+
     out.push({
       event_type,
       provider_id,
@@ -352,6 +393,30 @@ function buildValidationEvents(
       amount_usd,
       minutes_saved,
       occurred_at: new Date(t).toISOString(),
+      icd10_combo: buildIcd10Combo(snapshot),
+      cpt_combo: buildCptCombo(snapshot, order),
+      age_bucket,
+      sex,
+      region_bucket,
+      redflag_combo: buildRedFlagCombo(
+        i % 17 === 0 ?
+          {
+            cancerHistory: true,
+            neurologicalDeficit: true,
+            fever: false,
+            weightLoss: false,
+            trauma: false,
+            immunocompromised: false,
+            ivDrugUse: false,
+            osteoporosis: false,
+            ageOver50: true,
+            ageUnder18: false,
+            progressiveSymptoms: true,
+            bladderBowelDysfunction: false,
+            suddenOnset: false,
+          }
+        : undefined,
+      ),
     });
   }
   return out;
@@ -404,6 +469,19 @@ export async function runSeedInsDemoData(): Promise<void> {
     throw new Error(`ins_validation_events delete: ${delValErr.message}`);
   }
 
+  const { error: delAuditErr } = await supabase
+    .from("ins_aiie_audit")
+    .delete()
+    .contains("factor_payload", { lifecycle_demo: true });
+  if (delAuditErr) {
+    throw new Error(`ins_aiie_audit delete: ${delAuditErr.message}`);
+  }
+
+  const { error: delSchedErr } = await supabase.from("ins_scheduling_intent").delete().neq("id", NIL_UUID);
+  if (delSchedErr) {
+    throw new Error(`ins_scheduling_intent delete: ${delSchedErr.message}`);
+  }
+
   const { data: demoSites, error: demoSiteFetchErr } = await supabase
     .from("ins_shoppable_sites")
     .select("id")
@@ -448,6 +526,7 @@ export async function runSeedInsDemoData(): Promise<void> {
     decision: PaDecision;
     appeal_filed: boolean;
     appeal_overturned: boolean;
+    order_hash?: string;
   }> = [];
 
   let deniedCounter = 0;
@@ -468,7 +547,7 @@ export async function runSeedInsDemoData(): Promise<void> {
       appeal_overturned = deniedCounter <= 18;
     }
 
-    paRows.push({
+    const row: (typeof paRows)[number] = {
       provider_id,
       patient_hash: patientHash(`arka-ins-demo|${i}|${provider_id}|${cpt_code}|${payer_id}`),
       cpt_code,
@@ -481,7 +560,11 @@ export async function runSeedInsDemoData(): Promise<void> {
       decision,
       appeal_filed,
       appeal_overturned,
-    });
+    };
+    if (i < LIFECYCLE_LINKED_COUNT) {
+      row.order_hash = demoOrderHash(i);
+    }
+    paRows.push(row);
   }
 
   const chunk = 100;
@@ -514,7 +597,7 @@ export async function runSeedInsDemoData(): Promise<void> {
     const site_id = siteIds[i % siteIds.length]!;
     const cpt_code = CPT_POOL[i % CPT_POOL.length]!;
     const payer_id = PAYER_POOL[i % PAYER_POOL.length]!;
-    oopRows.push({
+    const row: Record<string, unknown> = {
       cpt_code,
       payer_id,
       plan_id: `demo-plan-${payer_id}`,
@@ -525,11 +608,50 @@ export async function runSeedInsDemoData(): Promise<void> {
       estimated_patient_responsibility: 210 + (i % 5) * 18,
       cached_at: new Date().toISOString(),
       expires_at: new Date(Date.now() + 30 * 86400000).toISOString(),
-    });
+    };
+    if (i < LIFECYCLE_LINKED_COUNT) {
+      row.order_hash = demoOrderHash(i);
+    }
+    oopRows.push(row);
   }
   const { error: oopErr } = await supabase.from("ins_oop_estimates").insert(oopRows);
   if (oopErr) {
     throw new Error(`ins_oop_estimates insert: ${oopErr.message}`);
+  }
+
+  const auditRows = Array.from({ length: LIFECYCLE_LINKED_COUNT }, (_, i) => {
+    const oh = demoOrderHash(i);
+    const ph = patientHash(`arka-ins-lifecycle-demo|patient|${i}`);
+    const cpt = CPT_POOL[i % CPT_POOL.length]!;
+    return {
+      order_hash: oh,
+      patient_hash: ph,
+      icd10: ["M54.5"],
+      cpt,
+      clinical_score: 45 + (i % 40),
+      mnai_tier: ["low", "moderate", "high"][i % 3],
+      denial_risk: 10 + (i % 70),
+      factor_payload: { lifecycle_demo: true, index: i },
+    };
+  });
+  const { error: auditErr } = await supabase.from("ins_aiie_audit").insert(auditRows);
+  if (auditErr) {
+    throw new Error(`ins_aiie_audit insert: ${auditErr.message}`);
+  }
+
+  const slaBase = Date.now() + 72 * 3600000;
+  const schedRows = Array.from({ length: LIFECYCLE_LINKED_COUNT }, (_, i) => ({
+    order_hash: demoOrderHash(i),
+    patient_hash: patientHash(`arka-ins-lifecycle-demo|patient|${i}`),
+    sla_expires_at: new Date(slaBase + i * 3600000).toISOString(),
+    status: SCHEDULING_STATUSES[i % SCHEDULING_STATUSES.length],
+    cpt: CPT_POOL[i % CPT_POOL.length],
+    modality: i % 2 === 0 ? "MRI" : "CT",
+    body_part: "Spine",
+  }));
+  const { error: schedErr } = await supabase.from("ins_scheduling_intent").insert(schedRows);
+  if (schedErr) {
+    throw new Error(`ins_scheduling_intent insert: ${schedErr.message}`);
   }
 
   const { error: refreshErr } = await supabase.rpc("refresh_ins_roi_summary_mv");
@@ -540,8 +662,16 @@ export async function runSeedInsDemoData(): Promise<void> {
     );
   }
 
+  const { error: rarityRefreshErr } = await supabase.rpc("refresh_ins_rarity_index_mv");
+  if (rarityRefreshErr) {
+    console.warn(
+      `[seed-ins-demo-data] Rarity index refresh failed (${rarityRefreshErr.message}). ` +
+        "Apply migration 022 or run: REFRESH MATERIALIZED VIEW public.ins_rarity_index;",
+    );
+  }
+
   console.log(
-    `[seed-ins-demo-data] Done: ${providers.length} providers, ${paRows.length} PA rows, ${shoppable.length} sites, ${validationRows.length} validation events, ${oopRows.length} OOP rows.`,
+    `[seed-ins-demo-data] Done: ${providers.length} providers, ${paRows.length} PA rows, ${shoppable.length} sites, ${validationRows.length} validation events, ${oopRows.length} OOP rows, ${LIFECYCLE_LINKED_COUNT} lifecycle-linked orders.`,
   );
 }
 

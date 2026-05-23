@@ -9,8 +9,9 @@ export const ARKA_INS_CARD_SOURCE: CDSCardSource = {
 /** Public site origin for absolute links inside CDS cards. */
 export const ARKA_PUBLIC_SITE_ORIGIN = "https://arkahealth.com";
 
-const FDA_DETAIL_FOOTER =
-  "\n\n---\n*This recommendation is provided by ARKA Imaging Intelligence Engine, an FDA Non-Device Clinical Decision Support tool under the 21st Century Cures Act. The ordering clinician retains full responsibility for the final decision.*";
+import { FDA_NON_DEVICE_CDS_DISCLOSURE } from "@/lib/compliance/fda-disclosure";
+
+const FDA_DETAIL_FOOTER = `\n\n---\n*${FDA_NON_DEVICE_CDS_DISCLOSURE}*`;
 
 /**
  * Appends the required FDA non-device CDS disclaimer to card detail markdown.

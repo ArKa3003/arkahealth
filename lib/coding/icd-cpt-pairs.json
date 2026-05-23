@@ -1,0 +1,288 @@
+[
+  {
+    "icd10": "M54.5",
+    "cpt": "72148",
+    "defaultAlignment": "requires_qualifiers",
+    "requiredQualifiers": ["conservative_management_tried", "duration_ge_6_weeks", "absence_of_red_flags_negates"],
+    "redFlagOverrides": ["neurological_deficit", "bladder_bowel_dysfunction", "cancer_history", "ivdu", "progressive_weakness"],
+    "policyReferences": [
+      { "source": "ACR Appropriateness Criteria — Low Back Pain", "strength": "usually_appropriate_with_red_flags" },
+      { "source": "AIM Specialty Health policy (public summary)", "strength": "may_be_appropriate" }
+    ]
+  },
+  {
+    "icd10": "M54.16",
+    "cpt": "72148",
+    "defaultAlignment": "requires_qualifiers",
+    "requiredQualifiers": ["conservative_management_tried", "duration_ge_6_weeks", "absence_of_red_flags_negates"],
+    "redFlagOverrides": ["neurological_deficit", "bladder_bowel_dysfunction", "cancer_history", "progressive_weakness"],
+    "policyReferences": [
+      { "source": "ACR Appropriateness Criteria — Low Back Pain (radiculopathy)", "strength": "may_be_appropriate" },
+      { "source": "CMS LCD — Lumbar MRI", "strength": "may_be_appropriate" }
+    ]
+  },
+  {
+    "icd10": "R51.9",
+    "cpt": "70450",
+    "defaultAlignment": "requires_qualifiers",
+    "requiredQualifiers": ["absence_of_red_flags_negates", "duration_ge_4_weeks_or_escalation"],
+    "redFlagOverrides": ["neurological_deficit", "sudden_onset", "cancer_history", "immunocompromised", "age_over_50"],
+    "policyReferences": [
+      { "source": "ACR Appropriateness Criteria — Headache", "strength": "usually_not_appropriate" },
+      { "source": "ACEP Clinical Policy — Headache (CT)", "strength": "usually_appropriate_with_red_flags" }
+    ]
+  },
+  {
+    "icd10": "G43.909",
+    "cpt": "70450",
+    "defaultAlignment": "requires_qualifiers",
+    "requiredQualifiers": ["absence_of_red_flags_negates", "prior_imaging_interval_met"],
+    "redFlagOverrides": ["neurological_deficit", "sudden_onset", "fever"],
+    "policyReferences": [
+      { "source": "ACR Appropriateness Criteria — Headache (migraine)", "strength": "usually_not_appropriate" },
+      { "source": "AAN Practice Guideline — Migraine Neuroimaging", "strength": "usually_not_appropriate" }
+    ]
+  },
+  {
+    "icd10": "R10.9",
+    "cpt": "74177",
+    "defaultAlignment": "requires_qualifiers",
+    "requiredQualifiers": ["absence_of_red_flags_negates", "conservative_management_tried"],
+    "redFlagOverrides": ["fever", "peritoneal_signs", "cancer_history", "immunocompromised", "trauma"],
+    "policyReferences": [
+      { "source": "ACR Appropriateness Criteria — Acute Abdominal Pain", "strength": "may_be_appropriate" },
+      { "source": "ACEP Clinical Policy — Abdominal Pain (adult CT)", "strength": "usually_appropriate_with_red_flags" }
+    ]
+  },
+  {
+    "icd10": "K35.80",
+    "cpt": "74177",
+    "defaultAlignment": "usually_appropriate",
+    "requiredQualifiers": ["absence_of_red_flags_negates"],
+    "redFlagOverrides": ["fever", "peritoneal_signs", "sudden_onset"],
+    "policyReferences": [
+      { "source": "ACR Appropriateness Criteria — Right Lower Quadrant Pain", "strength": "usually_appropriate" },
+      { "source": "ACEP Clinical Policy — Suspected Appendicitis", "strength": "usually_appropriate" }
+    ]
+  },
+  {
+    "icd10": "R10.31",
+    "cpt": "74176",
+    "defaultAlignment": "requires_qualifiers",
+    "requiredQualifiers": ["absence_of_red_flags_negates"],
+    "redFlagOverrides": ["fever", "cancer_history", "weight_loss", "trauma"],
+    "policyReferences": [
+      { "source": "ACR Appropriateness Criteria — Acute Abdominal Pain", "strength": "may_be_appropriate" },
+      { "source": "AIM Specialty Health — CT Abdomen/Pelvis", "strength": "may_be_appropriate" }
+    ]
+  },
+  {
+    "icd10": "M25.561",
+    "cpt": "73721",
+    "defaultAlignment": "requires_qualifiers",
+    "requiredQualifiers": ["conservative_management_tried", "duration_ge_6_weeks", "absence_of_red_flags_negates"],
+    "redFlagOverrides": ["mechanical_locking", "effusion_acute", "trauma", "neurological_deficit"],
+    "policyReferences": [
+      { "source": "ACR Appropriateness Criteria — Acute Knee Pain", "strength": "may_be_appropriate" },
+      { "source": "AIM Specialty Health — MRI Knee", "strength": "may_be_appropriate" }
+    ]
+  },
+  {
+    "icd10": "M23.50",
+    "cpt": "73721",
+    "defaultAlignment": "requires_qualifiers",
+    "requiredQualifiers": ["conservative_management_tried", "duration_ge_6_weeks"],
+    "redFlagOverrides": ["mechanical_locking", "trauma", "effusion_acute"],
+    "policyReferences": [
+      { "source": "ACR Appropriateness Criteria — Chronic Knee Pain", "strength": "may_be_appropriate" },
+      { "source": "AAOS Appropriate Use Criteria — Meniscal Tear", "strength": "may_be_appropriate" }
+    ]
+  },
+  {
+    "icd10": "M25.511",
+    "cpt": "73221",
+    "defaultAlignment": "requires_qualifiers",
+    "requiredQualifiers": ["conservative_management_tried", "duration_ge_6_weeks", "absence_of_red_flags_negates"],
+    "redFlagOverrides": ["trauma", "neurological_deficit", "cancer_history", "progressive_weakness"],
+    "policyReferences": [
+      { "source": "ACR Appropriateness Criteria — Chronic Shoulder Pain", "strength": "may_be_appropriate" },
+      { "source": "AIM Specialty Health — MRI Shoulder", "strength": "may_be_appropriate" }
+    ]
+  },
+  {
+    "icd10": "M75.100",
+    "cpt": "73221",
+    "defaultAlignment": "requires_qualifiers",
+    "requiredQualifiers": ["conservative_management_tried", "duration_ge_6_weeks"],
+    "redFlagOverrides": ["trauma", "progressive_weakness"],
+    "policyReferences": [
+      { "source": "ACR Appropriateness Criteria — Rotator Cuff", "strength": "may_be_appropriate" },
+      { "source": "AAOS — Shoulder Pain AUC", "strength": "may_be_appropriate" }
+    ]
+  },
+  {
+    "icd10": "J32.9",
+    "cpt": "70486",
+    "defaultAlignment": "requires_qualifiers",
+    "requiredQualifiers": ["conservative_management_tried", "duration_ge_4_weeks_or_escalation"],
+    "redFlagOverrides": ["fever", "immunocompromised", "orbital_cellulitis_signs"],
+    "policyReferences": [
+      { "source": "ACR Appropriateness Criteria — Sinonasal Disease", "strength": "may_be_appropriate" },
+      { "source": "AAFP — Chronic Rhinosinusitis Imaging", "strength": "usually_not_appropriate" }
+    ]
+  },
+  {
+    "icd10": "J01.90",
+    "cpt": "70486",
+    "defaultAlignment": "requires_qualifiers",
+    "requiredQualifiers": ["duration_ge_4_weeks_or_escalation", "failed_antibiotic_course"],
+    "redFlagOverrides": ["fever", "immunocompromised", "orbital_cellulitis_signs"],
+    "policyReferences": [
+      { "source": "ACR Appropriateness Criteria — Acute Sinusitis", "strength": "usually_not_appropriate" },
+      { "source": "IDSA — Acute Bacterial Rhinosinusitis", "strength": "usually_not_appropriate" }
+    ]
+  },
+  {
+    "icd10": "R07.9",
+    "cpt": "71275",
+    "defaultAlignment": "requires_qualifiers",
+    "requiredQualifiers": ["absence_of_red_flags_negates", "pretest_probability_documented"],
+    "redFlagOverrides": ["hemodynamic_instability", "d_dimer_elevated", "pe_high_pretest"],
+    "policyReferences": [
+      { "source": "ACR Appropriateness Criteria — Chest Pain (suspected PE)", "strength": "usually_appropriate_with_red_flags" },
+      { "source": "ACEP Clinical Policy — Pulmonary Embolism", "strength": "usually_appropriate" }
+    ]
+  },
+  {
+    "icd10": "I26.99",
+    "cpt": "71275",
+    "defaultAlignment": "usually_appropriate",
+    "requiredQualifiers": ["pretest_probability_documented"],
+    "redFlagOverrides": ["hemodynamic_instability", "hypoxemia"],
+    "policyReferences": [
+      { "source": "ACR Appropriateness Criteria — Suspected Pulmonary Embolism", "strength": "usually_appropriate" },
+      { "source": "CHEST Guideline — Diagnosis of PE", "strength": "usually_appropriate" }
+    ]
+  },
+  {
+    "icd10": "I26.09",
+    "cpt": "71260",
+    "defaultAlignment": "usually_appropriate",
+    "requiredQualifiers": [],
+    "redFlagOverrides": ["hemodynamic_instability", "hypoxemia", "pregnancy"],
+    "policyReferences": [
+      { "source": "ACR Appropriateness Criteria — CTPA for PE", "strength": "usually_appropriate" },
+      { "source": "ESC Guidelines — Acute PE", "strength": "usually_appropriate" }
+    ]
+  },
+  {
+    "icd10": "I63.9",
+    "cpt": "70450",
+    "defaultAlignment": "usually_appropriate",
+    "requiredQualifiers": ["symptom_onset_within_window"],
+    "redFlagOverrides": ["neurological_deficit", "sudden_onset", "anticoagulation"],
+    "policyReferences": [
+      { "source": "ACR Appropriateness Criteria — Acute Stroke", "strength": "usually_appropriate" },
+      { "source": "AHA/ASA — Acute Ischemic Stroke Imaging", "strength": "usually_appropriate" }
+    ]
+  },
+  {
+    "icd10": "G45.9",
+    "cpt": "70450",
+    "defaultAlignment": "requires_qualifiers",
+    "requiredQualifiers": ["symptom_onset_within_window", "absence_of_red_flags_negates"],
+    "redFlagOverrides": ["neurological_deficit", "sudden_onset", "cancer_history"],
+    "policyReferences": [
+      { "source": "ACR Appropriateness Criteria — TIA", "strength": "usually_appropriate_with_red_flags" },
+      { "source": "AHA/ASA — TIA Evaluation", "strength": "may_be_appropriate" }
+    ]
+  },
+  {
+    "icd10": "I63.9",
+    "cpt": "70547",
+    "defaultAlignment": "requires_qualifiers",
+    "requiredQualifiers": ["symptom_onset_within_window", "ct_head_already_performed"],
+    "redFlagOverrides": ["neurological_deficit", "carotid_stenosis_clinical_suspicion"],
+    "policyReferences": [
+      { "source": "ACR Appropriateness Criteria — Stroke (MRA neck)", "strength": "may_be_appropriate" },
+      { "source": "AHA/ASA — Large Vessel Occlusion Workup", "strength": "may_be_appropriate" }
+    ]
+  },
+  {
+    "icd10": "S82.201A",
+    "cpt": "73562",
+    "defaultAlignment": "usually_appropriate",
+    "requiredQualifiers": ["trauma_mechanism_documented"],
+    "redFlagOverrides": ["open_fracture", "neurovascular_compromise", "compartment_syndrome_signs"],
+    "policyReferences": [
+      { "source": "ACR Appropriateness Criteria — Ankle Trauma", "strength": "usually_appropriate" },
+      { "source": "AAOS — Ankle Fracture Imaging", "strength": "usually_appropriate" }
+    ]
+  },
+  {
+    "icd10": "S52.501A",
+    "cpt": "73090",
+    "defaultAlignment": "usually_appropriate",
+    "requiredQualifiers": ["trauma_mechanism_documented"],
+    "redFlagOverrides": ["open_fracture", "neurovascular_compromise"],
+    "policyReferences": [
+      { "source": "ACR Appropriateness Criteria — Forearm Trauma", "strength": "usually_appropriate" },
+      { "source": "ACEP — Extremity Trauma Imaging", "strength": "usually_appropriate" }
+    ]
+  },
+  {
+    "icd10": "S43.401A",
+    "cpt": "73030",
+    "defaultAlignment": "usually_appropriate",
+    "requiredQualifiers": ["trauma_mechanism_documented"],
+    "redFlagOverrides": ["dislocation_reducible", "neurovascular_compromise"],
+    "policyReferences": [
+      { "source": "ACR Appropriateness Criteria — Shoulder Trauma", "strength": "usually_appropriate" },
+      { "source": "ACEP — Shoulder Injury Imaging", "strength": "usually_appropriate" }
+    ]
+  },
+  {
+    "icd10": "R10.9",
+    "cpt": "76705",
+    "defaultAlignment": "requires_qualifiers",
+    "requiredQualifiers": ["pediatric_patient", "absence_of_red_flags_negates"],
+    "redFlagOverrides": ["fever", "peritoneal_signs", "trauma", "pregnancy_excluded"],
+    "policyReferences": [
+      { "source": "ACR Appropriateness Criteria — Pediatric Abdominal Pain (US first)", "strength": "usually_appropriate" },
+      { "source": "AAP — Abdominal Pain Imaging Pathway", "strength": "usually_appropriate" }
+    ]
+  },
+  {
+    "icd10": "R10.9",
+    "cpt": "74177",
+    "defaultAlignment": "requires_qualifiers",
+    "requiredQualifiers": ["pediatric_patient", "ultrasound_nondiagnostic_or_contraindicated"],
+    "redFlagOverrides": ["fever", "peritoneal_signs", "trauma", "appendicitis_high_suspicion"],
+    "policyReferences": [
+      { "source": "ACR Appropriateness Criteria — Pediatric Abdominal Pain (CT)", "strength": "may_be_appropriate" },
+      { "source": "AAP — Appendicitis Imaging (CT when US inadequate)", "strength": "may_be_appropriate" }
+    ]
+  },
+  {
+    "icd10": "K59.00",
+    "cpt": "76705",
+    "defaultAlignment": "requires_qualifiers",
+    "requiredQualifiers": ["pediatric_patient", "absence_of_red_flags_negates"],
+    "redFlagOverrides": ["fever", "bilious_vomiting", "weight_loss"],
+    "policyReferences": [
+      { "source": "ACR Appropriateness Criteria — Pediatric Constipation/Obstruction", "strength": "may_be_appropriate" },
+      { "source": "NASPGHAN — Abdominal Pain in Children", "strength": "may_be_appropriate" }
+    ]
+  },
+  {
+    "icd10": "R07.2",
+    "cpt": "71260",
+    "defaultAlignment": "requires_qualifiers",
+    "requiredQualifiers": ["absence_of_red_flags_negates"],
+    "redFlagOverrides": ["d_dimer_elevated", "pe_high_pretest", "hemodynamic_instability"],
+    "policyReferences": [
+      { "source": "ACR Appropriateness Criteria — Pleuritic Chest Pain", "strength": "may_be_appropriate" },
+      { "source": "CHEST — PE Diagnosis (CTPA)", "strength": "usually_appropriate_with_red_flags" }
+    ]
+  }
+]

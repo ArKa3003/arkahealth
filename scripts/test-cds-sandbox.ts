@@ -11,21 +11,37 @@
 
 import { randomUUID } from "node:crypto";
 
+import { evaluateStat } from "@/lib/aiie/stat-gate";
+import { OVERUSE_RULES } from "@/lib/aiie/overuse-patterns";
+import type { RedundancyAssessment } from "@/lib/aiie/redundancy";
+import { isSwallowStudyOrder, triageSwallow } from "@/lib/aiie/swallow-triage";
+import { buildDuplicateOrderCard } from "@/lib/cards/duplicate-order-card";
+import { buildOveruseCard } from "@/lib/cards/overuse-soft-block-card";
+import { buildStatReclassCard } from "@/lib/cards/stat-reclass-card";
+import {
+  detailIncludesFdaDisclosure,
+  FDA_DISCLOSURE_MARKERS,
+} from "@/lib/compliance/fda-disclosure";
+import { FDA_NON_DEVICE_CDS_DISCLOSURE } from "@/lib/compliance/fda-disclosure";
 import {
   cdsHookResponseSchema,
   type ParsedCDSHookResponse,
 } from "@/lib/validation/cds-hooks-response";
 import type { CDSHookRequest } from "@/lib/types/cds-hooks";
 import type {
+  Appointment,
   Bundle,
   Coverage,
   Patient,
   Practitioner,
   ServiceRequest,
 } from "@/lib/types/fhir";
+import type { PatientRecordSnapshot } from "@/lib/types/record-snapshot";
 
 const BASE_URL = (process.env.CDS_SANDBOX_BASE_URL ?? "http://127.0.0.1:3000").replace(/\/$/, "");
 const COVERAGE_PATH = "/api/cds-services/arka-ins-coverage";
+const FINAL_CHECK_PATH = "/api/cds-services/arka-ins-final-check";
+const APPOINTMENT_PATH = "/api/cds-services/arka-ins-appointment";
 
 const GOLD_NPI = process.env.ARKA_SANDBOX_GOLD_NPI ?? "1003000126";
 const NON_GOLD_NPI = process.env.ARKA_SANDBOX_NON_GOLD_NPI ?? "1003000127";
@@ -286,11 +302,151 @@ function assertFdaAndSource(cards: ParsedCDSHookResponse["cards"]): string | und
       return `Card source label expected "${SOURCE_LABEL}", got "${c.source.label}"`;
     }
     const d = c.detail ?? "";
-    if (!FDA_MARKERS.some((m) => d.includes(m))) {
-      return `Card "${c.summary.slice(0, 40)}" missing FDA disclaimer markers`;
+    if (!detailIncludesFdaDisclosure(d)) {
+      return `Card "${c.summary.slice(0, 40)}" missing canonical FDA disclaimer`;
     }
   }
   return undefined;
+}
+
+/** Offline validation of new CDS / CLIN card surfaces (no dev server required). */
+function validateOfflineCards(): string | undefined {
+  const statGate = evaluateStat({
+    snapshot: emptySandboxSnapshot(),
+    order: { modality: "CT", procedure: "CT head without contrast", bodyPart: "head" },
+    complaint: "chronic headache",
+    priority: "stat",
+    patientAgeYears: 42,
+  });
+  const statCard = buildStatReclassCard({
+    gate: statGate,
+    serviceRequest: {
+      resourceType: "ServiceRequest",
+      id: "offline-stat-sr",
+      intent: "order",
+      priority: "stat",
+      subject: { reference: "Patient/sandbox-patient-1" },
+    },
+  });
+  if (!detailIncludesFdaDisclosure(statCard.detail)) {
+    return "STAT reclass card missing FDA disclosure";
+  }
+
+  const redundancy: RedundancyAssessment = {
+    severity: "high",
+    reason: "Prior lumbar MRI within 14 days.",
+    priorStudyId: "img-offline-1",
+    daysSincePrior: 14,
+    sameCpt: true,
+    sameRegionDifferentModality: false,
+    priorNormalWithoutRedFlags: true,
+    suggestedAction: "BLOCK_SOFT",
+  };
+  const dupCard = buildDuplicateOrderCard(redundancy);
+  if (dupCard.uuid !== "arka-ins-duplicate-order" || !detailIncludesFdaDisclosure(dupCard.detail)) {
+    return "Duplicate-order card missing uuid or FDA disclosure";
+  }
+
+  const overuseCard = buildOveruseCard(OVERUSE_RULES[0], {
+    order: { modality: "MRI", procedure: "MRI lumbar spine", bodyPart: "lumbar", cpt: "72148" },
+  });
+  const overuseUuid = overuseCard.uuid ?? "";
+  if (!overuseUuid.startsWith("arka-ins-overuse-") || !detailIncludesFdaDisclosure(overuseCard.detail)) {
+    return "Overuse soft-block card missing FDA disclosure";
+  }
+
+  const swallowOrder = {
+    modality: "Fluoroscopy",
+    procedure: "Video fluoroscopic swallow study (VFSS)",
+    bodyPart: "swallow",
+  };
+  if (!isSwallowStudyOrder(swallowOrder.procedure)) {
+    return "Swallow order detector failed for VFSS procedure text";
+  }
+  const swallow = triageSwallow({
+    snapshot: emptySandboxSnapshot(),
+    order: swallowOrder,
+    complaint: "dysphagia after stroke",
+  });
+  if (!swallow.recommendation) {
+    return "Swallow triage returned empty recommendation";
+  }
+  if (!detailIncludesFdaDisclosure(FDA_NON_DEVICE_CDS_DISCLOSURE)) {
+    return "Swallow triage canonical FDA disclosure missing";
+  }
+
+  return undefined;
+}
+
+function emptySandboxSnapshot(): PatientRecordSnapshot {
+  return {
+    patientHash: "sandbox-hash",
+    capturedAtIso: new Date().toISOString(),
+    ttlSeconds: 1800,
+    problems: [],
+    medications: [],
+    allergies: [],
+    encounters: [],
+    priorImaging: [],
+    priorReports: [],
+    labs: [],
+    vitals: [],
+    notes: [],
+    codingContext: { activeIcd10: [], activeCpt: [] },
+  };
+}
+
+function scenarioOrderSignRequest(): CDSHookRequest {
+  const req = scenario1Request();
+  return { ...req, hook: "order-sign" };
+}
+
+function scenarioAppointmentBookRequest(): CDSHookRequest {
+  const patient = patientBundle();
+  const appointment: Appointment = {
+    resourceType: "Appointment",
+    id: "sandbox-appt-1",
+    status: "booked",
+    participant: [
+      { actor: { reference: "Patient/sandbox-patient-1" }, status: "accepted" },
+      { actor: { reference: "Location/rad-suite-a" }, status: "accepted" },
+    ],
+    reasonReference: [{ reference: "ServiceRequest/sandbox-sr-gold-lumbar" }],
+  };
+  const sr = (scenario1Request().prefetch?.serviceRequest as Bundle<ServiceRequest>).entry?.[0]
+    ?.resource as ServiceRequest;
+
+  return {
+    hook: "appointment-book",
+    hookInstance: randomUUID(),
+    fhirServer: "https://sandbox.cds-hooks.org/fhir",
+    context: {
+      patientId: "sandbox-patient-1",
+      userId: `sandbox-practitioner-${GOLD_NPI}`,
+      appointmentId: "sandbox-appt-1",
+    },
+    prefetch: {
+      patient,
+      appointment,
+      serviceRequest: serviceRequestBundle(sr),
+      coverage: coverageBundle(coverageHdhp()),
+    },
+  };
+}
+
+async function postCdsHook(
+  path: string,
+  req: CDSHookRequest,
+): Promise<{ ms: number; json: unknown; status: number }> {
+  const t0 = performance.now();
+  const res = await fetch(`${BASE_URL}${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(req),
+  });
+  const ms = performance.now() - t0;
+  const json: unknown = await res.json();
+  return { ms, json, status: res.status };
 }
 
 function validateScenario1(cards: ParsedCDSHookResponse["cards"]): string | undefined {
@@ -369,7 +525,73 @@ interface Row {
   detail: string;
 }
 
+async function runHookSmoke(
+  label: string,
+  path: string,
+  build: () => CDSHookRequest,
+): Promise<Row> {
+  try {
+    const { ms, json, status } = await postCdsHook(path, build());
+    if (status < 200 || status >= 300) {
+      return {
+        scenario: label,
+        shape: "fail",
+        behavior: "fail",
+        p95Ms: ms,
+        latency: "ok",
+        detail: `HTTP ${status}: ${JSON.stringify(json)}`,
+      };
+    }
+    const parsed = cdsHookResponseSchema.safeParse(json);
+    if (!parsed.success) {
+      return {
+        scenario: label,
+        shape: "fail",
+        behavior: "fail",
+        p95Ms: ms,
+        latency: "ok",
+        detail: parsed.error.message,
+      };
+    }
+    const srcErr = assertFdaAndSource(parsed.data.cards);
+    if (srcErr) {
+      return {
+        scenario: label,
+        shape: "fail",
+        behavior: "fail",
+        p95Ms: ms,
+        latency: "ok",
+        detail: srcErr,
+      };
+    }
+    return {
+      scenario: label,
+      shape: "ok",
+      behavior: "ok",
+      p95Ms: ms,
+      latency: "ok",
+      detail: `${parsed.data.cards.length} card(s)`,
+    };
+  } catch (e) {
+    return {
+      scenario: label,
+      shape: "fail",
+      behavior: "fail",
+      p95Ms: 0,
+      latency: "fail",
+      detail: e instanceof Error ? e.message : String(e),
+    };
+  }
+}
+
 async function main(): Promise<void> {
+  const offlineErr = validateOfflineCards();
+  if (offlineErr) {
+    console.error(`\nFAIL — offline card validation: ${offlineErr}`);
+    process.exit(1);
+  }
+  console.log("\nPASS — offline STAT / duplicate / overuse / swallow-triage card checks");
+
   const scenarios: Array<{
     name: string;
     build: () => CDSHookRequest;
@@ -454,12 +676,30 @@ async function main(): Promise<void> {
   }
   console.log(line);
 
-  const allPass = rows.every((r) => r.shape === "ok" && r.behavior === "ok" && r.latency === "ok");
+  const hookRows = await Promise.all([
+    runHookSmoke("4 order-sign final-check", FINAL_CHECK_PATH, scenarioOrderSignRequest),
+    runHookSmoke("5 appointment-book", APPOINTMENT_PATH, scenarioAppointmentBookRequest),
+  ]);
+
+  console.log(`\n${"─".repeat(Math.min(process.stdout.columns ?? 100, 90))}`);
+  console.log("Additional CDS Hooks (server)");
+  for (const r of hookRows) {
+    console.log(
+      `${r.scenario.padEnd(36)} | ${r.shape.padEnd(6)} | ${r.behavior.padEnd(8)} | ${r.latency.padEnd(6)} | ${r.p95Ms.toFixed(0)}`,
+    );
+    if (r.detail) {
+      console.log(`  → ${r.detail}`);
+    }
+  }
+
+  const allPass =
+    rows.every((r) => r.shape === "ok" && r.behavior === "ok" && r.latency === "ok") &&
+    hookRows.every((r) => r.shape === "ok" && r.behavior === "ok");
   if (!allPass) {
     console.log("\nFAIL — fix Supabase fixtures, seed data, or server config (see docs/INS_SANDBOX_TESTING.md).");
     process.exit(1);
   }
-  console.log("\nPASS — all scenarios within CDS shape, behavior, and p95 budget.");
+  console.log("\nPASS — coverage, final-check, appointment-book, and offline card checks.");
 }
 
 main().catch((e) => {

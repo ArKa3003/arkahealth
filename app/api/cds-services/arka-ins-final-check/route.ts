@@ -18,6 +18,8 @@ import {
   userIdFromContext,
 } from "@/lib/fhir/prefetch";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { captureIntent } from "@/lib/ins/scheduling-intent";
+import { buildAiieAuditEvent, logAiieAudit } from "@/lib/server/aiie-audit-logger";
 import { withInsApiLogging } from "@/lib/server/with-ins-api-logging";
 import type { AIIEInput, AIIEOrder, AIIERedFlags } from "@/lib/types/aiie";
 import type { CDSHookRequest, CDSHookResponse } from "@/lib/types/cds-hooks";
@@ -632,6 +634,18 @@ async function handleFinalCheckPost(req: Request): Promise<NextResponse> {
         AIIE_SCORE_TIMEOUT_MS,
       );
       denialRisk = invertToDenialRisk(aiieScore.clinicalScore);
+
+      if (patientId) {
+        const auditEvent = buildAiieAuditEvent({
+          patientId,
+          orderId: serviceRequest.id ?? selectedSrId ?? "unknown-order",
+          serviceRequest,
+          input: aiieInput,
+          score: aiieScore,
+        });
+        void logAiieAudit(auditEvent);
+        void captureIntent(auditEvent);
+      }
     } catch {
       const cards = [buildCoverageUnavailableCard()];
       await logValidationEvent("gold_card_check", {

@@ -5,6 +5,10 @@
  * while adding the structured fields needed for ARKA-INS workflows.
  */
 
+import type { RarityAssessment } from "@/lib/aiie/interesting-case";
+import type { MNAIResult } from "@/lib/coding/mnai";
+import type { PatientRecordSnapshot } from "@/lib/types/record-snapshot";
+
 /**
  * Administrative sex values currently used by the clinical engine.
  */
@@ -227,6 +231,11 @@ export interface AIIEInput {
   requestedModality: AIIEModality;
   /** Requested procedure used by the current demo scoring engine. */
   requestedProcedure: string;
+  /**
+   * Optional full-record snapshot from async FHIR scrape; augments indication and
+   * prior-imaging signals without replacing structured hook payload fields.
+   */
+  recordSnapshot?: PatientRecordSnapshot;
 }
 
 /**
@@ -246,6 +255,15 @@ export interface AIIEScore {
   factors: AIIEFactor[];
   /** Consolidated narrative for clinical and payer-facing review. */
   narrativeRationale: string;
+  /**
+   * Medical Necessity Alignment Index when ICD-10/CPT and record snapshot are available.
+   * Does not alter {@link clinicalScore}; append-only enrichment for ARKA-INS.
+   */
+  mnai?: MNAIResult;
+  /**
+   * Interesting-case rarity assessment (top-decile flag); append-only for teaching / QI workflows.
+   */
+  rarity?: RarityAssessment;
 }
 
 /**

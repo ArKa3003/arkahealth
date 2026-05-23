@@ -1,0 +1,60 @@
+name: ARKA go-live checks
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - run: npm run type-check
+      - run: npm run lint
+      - run: npm run test
+      - run: npm run test:coverage
+      - run: npm run test:compliance
+
+  fda-disclosure-grep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Canonical FDA sentence present in card footer helper
+        run: |
+          grep -Fq "This recommendation is provided by ARKA Imaging Intelligence Engine, an FDA Non-Device Clinical Decision Support tool under the 21st Century Cures Act. The ordering clinician retains full responsibility for the final decision." lib/compliance/fda-disclosure.ts
+          grep -Fq "appendFdaDetailDisclaimer" lib/cards/duplicate-order-card.ts lib/cards/overuse-soft-block-card.ts lib/cards/stat-reclass-card.ts
+
+  cds-sandbox:
+    runs-on: ubuntu-latest
+    needs: quality
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npm run start &
+        env:
+          PORT: 3000
+      - name: Wait for Next.js
+        run: |
+          for i in $(seq 1 60); do
+            if curl -sf http://127.0.0.1:3000/api/cds-services >/dev/null; then
+              echo "Server ready"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Server did not become ready"
+          exit 1
+      - run: npm run test:sandbox
+        env:
+          CDS_SANDBOX_BASE_URL: http://127.0.0.1:3000

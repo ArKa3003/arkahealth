@@ -1,10 +1,19 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import type { ClinicalScenario, ImagingModality, RedFlag } from "@/lib/demos/clin/types";
+import { buildClinDemoRecordSnapshot } from "@/lib/demos/clin/clin-record-snapshot";
+import { clinicalScenarioToAIIEInput } from "@/lib/demos/clin/clin-aiie-input";
+import { proposeAutofill } from "@/lib/aiie/requisition-autofill";
+import type { AutofillProposalField } from "@/lib/aiie/requisition-autofill";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/Card";
 import { Button } from "./ui/Button";
 import { FieldError } from "./ui/FieldError";
+import { RequisitionAutofillCard } from "./RequisitionAutofillCard";
+import { DocumentationAssistantCard } from "./DocumentationAssistantCard";
+import { SwallowTriageCard } from "./SwallowTriageCard";
+import { isSwallowStudyOrder } from "@/lib/aiie/swallow-triage";
+import type { AIIERedFlags } from "@/lib/types/aiie";
 
 const IMAGING_MODALITIES: ImagingModality[] = [
   "X-ray",
@@ -44,7 +53,6 @@ interface FormErrors {
   age?: string;
   sex?: string;
   chiefComplaint?: string;
-  duration?: string;
   bodyPart?: string;
   clinicalIndication?: string;
 }
@@ -69,10 +77,149 @@ export function ClinicalScenarioForm({ onEvaluate }: ClinicalScenarioFormProps) 
   const [clinicalIndication, setClinicalIndication] = useState("");
   const [urgency, setUrgency] = useState<"routine" | "urgent" | "stat">("routine");
   const [priorImagingExists, setPriorImagingExists] = useState(false);
+  const [conservativeManagementTried, setConservativeManagementTried] = useState(false);
+  const [conservativeManagementDuration, setConservativeManagementDuration] = useState("");
+  const [resolvedAutofillPaths, setResolvedAutofillPaths] = useState<Set<string>>(new Set());
   const [errors, setErrors] = useState<FormErrors>({});
+
+  const draftScenario = useMemo((): ClinicalScenario | null => {
+    if (age.trim() === "" || sex === "" || chiefComplaint.trim() === "") {
+      return null;
+    }
+    const ageNum = Number(age);
+    if (isNaN(ageNum) || ageNum < 0 || ageNum > 150) {
+      return null;
+    }
+    return {
+      patientId: "FORM-DRAFT",
+      age: ageNum,
+      sex: sex as "male" | "female",
+      chiefComplaint: chiefComplaint.trim().slice(0, 500),
+      clinicalHistory: clinicalHistory.trim().slice(0, 2000),
+      symptoms: symptoms
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean),
+      duration: duration.trim(),
+      redFlags: RED_FLAG_LABELS.map((flag) => ({
+        flag,
+        present: redFlags[flag] ?? false,
+      })),
+      proposedImaging: {
+        modality,
+        bodyPart: bodyPart.trim(),
+        indication: clinicalIndication.trim(),
+        urgency,
+      },
+      priorImaging: priorImagingExists
+        ? [
+            {
+              modality,
+              bodyPart: bodyPart.trim(),
+              date: new Date().toISOString(),
+              daysAgo: 90,
+            },
+          ]
+        : undefined,
+    };
+  }, [
+    age,
+    sex,
+    chiefComplaint,
+    clinicalHistory,
+    symptoms,
+    duration,
+    redFlags,
+    modality,
+    bodyPart,
+    clinicalIndication,
+    urgency,
+    priorImagingExists,
+  ]);
+
+  const autofillContext = useMemo(() => {
+    if (!draftScenario) {
+      return null;
+    }
+    const snapshot = buildClinDemoRecordSnapshot(draftScenario);
+    const factorOverrides = {
+      conservativeManagementTried,
+      conservativeManagementDuration: conservativeManagementDuration.trim() || undefined,
+    };
+    const baseInput = clinicalScenarioToAIIEInput(draftScenario, factorOverrides);
+    const proposal = proposeAutofill({
+      snapshot,
+      order: baseInput.order,
+      existing: baseInput.clinicalFactors,
+    });
+    return { snapshot, baseInput, proposal };
+  }, [draftScenario, conservativeManagementTried, conservativeManagementDuration]);
+
+  const applyConfirmedField = useCallback((field: AutofillProposalField) => {
+    switch (field.path) {
+      case "clinicalFactors.duration":
+        setDuration(field.value);
+        break;
+      case "clinicalFactors.symptoms":
+        setSymptoms(field.value);
+        break;
+      case "clinicalFactors.conservativeManagementTried":
+        setConservativeManagementTried(field.value === "true");
+        break;
+      case "clinicalFactors.conservativeManagementDuration":
+        setConservativeManagementDuration(field.value);
+        break;
+      default:
+        break;
+    }
+    setResolvedAutofillPaths((prev) => new Set(prev).add(field.path));
+  }, []);
+
+  const rejectAutofillField = useCallback((path: string) => {
+    setResolvedAutofillPaths((prev) => new Set(prev).add(path));
+  }, []);
 
   const toggleRedFlag = useCallback((label: string) => {
     setRedFlags((prev) => ({ ...prev, [label]: !prev[label] }));
+  }, []);
+
+  const confirmNlpDuration = useCallback((value: string) => {
+    setDuration(value);
+  }, []);
+
+  const confirmNlpSymptoms = useCallback((symptomIds: string[]) => {
+    setSymptoms((prev) => {
+      const existing = prev
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+      const merged = [...new Set([...existing, ...symptomIds])];
+      return merged.join(", ");
+    });
+  }, []);
+
+  const confirmNlpRedFlag = useCallback((_flag: keyof AIIERedFlags, demoLabel: string) => {
+    setRedFlags((prev) => ({ ...prev, [demoLabel]: true }));
+  }, []);
+
+  const confirmNlpConservativeTried = useCallback((tried: boolean) => {
+    setConservativeManagementTried(tried);
+  }, []);
+
+  const confirmNlpConservativeDuration = useCallback((value: string) => {
+    setConservativeManagementDuration(value);
+  }, []);
+
+  const appendNlpAuditNote = useCallback((originalText: string) => {
+    const marker = `[NLP source ${new Date().toISOString().slice(0, 10)}]`;
+    setClinicalHistory((prev) => {
+      const block = `${marker}\n${originalText}`;
+      if (prev.includes(originalText)) {
+        return prev;
+      }
+      const combined = prev.trim() ? `${prev.trim()}\n\n${block}` : block;
+      return combined.slice(0, 2000);
+    });
   }, []);
 
   const validate = useCallback((): boolean => {
@@ -81,7 +228,6 @@ export function ClinicalScenarioForm({ onEvaluate }: ClinicalScenarioFormProps) 
       next.age = "This field cannot be empty";
     if (sex === "") next.sex = "This field cannot be empty";
     if (chiefComplaint.trim() === "") next.chiefComplaint = "This field cannot be empty";
-    if (duration.trim() === "") next.duration = "This field cannot be empty";
     if (bodyPart.trim() === "") next.bodyPart = "This field cannot be empty";
     if (clinicalIndication.trim() === "") next.clinicalIndication = "This field cannot be empty";
     setErrors(next);
@@ -103,7 +249,15 @@ export function ClinicalScenarioForm({ onEvaluate }: ClinicalScenarioFormProps) 
         age: Number(age),
         sex: sex as "male" | "female",
         chiefComplaint: chiefComplaint.trim().slice(0, 500),
-        clinicalHistory: clinicalHistory.trim().slice(0, 2000),
+        clinicalHistory: [
+          clinicalHistory.trim(),
+          conservativeManagementTried
+            ? `Conservative management tried${conservativeManagementDuration.trim() ? `: ${conservativeManagementDuration.trim()}` : ""}.`
+            : "",
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .slice(0, 2000),
         symptoms: symptoms
           .split(",")
           .map((s) => s.trim())
@@ -163,6 +317,8 @@ export function ClinicalScenarioForm({ onEvaluate }: ClinicalScenarioFormProps) 
       clinicalIndication,
       urgency,
       priorImagingExists,
+      conservativeManagementTried,
+      conservativeManagementDuration,
       onEvaluate,
     ]
   );
@@ -245,9 +401,19 @@ export function ClinicalScenarioForm({ onEvaluate }: ClinicalScenarioFormProps) 
             )}
           </div>
 
+          <DocumentationAssistantCard
+            onConfirmDuration={confirmNlpDuration}
+            onConfirmSymptoms={confirmNlpSymptoms}
+            onConfirmRedFlag={confirmNlpRedFlag}
+            onConfirmConservativeTried={confirmNlpConservativeTried}
+            onConfirmConservativeDuration={confirmNlpConservativeDuration}
+            onAuditNote={appendNlpAuditNote}
+          />
+
           <div>
             <label htmlFor="clin-duration" className="block text-sm font-medium text-arka-text-dark mb-1">
-              Duration of Symptoms <span className="text-red-600">*</span>
+              Duration of Symptoms{" "}
+              <span className="text-arka-text-dark-soft">(optional — confirm record proposals below)</span>
             </label>
             <input
               id="clin-duration"
@@ -256,16 +422,7 @@ export function ClinicalScenarioForm({ onEvaluate }: ClinicalScenarioFormProps) 
               onChange={(e) => setDuration(e.target.value)}
               placeholder="e.g. 3 days, 2 weeks"
               className="arka-input w-full rounded-lg border border-arka-primary/20 bg-white px-3 py-2 text-arka-text-dark"
-              aria-required
-              aria-invalid={!!errors.duration}
             />
-            {errors.duration && (
-              <FieldError
-                id="clin-duration-error"
-                message={errors.duration}
-                className="text-red-600"
-              />
-            )}
           </div>
 
           <div>
@@ -475,6 +632,34 @@ export function ClinicalScenarioForm({ onEvaluate }: ClinicalScenarioFormProps) 
               <span className="text-sm text-arka-text-dark">Prior imaging exists</span>
             </label>
           </div>
+
+          {autofillContext && autofillContext.proposal.fields.length > 0 ?
+            <RequisitionAutofillCard
+              proposal={autofillContext.proposal}
+              baseInput={autofillContext.baseInput}
+              onConfirmField={applyConfirmedField}
+              onRejectField={rejectAutofillField}
+              resolvedPaths={resolvedAutofillPaths}
+            />
+          : null}
+
+          {autofillContext &&
+          isSwallowStudyOrder(autofillContext.baseInput.order.procedure) ?
+            <SwallowTriageCard
+              snapshot={autofillContext.snapshot}
+              order={autofillContext.baseInput.order}
+              complaint={`${chiefComplaint} ${clinicalHistory}`.trim()}
+              patientHash={autofillContext.snapshot.patientHash}
+              onUseFeesBedside={() => {
+                setBodyPart("FEES bedside");
+                setClinicalIndication((prev) =>
+                  prev.toLowerCase().includes("fees") ?
+                    prev
+                  : `Fiberoptic endoscopic evaluation of swallowing — ${prev}`.trim(),
+                );
+              }}
+            />
+          : null}
 
           <div className="pt-2">
             <Button type="submit" variant="primary" size="lg" className="w-full sm:w-auto">

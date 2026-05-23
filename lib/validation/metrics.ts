@@ -136,6 +136,14 @@ export interface DailyTimeSeriesPoint {
   eventsCount: number;
 }
 
+/** Daily MNAI green-tier rate from `ins_aiie_audit` (percent 0–100). */
+export interface MnaiGreenRatePoint {
+  date: string;
+  /** Share of scored orders with `mnai_tier = green` that day. */
+  rate: number;
+  sampleSize: number;
+}
+
 export interface MonthlyRoiPoint {
   monthStart: string;
   totalSavingsUsd: number;
@@ -155,6 +163,7 @@ export interface ValidationMetricsApiResponse {
     daily: DailyTimeSeriesPoint[];
     monthlyRoi: MonthlyRoiPoint[];
     weeklyMinutesLast12: WeeklyMinutesPoint[];
+    mnaiGreenRate: MnaiGreenRatePoint[];
   };
   costAvoidanceStackUsd: CostAvoidanceStackUsd;
   payerBreakdown: PayerRoiRow[];
@@ -443,6 +452,55 @@ export function buildDailyTimeSeries(
   }
 
   return [...byDay.values()].sort((a, b) => a.date.localeCompare(b.date));
+}
+
+export interface AiieAuditRowInput {
+  created_at: string;
+  mnai_tier: string | null;
+  cpt: string | null;
+}
+
+/**
+ * Daily MNAI green-tier rate for coding / QI dashboards.
+ *
+ * @param rows - `ins_aiie_audit` rows in range (tier and CPT only).
+ * @param range - Bounds used to fill missing days with zero samples.
+ * @returns One point per calendar day (UTC).
+ */
+export function buildMnaiGreenRateTimeSeries(
+  rows: AiieAuditRowInput[],
+  range: DateRangeBounds,
+): MnaiGreenRatePoint[] {
+  const start = new Date(range.startIso);
+  const end = new Date(range.endIso);
+  const byDay = new Map<string, { green: number; total: number }>();
+
+  for (let d = new Date(start); d < end; d = new Date(d.getTime() + 86400000)) {
+    byDay.set(d.toISOString().slice(0, 10), { green: 0, total: 0 });
+  }
+
+  for (const row of rows) {
+    if (!row.mnai_tier) {
+      continue;
+    }
+    const day = row.created_at.slice(0, 10);
+    const bucket = byDay.get(day);
+    if (!bucket) {
+      continue;
+    }
+    bucket.total += 1;
+    if (row.mnai_tier === "green") {
+      bucket.green += 1;
+    }
+  }
+
+  return [...byDay.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([date, { green, total }]) => ({
+      date,
+      rate: total > 0 ? (green / total) * 100 : 0,
+      sampleSize: total,
+    }));
 }
 
 /**

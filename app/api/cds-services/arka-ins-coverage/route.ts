@@ -1,13 +1,27 @@
 import { NextResponse } from "next/server";
 
 import { classifyAction, invertToDenialRisk } from "@/lib/aiie/denial-risk";
+import {
+  buildRarityEventDimensions,
+  computeRarityScore,
+  type RarityDemographics,
+} from "@/lib/aiie/interesting-case";
 import { computeGoldCardScore } from "@/lib/aiie/gold-card";
 import { estimatePatientResponsibility } from "@/lib/aiie/oop-estimator";
+import { evaluateRedundancy } from "@/lib/aiie/redundancy";
 import { clinicalDocumentationHintsFromServiceRequest } from "@/lib/aiie/service-request-hints";
+import { evaluateOveruseRules } from "@/lib/aiie/overuse-patterns";
+import { evaluateStat, type StatPriority } from "@/lib/aiie/stat-gate";
 import { scoreOrder } from "@/lib/aiie/scoring-engine";
+import { buildDuplicateOrderCard } from "@/lib/cards/duplicate-order-card";
+import { buildOveruseCard } from "@/lib/cards/overuse-soft-block-card";
+import { buildStatReclassCard } from "@/lib/cards/stat-reclass-card";
 import type { ShoppableSite } from "@/lib/cards/alternative-site-card";
 import type { InsPaHistorySimilarMetrics } from "@/lib/cards/coverage-card";
 import { buildCoverageUnavailableCard, buildCRDCards } from "@/lib/davinci/crd";
+import { emptyRecordSnapshot } from "@/lib/fhir/record-normalizer";
+import { hashPatientId } from "@/lib/fhir/record-scraper";
+import { logInsStatEvent } from "@/lib/ins/stat-events";
 import { parseCoverage } from "@/lib/fhir/coverage";
 import { FHIRClient } from "@/lib/fhir/client";
 import {
@@ -16,6 +30,7 @@ import {
   userIdFromContext,
 } from "@/lib/fhir/prefetch";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { buildAiieAuditEvent, hashAuditIdentifier, logAiieAudit } from "@/lib/server/aiie-audit-logger";
 import { withInsApiLogging } from "@/lib/server/with-ins-api-logging";
 import type {
   AIIECoverage,
@@ -51,7 +66,8 @@ type InsValidationEventType =
   | "pa_submitted"
   | "pa_avoided_by_gold_card"
   | "pa_avoided_by_crd"
-  | "gold_card_check";
+  | "gold_card_check"
+  | "overuse_pattern_matched";
 
 function jsonResponse(body: CDSHookResponse, status = 200): NextResponse {
   return NextResponse.json(body, { status, headers: CDS_HEADERS });
@@ -240,6 +256,17 @@ function patientSex(p: Patient | undefined): "male" | "female" {
     return "female";
   }
   return "male";
+}
+
+function priorityFromServiceRequest(sr: ServiceRequest): StatPriority {
+  const raw = sr.priority?.toLowerCase();
+  if (raw === "stat" || raw === "asap") {
+    return "stat";
+  }
+  if (raw === "urgent") {
+    return "urgent";
+  }
+  return "routine";
 }
 
 function chiefComplaintFromServiceRequest(sr: ServiceRequest): string {
@@ -449,7 +476,13 @@ async function resolveInsProviderUuid(
 
 async function logValidationEvent(
   eventType: InsValidationEventType,
-  fields: { providerId?: string; payerId?: string; amountUsd?: number },
+  fields: {
+    providerId?: string;
+    payerId?: string;
+    amountUsd?: number;
+    metadata?: Record<string, string | number | boolean | null>;
+    rarityDimensions?: ReturnType<typeof buildRarityEventDimensions>;
+  },
 ): Promise<void> {
   const { data: supabase, error } = createAdminClient();
   if (error || !supabase) {
@@ -461,6 +494,8 @@ async function logValidationEvent(
     payer_id: fields.payerId ?? null,
     amount_usd: fields.amountUsd ?? null,
     minutes_saved: null,
+    metadata: fields.metadata ?? null,
+    ...(fields.rarityDimensions ?? {}),
   });
 }
 
@@ -712,6 +747,60 @@ async function handleCoveragePost(req: Request): Promise<NextResponse> {
     coverage: coverageResource,
   });
 
+  const requestedPriority = priorityFromServiceRequest(serviceRequest);
+  const orderHash = hashAuditIdentifier(serviceRequest.id ?? selectedSrId ?? "unknown-order");
+  const clinicianHash =
+    userId ?
+      hashAuditIdentifier(userId.startsWith("Practitioner/") ? userId : `Practitioner/${userId}`)
+    : undefined;
+
+  let statReclassCard: ReturnType<typeof buildStatReclassCard> | undefined;
+  let duplicateOrderCard: ReturnType<typeof buildDuplicateOrderCard> | undefined;
+  let recordSnapshot: ReturnType<typeof emptyRecordSnapshot> | undefined;
+
+  if (patientId) {
+    const snapshotResult = await client.getPatientRecordSnapshot(patientId);
+    const snapshot =
+      snapshotResult.data ??
+      emptyRecordSnapshot(
+        hashPatientId(patientId),
+        new Date().toISOString(),
+        1800,
+      );
+    recordSnapshot = snapshot;
+
+    const redundancy = evaluateRedundancy(
+      aiieInput.order,
+      snapshot,
+      aiieInput.redFlags,
+    );
+    if (
+      (redundancy.severity === "high" || redundancy.severity === "medium") &&
+      redundancy.priorStudyId
+    ) {
+      duplicateOrderCard = buildDuplicateOrderCard(redundancy);
+    }
+
+    if (requestedPriority === "stat") {
+      const statGate = evaluateStat({
+        snapshot,
+        order: aiieInput.order,
+        complaint: aiieInput.chiefComplaint,
+        priority: "stat",
+        patientAgeYears: patientAgeYears(patient),
+      });
+      if (!statGate.meetsCriteria) {
+        statReclassCard = buildStatReclassCard({ gate: statGate, serviceRequest });
+        void logInsStatEvent({
+          orderHash,
+          priorityRequested: "stat",
+          gate: statGate,
+          clinicianHash,
+        });
+      }
+    }
+  }
+
   const insProviderUuid = await resolveInsProviderUuid(practitioner);
   const oopCoverage = toAIIECoverageBlock(parsedCoverage, coverageResource, aiieInput.order);
 
@@ -743,12 +832,39 @@ async function handleCoveragePost(req: Request): Promise<NextResponse> {
   const aiieScore = scoreSettled.value;
   const denialRisk = invertToDenialRisk(aiieScore.clinicalScore);
 
+  if (recordSnapshot) {
+    const demographics: RarityDemographics = {
+      ageYears: aiieInput.age,
+      sex: aiieInput.sex,
+      regionBucket: "unspecified",
+    };
+    const rarity = await computeRarityScore(
+      recordSnapshot,
+      aiieInput.order,
+      demographics,
+      aiieInput.redFlags,
+    );
+    aiieScore.rarity = rarity;
+  }
+
+  if (patientId) {
+    void logAiieAudit(
+      buildAiieAuditEvent({
+        patientId,
+        orderId: serviceRequest.id ?? selectedSrId ?? "unknown-order",
+        serviceRequest,
+        input: aiieInput,
+        score: aiieScore,
+      }),
+    );
+  }
+
   let goldCard: GoldCardStatus | null = null;
   if (goldSettled.status === "fulfilled" && goldSettled.value.data) {
     goldCard = goldSettled.value.data;
   }
 
-  let oop = oopSettled.status === "fulfilled" ? (oopSettled.value.data ?? null) : null;
+  const oop = oopSettled.status === "fulfilled" ? (oopSettled.value.data ?? null) : null;
 
   const goldEligible = goldCard?.eligible === true;
   const action = classifyAction(denialRisk, goldEligible);
@@ -775,6 +891,28 @@ async function handleCoveragePost(req: Request): Promise<NextResponse> {
     paHistorySimilar,
   });
 
+  if (statReclassCard) {
+    cards.unshift(statReclassCard);
+  }
+
+  const matchedOveruseRules = evaluateOveruseRules({
+    snapshot: recordSnapshot,
+    order: aiieInput.order,
+    clinical: aiieInput.clinicalFactors,
+  });
+  for (const rule of matchedOveruseRules) {
+    cards.unshift(buildOveruseCard(rule, { order: aiieInput.order }));
+    await logValidationEvent("overuse_pattern_matched", {
+      providerId: insProviderUuid,
+      payerId,
+      metadata: { rule_id: rule.id, cpt },
+    });
+  }
+
+  if (duplicateOrderCard) {
+    cards.push(duplicateOrderCard);
+  }
+
   let amountUsd: number | undefined;
   if (oop?.alternativeSiteRecommended && oop.cheapestInNetworkSite) {
     const baseline = oop.estimatedPatientResponsibility;
@@ -782,12 +920,22 @@ async function handleCoveragePost(req: Request): Promise<NextResponse> {
     amountUsd = Math.max(0, baseline - alt);
   }
 
+  const rarityDimensions =
+    recordSnapshot ?
+      buildRarityEventDimensions(recordSnapshot, aiieInput.order, {
+        ageYears: aiieInput.age,
+        sex: aiieInput.sex,
+        regionBucket: "unspecified",
+      }, aiieInput.redFlags)
+    : undefined;
+
   await logValidationEvent(
     outcomeEventType(true, goldEligible, denialRisk),
     {
       providerId: insProviderUuid,
       payerId,
       amountUsd,
+      rarityDimensions,
     },
   );
 

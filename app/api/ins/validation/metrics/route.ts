@@ -11,7 +11,9 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import {
   aggregateMonthlyRoiFromEvents,
   buildDailyTimeSeries,
+  buildMnaiGreenRateTimeSeries,
   buildWeeklyMinutesLastNWeeks,
+  cptMatchesImagingModality,
   computeBurdenReduction,
   computeClinicalQuality,
   computeCostAvoidance,
@@ -19,7 +21,6 @@ import {
   computeOopTransparency,
   computePayerBreakdown,
   computePayerROI,
-  cptMatchesImagingModality,
   mapRoiSummaryRows,
   sumMinutesSaved,
   type DateRangeBounds,
@@ -90,6 +91,12 @@ type PaHistoryRow = PaHistoryInput & {
   payer_id: string;
   provider_id: string;
   cpt_code: string;
+};
+
+type AiieAuditRow = {
+  created_at: string;
+  mnai_tier: string | null;
+  cpt: string | null;
 };
 
 function toPaInputs(rows: PaHistoryRow[]): PaHistoryInput[] {
@@ -221,6 +228,7 @@ async function getValidationMetrics(request: Request): Promise<NextResponse<Vali
           daily: buildDailyTimeSeries([], range),
           monthlyRoi: [],
           weeklyMinutesLast12: buildWeeklyMinutesLastNWeeks([], range.endIso, 12),
+          mnaiGreenRate: buildMnaiGreenRateTimeSeries([], range),
         },
       };
       return NextResponse.json(empty, {
@@ -277,10 +285,17 @@ async function getValidationMetrics(request: Request): Promise<NextResponse<Vali
     .gte("month_start", mvStart.toISOString())
     .lte("month_start", endIso);
 
-  const [evRes, paRes, mvRes] = await Promise.all([
+  const auditQuery = supabase
+    .from("ins_aiie_audit")
+    .select("created_at, mnai_tier, cpt")
+    .gte("created_at", startIso)
+    .lt("created_at", endIso);
+
+  const [evRes, paRes, mvRes, auditRes] = await Promise.all([
     eventsQuery,
     paQuery,
     scoped ? Promise.resolve({ data: [] as RoiSummaryRow[], error: null as null }) : mvQuery,
+    auditQuery,
   ]);
 
   if (evRes.error) {
@@ -292,14 +307,21 @@ async function getValidationMetrics(request: Request): Promise<NextResponse<Vali
   if (mvRes.error) {
     return NextResponse.json({ error: mvRes.error.message }, { status: 500 });
   }
+  if (auditRes.error) {
+    return NextResponse.json({ error: auditRes.error.message }, { status: 500 });
+  }
 
   let eventRows = (evRes.data ?? []) as ValidationEventRow[];
   let paRows = (paRes.data ?? []) as PaHistoryRow[];
+  let auditRows = (auditRes.data ?? []) as AiieAuditRow[];
   const mvRows = (mvRes.data ?? []) as RoiSummaryRow[];
 
   const modalityActive = Boolean(cptModality);
   if (modalityActive && cptModality) {
     paRows = paRows.filter((r) => cptMatchesImagingModality(r.cpt_code, cptModality));
+    auditRows = auditRows.filter(
+      (r) => r.cpt && cptMatchesImagingModality(r.cpt, cptModality),
+    );
     const allow = new Set(paRows.map((p) => p.provider_id));
     if (allow.size === 0) {
       eventRows = [];
@@ -352,6 +374,7 @@ async function getValidationMetrics(request: Request): Promise<NextResponse<Vali
       daily: buildDailyTimeSeries(eventRows, range),
       monthlyRoi: scoped ? aggregateMonthlyRoiFromEvents(eventRows) : mapRoiSummaryRows(mvRows),
       weeklyMinutesLast12,
+      mnaiGreenRate: buildMnaiGreenRateTimeSeries(auditRows, range),
     },
   };
 

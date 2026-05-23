@@ -8,6 +8,16 @@
     "app/api/cds-services/**/*.ts": { "maxDuration": 10 },
     "app/api/ins/**/*.ts": { "maxDuration": 10 }
   },
+  "crons": [
+    {
+      "path": "/api/ins/scheduling/reconcile",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/ins/reference/refresh",
+      "schedule": "0 5 * * *"
+    }
+  ],
   "rewrites": [
     {
       "source": "/.well-known/cds-services",

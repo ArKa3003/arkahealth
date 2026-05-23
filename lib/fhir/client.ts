@@ -1,6 +1,8 @@
 import FhirKitClient from "fhir-kit-client";
 
+import { scrapePatientRecord } from "@/lib/fhir/record-scraper";
 import type { CDSFhirAuthorization } from "@/lib/types/cds-hooks";
+import type { PatientRecordSnapshot } from "@/lib/types/record-snapshot";
 import type {
   Appointment,
   Bundle,
@@ -67,6 +69,8 @@ function requestTimeoutOptions(): RequestInit {
 export class FHIRClient {
   private readonly inner: FhirKitClient | null;
   private readonly blocked: FHIRError | null;
+  private readonly baseUrl: string | null;
+  private readonly bearerToken: string | null;
 
   /**
    * @param fhirServer - Base URL for the FHIR server (SMART `iss` / CDS `fhirServer`).
@@ -75,6 +79,8 @@ export class FHIRClient {
   constructor(fhirServer: string | undefined, fhirAuthorization: CDSFhirAuthorization | string | undefined) {
     const base = typeof fhirServer === "string" ? fhirServer.trim() : "";
     const token = bearerFromAuthorization(fhirAuthorization);
+    this.baseUrl = base || null;
+    this.bearerToken = token ?? null;
 
     if (!base) {
       this.inner = null;
@@ -294,6 +300,44 @@ export class FHIRClient {
   }
 
   /**
+   * Searches `Appointment` resources (for scheduling-intent reconciliation).
+   */
+  async searchAppointments(params: {
+    date?: string;
+    status?: string;
+    patient?: string;
+    _count?: number;
+  }): Promise<FHIRResult<Bundle<Appointment>>> {
+    const g = this.guard<Bundle<Appointment>>();
+    if (g) {
+      return g;
+    }
+    try {
+      const searchParams: Record<string, string> = {};
+      if (params.date) {
+        searchParams.date = params.date;
+      }
+      if (params.status) {
+        searchParams.status = params.status;
+      }
+      if (params.patient) {
+        searchParams.patient = params.patient;
+      }
+      if (params._count != null) {
+        searchParams._count = String(params._count);
+      }
+      const data = (await this.inner!.search({
+        resourceType: "Appointment",
+        searchParams,
+        options: requestTimeoutOptions(),
+      })) as Bundle<Appointment>;
+      return { data };
+    } catch (e) {
+      return { data: null, error: toFhirError(e, "appointment_search_failed") };
+    }
+  }
+
+  /**
    * Reads an `Appointment` instance by logical id.
    */
   async getAppointment(id: string): Promise<FHIRResult<Appointment>> {
@@ -331,5 +375,78 @@ export class FHIRClient {
     } catch (e) {
       return { data: null, error: toFhirError(e, "location_read_failed") };
     }
+  }
+
+  /**
+   * Reads an `ImagingStudy` by logical id (for WADO / Binary thumbnail proxy).
+   */
+  async readImagingStudy(id: string): Promise<FHIRResult<Record<string, unknown>>> {
+    const g = this.guard<Record<string, unknown>>();
+    if (g) {
+      return g;
+    }
+    try {
+      const data = (await this.inner!.read({
+        resourceType: "ImagingStudy",
+        id,
+        options: requestTimeoutOptions(),
+      })) as Record<string, unknown>;
+      return { data };
+    } catch (e) {
+      return { data: null, error: toFhirError(e, "imaging_study_read_failed") };
+    }
+  }
+
+  /**
+   * Fetches raw bytes from a relative FHIR path (Binary or WADO-RS).
+   */
+  async fetchBinary(relativeUrl: string): Promise<FHIRResult<Buffer>> {
+    const g = this.guard<Buffer>();
+    if (g) {
+      return g;
+    }
+    const path = relativeUrl.startsWith("/") ? relativeUrl.slice(1) : relativeUrl;
+    const base = this.baseUrl;
+    const token = this.bearerToken;
+    if (!base || !token) {
+      return { data: null, error: { code: "binary_fetch_unconfigured" } };
+    }
+    try {
+      const response = await fetch(new URL(path, base).toString(), {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/dicom, application/octet-stream, */*",
+        },
+        signal: AbortSignal.timeout(FHIR_CALL_TIMEOUT_MS),
+      });
+      if (!response.ok) {
+        return { data: null, error: { code: "binary_fetch_failed", status: response.status } };
+      }
+      const arrayBuffer = await response.arrayBuffer();
+      return { data: Buffer.from(arrayBuffer) };
+    } catch (e) {
+      return { data: null, error: toFhirError(e, "binary_fetch_failed") };
+    }
+  }
+
+  /**
+   * Returns a normalized patient record snapshot (cache-first via {@link scrapePatientRecord}).
+   */
+  async getPatientRecordSnapshot(patientId: string): Promise<FHIRResult<PatientRecordSnapshot>> {
+    const g = this.guard<PatientRecordSnapshot>();
+    if (g) {
+      return g;
+    }
+    const result = await scrapePatientRecord({
+      patientId,
+      fhirClient: this.inner!,
+    });
+    if (result.error) {
+      return {
+        data: null,
+        error: { code: result.error.code, status: undefined },
+      };
+    }
+    return { data: result.data };
   }
 }

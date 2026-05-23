@@ -1,10 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { clsx } from "clsx";
 import { Lightbulb, FileText, Copy } from "lucide-react";
 import type { ClinicalScenario, EvaluationResult } from "@/lib/demos/clin/types";
+import { clinicalScenarioToAIIEOrder } from "@/lib/demos/clin/clin-aiie-order";
+import { buildClinDemoRecordSnapshot } from "@/lib/demos/clin/clin-record-snapshot";
+import { detectIncidentals, incidentalFindingKey } from "@/lib/aiie/incidentals";
+import { IncidentalFollowupCard } from "@/components/shared/IncidentalFollowupCard";
+import { PriorImagingControlSheetGate } from "@/components/shared/PriorImagingControlSheet";
+import type { PatientRecordSnapshot } from "@/lib/types/record-snapshot";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/Card";
 import { Button } from "./ui/Button";
 import { Badge } from "./ui/Badge";
@@ -16,6 +22,8 @@ interface ClinResultsViewProps {
   scenario: ClinicalScenario;
   onNewEvaluation: () => void;
   onEvaluate: (scenario: ClinicalScenario) => void;
+  /** When set, uses this snapshot instead of building from the demo scenario. */
+  recordSnapshot?: PatientRecordSnapshot;
 }
 
 export function ClinResultsView({
@@ -23,8 +31,18 @@ export function ClinResultsView({
   scenario,
   onNewEvaluation,
   onEvaluate,
+  recordSnapshot: recordSnapshotProp,
 }: ClinResultsViewProps) {
   const [reasoningExpanded, setReasoningExpanded] = useState(false);
+  const [controlOverrideLog, setControlOverrideLog] = useState<string | null>(null);
+  const [dismissedIncidentalKeys, setDismissedIncidentalKeys] = useState<Set<string>>(() => new Set());
+  const [scheduledIncidentalKeys, setScheduledIncidentalKeys] = useState<Set<string>>(() => new Set());
+  const recordSnapshot = recordSnapshotProp ?? buildClinDemoRecordSnapshot(scenario);
+  const incidentalFindings = useMemo(
+    () => detectIncidentals(recordSnapshot),
+    [recordSnapshot],
+  );
+  const proposedOrder = clinicalScenarioToAIIEOrder(scenario);
   const [shapExpanded, setShapExpanded] = useState(true);
   const [showCitations, setShowCitations] = useState(false);
 
@@ -54,6 +72,42 @@ export function ClinResultsView({
 
   return (
     <div className="space-y-6 animate-fade-in" role="region" aria-label="Evaluation results">
+      <PriorImagingControlSheetGate
+        snapshot={recordSnapshot}
+        proposed={proposedOrder}
+        product="CLIN"
+        onOverride={(reason) => setControlOverrideLog(reason)}
+      />
+      {controlOverrideLog ?
+        <p className="text-xs text-arka-text-dark-muted" role="status">
+          Prior-imaging override documented: {controlOverrideLog}
+        </p>
+      : null}
+
+      {incidentalFindings
+        .filter((finding) => !dismissedIncidentalKeys.has(incidentalFindingKey(finding)))
+        .map((finding) => {
+          const key = incidentalFindingKey(finding);
+          return (
+            <IncidentalFollowupCard
+              key={key}
+              finding={finding}
+              onDismiss={() => {
+                setDismissedIncidentalKeys((prev) => new Set(prev).add(key));
+              }}
+              onSchedule={() => {
+                setScheduledIncidentalKeys((prev) => new Set(prev).add(key));
+              }}
+            />
+          );
+        })}
+      {scheduledIncidentalKeys.size > 0 ?
+        <p className="text-xs text-arka-text-dark-muted" role="status">
+          Follow-up scheduling noted for {scheduledIncidentalKeys.size} incidental finding
+          {scheduledIncidentalKeys.size === 1 ? "" : "s"} (demo).
+        </p>
+      : null}
+
       {/* Advisory */}
       <div
         className="arka-card rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 sm:p-5"

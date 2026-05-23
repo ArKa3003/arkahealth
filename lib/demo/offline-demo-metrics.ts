@@ -75,6 +75,11 @@ export function buildOfflineDemoMetricsResponse(
       daily,
       monthlyRoi,
       weeklyMinutesLast12,
+      mnaiGreenRate: daily.map((d) => ({
+        date: d.date,
+        rate: 62 + (d.date.charCodeAt(8) % 12),
+        sampleSize: 8 + (d.eventsCount % 5),
+      })),
     },
     costAvoidanceStackUsd: {
       appealCostsAvoided: 1050,

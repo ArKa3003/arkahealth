@@ -10,6 +10,7 @@ import { DemoLoadingSkeleton } from "@/components/demos/DemoLoadingSkeleton";
 import { cn } from "@/lib/utils";
 import { AIIEForUtilizationManagementSection } from "@/components/demos/ins/AIIEForUtilizationManagementSection";
 import { HowArkaInsWorksSection } from "@/components/demos/ins/HowArkaInsWorksSection";
+import { ObservabilityCard } from "@/components/ins/ObservabilityCard";
 
 const InsDemoView = dynamic(
   () => import("@/components/demos/ins/InsDemoView").then((m) => m.InsDemoView),
@@ -44,6 +45,8 @@ export default function InsPage() {
             </li>
           </ol>
         </nav>
+
+        <ObservabilityCard className="mb-6 sm:mb-8" />
 
         {/* Header */}
         <header className="mb-6 sm:mb-8">
