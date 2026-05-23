@@ -21,6 +21,10 @@ Copy `.env.example` to `.env.local` for local development. For Vercel, set varia
 |----------|-------------|
 | `NEXT_PUBLIC_SITE_URL` | Canonical site URL for sitemap, robots, and metadata. Default: `https://arkahealth.com`. Use your Vercel URL (e.g. `https://your-app.vercel.app`) or custom domain in production. |
 
+## CI
+
+The `cds-sandbox` job in [ARKA go-live checks](.github/workflows/go-live.yml) is currently allowed to fail without blocking merges; see [docs/CI_KNOWN_ISSUES.md](docs/CI_KNOWN_ISSUES.md).
+
 ## Scripts
 
 | Script | Description |
