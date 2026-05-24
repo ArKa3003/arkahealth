@@ -4,7 +4,11 @@
  *   imaging order. Resolves prefetch, builds ClinicalScenario, runs ML and alerting, returns cards.
  */
 
+import pino from 'pino';
 import type { CDSHooksRequest, CDSHooksResponse } from './types';
+import { getFeatureCatalogEntry } from '@/lib/cds-platform/ml/feature-catalog';
+import type { WeightDirection } from '@/lib/cds-platform/ml/feature-catalog';
+import type { MLPrediction } from '@/lib/cds-platform/ml/types';
 import { getImagingDraftOrders } from './request-validator';
 import {
   buildAppropriatenessCard,
@@ -26,6 +30,50 @@ import {
   checkPregnancy,
   extractEGFR,
 } from '@/lib/cds-platform/fhir/mappers';
+
+const logger = pino({
+  name: 'cds-hooks-order-select',
+  level: process.env.LOG_LEVEL ?? 'info',
+});
+
+/** SHAP row with FDA Criterion 4 catalogue rationale (Phase 6.3 wire format). */
+export interface ShapWithRationale {
+  feature: string;
+  label: string;
+  contribution: number;
+  rationale: string;
+  citationId: string;
+  citationUrl: string;
+  weightDirection: WeightDirection;
+}
+
+type AppropriatenessCard = ReturnType<typeof buildAppropriatenessCard> & {
+  extension?: { shapWithRationales: ShapWithRationale[] };
+};
+
+/**
+ * Maps ML SHAP contributions to catalogue-backed rationale rows (top 5).
+ * Suppresses features without a catalogue entry (Criterion 4 invariant).
+ */
+function buildShapWithRationales(prediction: MLPrediction): ShapWithRationale[] {
+  const contribs = prediction.shapValues?.featureContributions ?? [];
+  return contribs
+    .map(({ feature: name, shapValue: value }) => {
+      const entry = getFeatureCatalogEntry(name);
+      if (!entry) return null;
+      return {
+        feature: name,
+        label: entry.label,
+        contribution: value,
+        rationale: entry.rationale,
+        citationId: entry.citationId,
+        citationUrl: entry.url,
+        weightDirection: entry.weightDirection,
+      };
+    })
+    .filter((row): row is ShapWithRationale => row !== null)
+    .slice(0, 5);
+}
 
 function emptyBundle(): { resourceType: 'Bundle'; type: string; entry: unknown[] } {
   return { resourceType: 'Bundle', type: 'searchset', entry: [] };
@@ -158,6 +206,19 @@ export async function handleOrderSelect(request: CDSHooksRequest): Promise<CDSHo
     }
     runTieredEngine({ score: prediction.score, scenarioSummary: { modality: scenario.proposedImaging?.modality } });
     const card = buildAppropriatenessCard(prediction, scenario as ClinicalScenario, 'order-select');
+    const shapWithRationales = buildShapWithRationales(prediction);
+    if (shapWithRationales.length > 0) {
+      (card as AppropriatenessCard).extension = { shapWithRationales };
+    } else {
+      logger.info(
+        {
+          hook: 'order-select',
+          usedFallback: prediction.usedFallback,
+          contributionCount: prediction.shapValues?.featureContributions?.length ?? 0,
+        },
+        'TODO(fda-criterion-4): shapWithRationales empty — omitting extension; card basis remains guideline',
+      );
+    }
     const alternatives = getAlternatives(scenario as ClinicalScenario);
     if (alternatives.length > 0 && request.context?.patientId) {
       card.suggestions = buildAlternativesSuggestions(alternatives, request.context.patientId);

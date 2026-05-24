@@ -48,6 +48,8 @@ export const routes = {
   rural: "/rural",
   ruralCds: "/rural/cds",
   ruralTele: "/rural/tele",
+  cdsHooksDemo: "/cds-hooks-demo",
+  cdsHooksDemoValidation: "/cds-hooks-demo/validation",
 } as const;
 
 export const navLinks = [

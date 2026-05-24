@@ -118,6 +118,12 @@ export function Footer() {
               <span className="hidden text-arka-deep/50 sm:inline" aria-hidden>
                 |
               </span>
+              <Link href="/cds-hooks-demo" className="arka-link-underline font-medium text-arka-cyan hover:text-white">
+                CDS Hooks Live Demo — Guideline-anchored
+              </Link>
+              <span className="hidden text-arka-deep/50 sm:inline" aria-hidden>
+                |
+              </span>
               <Link href="/privacy" className="arka-link-underline text-arka-text-soft hover:text-arka-text">
                 Privacy
               </Link>
