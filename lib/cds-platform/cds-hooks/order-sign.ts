@@ -171,7 +171,7 @@ function addOverrideDocumentSuggestion(card: OrderSignCard, patientId: string): 
     content: [{ attachment: { contentType: 'text/plain', data: '[Document override reason and clinical justification here.]' } }],
   };
   const suggestion: CDSSuggestion = {
-    label: 'Document override justification',
+    label: 'Open: Document override justification',
     uuid: uuidv4(),
     isRecommended: false,
     actions: [{ type: 'create' as const, description: 'Create DocumentReference with override justification', resource: docRef }],

@@ -1,6 +1,6 @@
 /**
- * Hits ARKA-INS CDS Hooks `order-select` (`arka-ins-coverage`) with realistic payloads,
- * validates CDS Hooks 2.0–shaped responses, checks scenario expectations, and measures latency.
+ * ARKA CDS Hooks sandbox harness: ARKA-INS coverage/final-check/appointment-book and
+ * ARKA-CLIN appropriateness (order-select / order-sign) with FDA invariants + HTML report.
  *
  * Prerequisites:
  * - `npm run dev` (or set `CDS_SANDBOX_BASE_URL` to a deployed origin)
@@ -9,7 +9,10 @@
  * - `scripts/seed-shoppable-sites.ts` run for CPT `70553` alternative-site data (scenario 2)
  */
 
+import { execSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
+import { mkdirSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 
 import { evaluateStat } from "@/lib/aiie/stat-gate";
 import { OVERUSE_RULES } from "@/lib/aiie/overuse-patterns";
@@ -37,11 +40,17 @@ import type {
   ServiceRequest,
 } from "@/lib/types/fhir";
 import type { PatientRecordSnapshot } from "@/lib/types/record-snapshot";
+import { buildCdsRequest } from "@/components/cds-platform/demo/build-cds-request";
+import { DEMO_SCENARIOS } from "@/components/cds-platform/demo/scenarios";
+import { getCitation } from "@/lib/cds-platform/citations";
+import { getFeatureCatalogEntry } from "@/lib/cds-platform/ml/feature-catalog";
 
 const BASE_URL = (process.env.CDS_SANDBOX_BASE_URL ?? "http://127.0.0.1:3000").replace(/\/$/, "");
 const COVERAGE_PATH = "/api/cds-services/arka-ins-coverage";
 const FINAL_CHECK_PATH = "/api/cds-services/arka-ins-final-check";
 const APPOINTMENT_PATH = "/api/cds-services/arka-ins-appointment";
+const CLIN_SELECT_PATH = "/api/cds-services/arka-clin-appropriateness";
+const CLIN_SIGN_PATH = "/api/cds-services/arka-clin-appropriateness-sign";
 
 const GOLD_NPI = process.env.ARKA_SANDBOX_GOLD_NPI ?? "1003000126";
 const NON_GOLD_NPI = process.env.ARKA_SANDBOX_NON_GOLD_NPI ?? "1003000127";
@@ -49,8 +58,22 @@ const NON_GOLD_NPI = process.env.ARKA_SANDBOX_NON_GOLD_NPI ?? "1003000127";
 const PAYER_REF = "Organization/aetna";
 const LATENCY_SAMPLES = 20;
 const P95_THRESHOLD_MS = 800;
+const CLIN_P95_THRESHOLD_MS = 1500;
 const FDA_MARKERS = ["FDA Non-Device", "21st Century Cures Act"];
 const SOURCE_LABEL = "ARKA-INS (AIIE v2.0)";
+const CLIN_LABEL_PREFIX = "ARKA-CLIN";
+const BANNED_DIRECTIVE_VERBS = [
+  "cancel",
+  "stop",
+  "switch to",
+  "replace",
+  "do not order",
+  "must ",
+  "require",
+  "immediately",
+  "urgent action",
+] as const;
+const SUGGESTION_LABEL_PATTERN = /^Review|^Consider|^Open|^View/;
 
 function percentile95(sortedAsc: number[]): number {
   if (sortedAsc.length === 0) {
@@ -525,6 +548,287 @@ interface Row {
   detail: string;
 }
 
+interface ClinMedicalBasis {
+  label: string;
+  citationId: string;
+}
+
+interface ClinRawCard {
+  uuid?: string;
+  summary: string;
+  detail?: string;
+  indicator: "info" | "warning" | "critical";
+  source: { label: string };
+  medicalBasis?: ClinMedicalBasis;
+  suggestions?: Array<{ label: string }>;
+  overrideReasons?: Array<{ id?: string; code?: string }>;
+  extension?: { shapWithRationales?: Array<{ feature: string }> };
+}
+
+interface ClinAssertionRow {
+  id: string;
+  ok: boolean;
+  detail: string;
+}
+
+function detailHasFdaMarker(detail: string | undefined): boolean {
+  if (!detail?.trim()) {
+    return false;
+  }
+  if (detailIncludesFdaDisclosure(detail)) {
+    return true;
+  }
+  const normalized = detail.replace(/\*/g, "");
+  return (
+    normalized.includes(FDA_NON_DEVICE_CDS_DISCLOSURE) ||
+    normalized.includes("Non-Device CDS")
+  );
+}
+
+function overrideReasonKey(reason: { id?: string; code?: string } | undefined): string | undefined {
+  if (!reason) {
+    return undefined;
+  }
+  return reason.id ?? reason.code;
+}
+
+/**
+ * Validates FDA / CDS platform invariants on a single CLIN card (raw JSON shape).
+ */
+function assertClinCardInvariants(
+  card: ClinRawCard,
+  context: string,
+): string | undefined {
+  if (!card.source.label.startsWith(CLIN_LABEL_PREFIX)) {
+    return `${context}: source.label must start with "${CLIN_LABEL_PREFIX}", got "${card.source.label}"`;
+  }
+
+  const basis = card.medicalBasis;
+  if (!basis?.label?.trim() || !basis.citationId?.trim()) {
+    return `${context}: medicalBasis must be present and non-empty`;
+  }
+
+  try {
+    getCitation(basis.citationId);
+  } catch {
+    return `${context}: medicalBasis.citationId "${basis.citationId}" not in citation registry`;
+  }
+
+  const detail = card.detail ?? "";
+  if (!detail.includes(basis.label)) {
+    return `${context}: detail must contain medicalBasis.label "${basis.label}"`;
+  }
+
+  if (!detailHasFdaMarker(detail)) {
+    return `${context}: detail missing FDA Non-Device CDS disclosure`;
+  }
+
+  const detailLower = detail.toLowerCase();
+  for (const verb of BANNED_DIRECTIVE_VERBS) {
+    if (detailLower.includes(verb)) {
+      return `${context}: detail contains banned directive phrase "${verb}"`;
+    }
+  }
+
+  if (card.suggestions) {
+    for (const s of card.suggestions) {
+      if (!SUGGESTION_LABEL_PATTERN.test(s.label)) {
+        return `${context}: suggestion label "${s.label}" must start with Review|Consider|Open|View`;
+      }
+    }
+  }
+
+  const shap = card.extension?.shapWithRationales;
+  if (shap) {
+    for (const row of shap) {
+      if (!getFeatureCatalogEntry(row.feature)) {
+        return `${context}: SHAP feature "${row.feature}" not in feature catalog`;
+      }
+    }
+  }
+
+  return undefined;
+}
+
+async function postClinHook(
+  path: string,
+  req: CDSHookRequest,
+): Promise<{ ms: number; json: unknown; status: number }> {
+  return postCdsHook(path, req);
+}
+
+async function runClinScenarioAssertions(
+  label: string,
+  path: string,
+  build: () => CDSHookRequest,
+  extra?: (cards: ClinRawCard[]) => string | undefined,
+): Promise<{ rows: ClinAssertionRow[]; p95Ms: number }> {
+  const rows: ClinAssertionRow[] = [];
+  let p95Ms = 0;
+
+  try {
+    const { ms, json, status } = await postClinHook(path, build());
+    p95Ms = ms;
+
+    if (status < 200 || status >= 300) {
+      rows.push({
+        id: `${label} HTTP`,
+        ok: false,
+        detail: `HTTP ${status}: ${JSON.stringify(json)}`,
+      });
+      return { rows, p95Ms };
+    }
+
+    const parsed = cdsHookResponseSchema.safeParse(json);
+    rows.push({
+      id: `${label} cdsHookResponseSchema`,
+      ok: parsed.success,
+      detail: parsed.success ? "ok" : parsed.error.message,
+    });
+
+    const rawCards = (json as { cards?: ClinRawCard[] }).cards ?? [];
+    if (rawCards.length === 0) {
+      rows.push({
+        id: `${label} cards present`,
+        ok: false,
+        detail: "expected at least one card",
+      });
+    }
+
+    for (let i = 0; i < rawCards.length; i += 1) {
+      const err = assertClinCardInvariants(rawCards[i], `${label} card[${i}]`);
+      rows.push({
+        id: `${label} card[${i}] invariants`,
+        ok: !err,
+        detail: err ?? "ok",
+      });
+    }
+
+    if (extra) {
+      const extraErr = extra(rawCards);
+      rows.push({
+        id: `${label} scenario expectation`,
+        ok: !extraErr,
+        detail: extraErr ?? "ok",
+      });
+    }
+  } catch (e) {
+    rows.push({
+      id: `${label} request`,
+      ok: false,
+      detail: e instanceof Error ? e.message : String(e),
+    });
+  }
+
+  return { rows, p95Ms };
+}
+
+async function measureClinP95(build: () => CDSHookRequest): Promise<{ p95Ms: number; err?: string }> {
+  for (let i = 0; i < 2; i += 1) {
+    await postClinHook(CLIN_SELECT_PATH, JSON.parse(JSON.stringify(build())) as CDSHookRequest);
+  }
+  const times: number[] = [];
+  for (let i = 0; i < LATENCY_SAMPLES; i += 1) {
+    const { ms, json, status } = await postClinHook(
+      CLIN_SELECT_PATH,
+      JSON.parse(JSON.stringify(build())) as CDSHookRequest,
+    );
+    if (status < 200 || status >= 300) {
+      return { p95Ms: 0, err: `HTTP ${status}` };
+    }
+    const parsed = cdsHookResponseSchema.safeParse(json);
+    if (!parsed.success) {
+      return { p95Ms: 0, err: parsed.error.message };
+    }
+    times.push(ms);
+  }
+  times.sort((a, b) => a - b);
+  return { p95Ms: percentile95(times) };
+}
+
+function gitHeadSha(): string {
+  try {
+    return execSync("git rev-parse HEAD", { encoding: "utf8" }).trim();
+  } catch {
+    return "unknown";
+  }
+}
+
+function writeSandboxHtmlReport(options: {
+  insRows: Row[];
+  insHookRows: Row[];
+  clinRows: ClinAssertionRow[];
+  clinP95Ms: number;
+  allPass: boolean;
+}): string {
+  const dateIso = new Date().toISOString().slice(0, 10);
+  const reportPath = join(process.cwd(), "logs", `sandbox-validation-report-${dateIso}.html`);
+  mkdirSync(join(process.cwd(), "logs"), { recursive: true });
+
+  const insTable = [...options.insRows, ...options.insHookRows]
+    .map(
+      (r) =>
+        `<tr><td>${escapeHtml(r.scenario)}</td><td>${r.shape}</td><td>${r.behavior}</td><td>${r.latency}</td><td>${r.p95Ms.toFixed(0)}</td><td>${escapeHtml(r.detail)}</td></tr>`,
+    )
+    .join("");
+
+  const clinTable = options.clinRows
+    .map(
+      (r) =>
+        `<tr><td>${escapeHtml(r.id)}</td><td class="${r.ok ? "ok" : "fail"}">${r.ok ? "PASS" : "FAIL"}</td><td>${escapeHtml(r.detail)}</td></tr>`,
+    )
+    .join("");
+
+  const summary = options.allPass
+    ? "All INS and CLIN sandbox assertions passed."
+    : "One or more assertions failed — see table rows marked FAIL.";
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>ARKA CDS Hooks Sandbox Validation Report</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 2rem; color: #0f172a; max-width: 960px; }
+    h1 { font-size: 1.35rem; margin-bottom: 0.25rem; }
+    .meta { color: #475569; font-size: 0.9rem; margin-bottom: 1.5rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin-bottom: 1.25rem; }
+    th, td { border: 1px solid #e2e8f0; padding: 0.35rem 0.5rem; text-align: left; vertical-align: top; }
+    th { background: #f1f5f9; }
+    .ok { color: #15803d; font-weight: 600; }
+    .fail { color: #b91c1c; font-weight: 600; }
+    .summary { padding: 0.75rem 1rem; background: ${options.allPass ? "#ecfdf5" : "#fef2f2"}; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <h1>ARKA CDS Hooks Sandbox Validation Report</h1>
+  <p class="meta">Date: ${dateIso} · Commit: <code>${escapeHtml(gitHeadSha())}</code> · CLIN p95: ${options.clinP95Ms.toFixed(0)} ms (threshold ${CLIN_P95_THRESHOLD_MS} ms)</p>
+  <h2>ARKA-INS</h2>
+  <table>
+    <thead><tr><th>Scenario</th><th>Shape</th><th>Behavior</th><th>Latency</th><th>ms</th><th>Detail</th></tr></thead>
+    <tbody>${insTable}</tbody>
+  </table>
+  <h2>ARKA-CLIN (FDA invariants)</h2>
+  <table>
+    <thead><tr><th>Assertion</th><th>Result</th><th>Detail</th></tr></thead>
+    <tbody>${clinTable}</tbody>
+  </table>
+  <p class="summary"><strong>Summary:</strong> ${escapeHtml(summary)}</p>
+</body>
+</html>`;
+
+  writeFileSync(reportPath, html, "utf8");
+  return reportPath;
+}
+
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
 async function runHookSmoke(
   label: string,
   path: string,
@@ -692,14 +996,103 @@ async function main(): Promise<void> {
     }
   }
 
-  const allPass =
+  console.log(`\n${"─".repeat(Math.min(process.stdout.columns ?? 100, 90))}`);
+  console.log(`ARKA-CLIN CDS sandbox  →  ${BASE_URL}${CLIN_SELECT_PATH}`);
+
+  const clinAssertionRows: ClinAssertionRow[] = [];
+  const lbpScenario = DEMO_SCENARIOS["lbp-1"];
+  const haScenario = DEMO_SCENARIOS["ha-1"];
+  const bellyScenario = DEMO_SCENARIOS.belly;
+
+  const clinRuns = await Promise.all([
+    runClinScenarioAssertions(
+      "CLIN lbp-1 order-select",
+      CLIN_SELECT_PATH,
+      () => buildCdsRequest(lbpScenario, "order-select"),
+      (cards) =>
+        cards.some((c) => c.indicator !== "info")
+          ? undefined
+          : "lbp-1 order-select: expected at least one card with indicator !== info",
+    ),
+    runClinScenarioAssertions(
+      "CLIN ha-1 order-select",
+      CLIN_SELECT_PATH,
+      () => buildCdsRequest(haScenario, "order-select"),
+    ),
+    runClinScenarioAssertions(
+      "CLIN belly order-select",
+      CLIN_SELECT_PATH,
+      () => buildCdsRequest(bellyScenario, "order-select"),
+    ),
+    runClinScenarioAssertions(
+      "CLIN lbp-1 order-sign",
+      CLIN_SIGN_PATH,
+      () => buildCdsRequest(lbpScenario, "order-sign"),
+      (cards) => {
+        const match = cards.find(
+          (c) =>
+            c.indicator === "critical" &&
+            overrideReasonKey(c.overrideReasons?.[0]) === "clinical-judgment-unrecorded",
+        );
+        return match
+          ? undefined
+          : "lbp-1 order-sign: expected critical card with overrideReasons[0] clinical-judgment-unrecorded";
+      },
+    ),
+  ]);
+
+  for (const run of clinRuns) {
+    clinAssertionRows.push(...run.rows);
+  }
+
+  const { p95Ms: clinP95Ms, err: clinP95Err } = await measureClinP95(() =>
+    buildCdsRequest(lbpScenario, "order-select"),
+  );
+  clinAssertionRows.push({
+    id: "CLIN p95 latency (20× lbp-1 order-select)",
+    ok: !clinP95Err && clinP95Ms < CLIN_P95_THRESHOLD_MS,
+    detail: clinP95Err
+      ? clinP95Err
+      : clinP95Ms < CLIN_P95_THRESHOLD_MS
+        ? `p95 ${clinP95Ms.toFixed(0)} ms`
+        : `p95 ${clinP95Ms.toFixed(0)} ms >= ${CLIN_P95_THRESHOLD_MS} ms`,
+  });
+
+  console.log(`${"Scenario / assertion".padEnd(44)} | Result | Detail`);
+  console.log("─".repeat(Math.min(process.stdout.columns ?? 100, 90)));
+  for (const r of clinAssertionRows) {
+    console.log(
+      `${r.id.padEnd(44)} | ${(r.ok ? "PASS" : "FAIL").padEnd(6)} | ${r.detail}`,
+    );
+  }
+
+  const insPass =
     rows.every((r) => r.shape === "ok" && r.behavior === "ok" && r.latency === "ok") &&
     hookRows.every((r) => r.shape === "ok" && r.behavior === "ok");
+  const clinPass = clinAssertionRows.every((r) => r.ok);
+  const allPass = insPass && clinPass;
+
+  const reportPath = writeSandboxHtmlReport({
+    insRows: rows,
+    insHookRows: hookRows,
+    clinRows: clinAssertionRows,
+    clinP95Ms,
+    allPass,
+  });
+  console.log(`\nReport: ${reportPath}`);
+
   if (!allPass) {
-    console.log("\nFAIL — fix Supabase fixtures, seed data, or server config (see docs/INS_SANDBOX_TESTING.md).");
+    console.log(
+      "\nFAIL — fix Supabase fixtures, CLIN card invariants, or server config (see docs/INS_SANDBOX_TESTING.md).",
+    );
     process.exit(1);
   }
-  console.log("\nPASS — coverage, final-check, appointment-book, and offline card checks.");
+  console.log(
+    "\nPASS — INS coverage/final-check/appointment-book, CLIN appropriateness FDA invariants, offline card checks.",
+  );
+  console.log(
+    `Summary: INS 3/3 + hooks OK · CLIN ${clinAssertionRows.filter((r) => r.ok).length}/${clinAssertionRows.length} assertions · p95 ${clinP95Ms.toFixed(0)} ms · report ${reportPath}`,
+  );
 }
 
 main().catch((e) => {

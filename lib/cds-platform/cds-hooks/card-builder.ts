@@ -179,7 +179,10 @@ export function buildAlternativesSuggestions(
 ): CDSSuggestion[] {
   const subjectRef = `Patient/${patientId}`;
   return alternatives.map((alt, i) => {
-    const label = alt.display ?? `Order ${alt.modality} instead`;
+    const baseLabel = alt.display ?? `Order ${alt.modality} instead`;
+    const label = /^Review|^Consider|^Open|^View/i.test(baseLabel)
+      ? baseLabel
+      : `Consider: ${baseLabel}`;
     const resource: FHIRServiceRequest = alt.resource ?? {
       resourceType: 'ServiceRequest',
       status: 'draft',
