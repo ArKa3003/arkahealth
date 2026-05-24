@@ -395,9 +395,6 @@ export function computeMetrics(
 ): ValidationMetrics {
   const caseMap = new Map(cases.map((c) => [c.caseId, c]));
   const predScores = predictions.map((p) => p.score);
-  const actualScores = predictions
-    .map((p) => caseMap.get(p.caseId)?.expertLabel.appropriatenessScore)
-    .filter((s): s is number => typeof s === 'number');
   const actualScoresFull = predictions.map((p) => caseMap.get(p.caseId)?.expertLabel.appropriatenessScore ?? 5);
 
   const matrix = confusionMatrix3Class(predictions, cases);

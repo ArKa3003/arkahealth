@@ -19,13 +19,13 @@ import type { PrefetchData } from '@/lib/cds-platform/fhir/prefetch';
 import { createFHIRClient } from '@/lib/cds-platform/fhir/client';
 import { PrefetchResolver } from '@/lib/cds-platform/fhir/prefetch';
 import { XGBoostClient, DEFAULT_ML_SERVICE_URL } from '@/lib/cds-platform/ml/xgboost-client';
-import { runTieredEngine, getHighestTier } from '@/lib/cds-platform/alerting/tiered-engine';
+import { runTieredEngine } from '@/lib/cds-platform/alerting/tiered-engine';
 import type { ClinicalScenario } from '@/lib/cds-platform/types';
 import type { FHIRServiceRequest } from '@/lib/cds-platform/fhir/resources';
 import { checkPregnancy, extractEGFR } from '@/lib/cds-platform/fhir/mappers';
 import { v4 as uuidv4 } from 'uuid';
 
-function emptyBundle<T>(): { resourceType: 'Bundle'; type: string; entry: unknown[] } {
+function emptyBundle(): { resourceType: 'Bundle'; type: string; entry: unknown[] } {
   return { resourceType: 'Bundle', type: 'searchset', entry: [] };
 }
 

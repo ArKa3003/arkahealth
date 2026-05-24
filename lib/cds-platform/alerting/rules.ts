@@ -13,13 +13,9 @@ const CRITICAL_MAX = 3;
  * Evaluates clinical rules against score and optional scenario to produce alerts.
  * Used by tiered-engine to build the list of alerts.
  * @param score - Appropriateness score (1–9)
- * @param scenarioSummary - Optional summary of scenario for rule conditions
  * @returns Array of Alert (info, warning, critical)
  */
-export function evaluateRules(
-  score: number,
-  scenarioSummary?: Record<string, unknown>
-): Alert[] {
+export function evaluateRules(score: number): Alert[] {
   const alerts: Alert[] = [];
   if (score <= CRITICAL_MAX) {
     alerts.push({
@@ -29,8 +25,7 @@ export function evaluateRules(
       detail:
         'Evidence suggests lower appropriateness (score 1–3). Consider alternative imaging or non-imaging workup.',
       suggestionLabel: 'Review alternatives',
-      // TODO(fda-criterion-2): seed citation in citations/index.ts and reference here
-      medicalBasis: undefined as any,
+      // TODO(fda-criterion-2): LOW_APPROPRIATENESS — seed ACR/Choosing Wisely citation in citations/index.ts
     });
   } else if (score <= WARNING_MAX) {
     alerts.push({
@@ -40,8 +35,7 @@ export function evaluateRules(
       detail:
         'Moderate appropriateness (score 4–6). Review clinical indication and alternative options.',
       suggestionLabel: 'See alternatives',
-      // TODO(fda-criterion-2): seed citation in citations/index.ts and reference here
-      medicalBasis: undefined as any,
+      // TODO(fda-criterion-2): MAY_BE_APPROPRIATE — seed ACR appropriateness citation in citations/index.ts
     });
   } else {
     alerts.push({
@@ -49,8 +43,7 @@ export function evaluateRules(
       code: 'APPROPRIATE',
       summary: 'Imaging order appears appropriate.',
       detail: 'High appropriateness score (7–9). Proceed if clinically indicated.',
-      // TODO(fda-criterion-2): seed citation in citations/index.ts and reference here
-      medicalBasis: undefined as any,
+      // TODO(fda-criterion-2): APPROPRIATE — seed ACR appropriateness citation in citations/index.ts
     });
   }
   return alerts;

@@ -19,7 +19,7 @@ import type { PrefetchData } from '@/lib/cds-platform/fhir/prefetch';
 import { createFHIRClient } from '@/lib/cds-platform/fhir/client';
 import { PrefetchResolver } from '@/lib/cds-platform/fhir/prefetch';
 import { XGBoostClient, DEFAULT_ML_SERVICE_URL } from '@/lib/cds-platform/ml/xgboost-client';
-import { runTieredEngine, getHighestTier } from '@/lib/cds-platform/alerting/tiered-engine';
+import { runTieredEngine } from '@/lib/cds-platform/alerting/tiered-engine';
 import type { ClinicalScenario } from '@/lib/cds-platform/types';
 import type { FHIRServiceRequest } from '@/lib/cds-platform/fhir/resources';
 import {
@@ -27,7 +27,7 @@ import {
   extractEGFR,
 } from '@/lib/cds-platform/fhir/mappers';
 
-function emptyBundle<T>(): { resourceType: 'Bundle'; type: string; entry: unknown[] } {
+function emptyBundle(): { resourceType: 'Bundle'; type: string; entry: unknown[] } {
   return { resourceType: 'Bundle', type: 'searchset', entry: [] };
 }
 
@@ -164,8 +164,7 @@ export async function handleOrderSelect(request: CDSHooksRequest): Promise<CDSHo
     } catch {
       continue;
     }
-    const tiered = runTieredEngine({ score: prediction.score, scenarioSummary: { modality: scenario.proposedImaging?.modality } });
-    const indicator = getHighestTier(tiered.alerts);
+    runTieredEngine({ score: prediction.score, scenarioSummary: { modality: scenario.proposedImaging?.modality } });
     const card = buildAppropriatenessCard(prediction, scenario as ClinicalScenario, 'order-select');
     const alternatives = getAlternatives(scenario as ClinicalScenario);
     if (alternatives.length > 0 && request.context?.patientId) {

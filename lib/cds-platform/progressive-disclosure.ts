@@ -101,7 +101,6 @@ export class ProgressiveDisclosureController {
    */
   selectInitialLevel(context: DisclosureContext): DisclosureLevel {
     const { score, hasSafetyFlags, hook, userId } = context;
-    const key = this.getUserId(userId);
     const prefs = this.getPreferences(userId);
 
     // First 5 uses ever → STANDARD minimum (learning phase)
@@ -147,8 +146,6 @@ export class ProgressiveDisclosureController {
   private adaptLevelFromPreferences(prefs: UserPreferences): DisclosureLevel | null {
     if (prefs.viewCount < 3) return null;
 
-    const overrideRate = prefs.viewCount > 0 ? prefs.overrideCount / prefs.viewCount : 0;
-    const expansionRate = prefs.expandedSections.length > 0 ? 1 : 0; // simplified: any expansion
     const avgViewMs = prefs.averageViewTimeMs;
 
     // If detail expansion rate > 50% (we track expanded sections; if user often has many open) → default DETAILED

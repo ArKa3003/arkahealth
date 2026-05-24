@@ -217,7 +217,7 @@ export class AlertAcceptancePredictor {
         acceptanceProbability: Math.max(0, Math.min(1, prob)),
         confidenceInterval: ci,
         keyDrivers: drivers,
-        recommendation: this.recommendationFromProbability(prob, isSafety),
+        recommendation: this.recommendationFromProbability(prob),
       };
     }
 
@@ -259,7 +259,7 @@ export class AlertAcceptancePredictor {
         acceptanceProbability: Math.max(0, Math.min(1, prob)),
         confidenceInterval: ci,
         keyDrivers: drivers,
-        recommendation: this.recommendationFromProbability(prob, isSafety),
+        recommendation: this.recommendationFromProbability(prob),
       };
     }
 
@@ -284,7 +284,7 @@ export class AlertAcceptancePredictor {
         acceptanceProbability: Math.max(0, Math.min(1, prob)),
         confidenceInterval: ci,
         keyDrivers: drivers,
-        recommendation: this.recommendationFromProbability(prob, isSafety),
+        recommendation: this.recommendationFromProbability(prob),
       };
     }
 
@@ -296,7 +296,7 @@ export class AlertAcceptancePredictor {
       acceptanceProbability: Math.max(0, Math.min(1, prob)),
       confidenceInterval: ci,
       keyDrivers: drivers.length ? drivers : ['Default heuristic'],
-      recommendation: this.recommendationFromProbability(prob, isSafety),
+      recommendation: this.recommendationFromProbability(prob),
     };
   }
 
@@ -322,10 +322,7 @@ export class AlertAcceptancePredictor {
     return prob;
   }
 
-  private recommendationFromProbability(
-    prob: number,
-    _isSafety: boolean
-  ): AcceptanceRecommendation {
+  private recommendationFromProbability(prob: number): AcceptanceRecommendation {
     if (prob > 0.8) return 'show_as_is';
     if (prob < 0.05) return 'suppress';
     if (prob < 0.15) return 'downgrade_tier';

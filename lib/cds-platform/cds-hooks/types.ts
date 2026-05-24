@@ -147,7 +147,7 @@ const fhirBundleSchema = z
       'searchset',
       'collection',
     ]),
-    entry: z.array(z.record(z.unknown())).optional(),
+    entry: z.array(z.record(z.string(), z.unknown())).optional(),
   })
   .passthrough();
 
@@ -176,7 +176,7 @@ export const cdSHooksRequestSchema = z.object({
     })
     .optional(),
   context: cdSHooksContextSchema,
-  prefetch: z.record(z.unknown()).optional(),
+  prefetch: z.record(z.string(), z.unknown()).optional(),
 });
 
 export type CDSHooksRequestValidated = z.infer<typeof cdSHooksRequestSchema>;
@@ -192,7 +192,9 @@ export function validateCDSHooksRequest(body: unknown): CDSHooksRequestValidated
 /**
  * Safe parse: returns { success: true, data } or { success: false, error }.
  */
-export function safeValidateCDSHooksRequest(body: unknown): z.SafeParseReturnType<unknown, CDSHooksRequestValidated> {
+export function safeValidateCDSHooksRequest(
+  body: unknown
+): { success: true; data: CDSHooksRequestValidated } | { success: false; error: z.ZodError } {
   return cdSHooksRequestSchema.safeParse(body);
 }
 

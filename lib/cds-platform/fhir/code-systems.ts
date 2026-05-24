@@ -221,8 +221,6 @@ export const RED_FLAG_CODES: Record<string, { code: string; display: string }> =
 // 5. MEDICATION_CODES (RxNorm)
 // =============================================================================
 
-const RXNORM_SYSTEM = 'http://www.nlm.nih.gov/research/umls/rxnorm';
-
 /** RxNorm codes for medications we check (metformin, anticoagulants, contrast) */
 export const MEDICATION_CODES: Record<string, { rxcui: string; display: string }[]> = {
   Metformin: [

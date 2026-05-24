@@ -452,7 +452,7 @@ export class TieredAlertEngine {
 
   private applySuppressionRules(alerts: TieredAlert[]): TieredAlert[] {
     const threshold = this.config.acceptanceDowngradeThreshold;
-    let result = alerts.map((a) => {
+    const result = alerts.map((a) => {
       if (
         a.tier === (TierEnum.ACTIVE_WARNING as TieredAlert['tier']) &&
         a.category !== Category.PATIENT_SAFETY &&
@@ -515,7 +515,7 @@ export class TieredAlertEngine {
  * @returns TieredEngineOutput with alerts array
  */
 export function runTieredEngine(input: TieredEngineInput): TieredEngineOutput {
-  const alerts = evaluateRules(input.score, input.scenarioSummary);
+  const alerts = evaluateRules(input.score);
   const byTier = (a: Alert, b: Alert) => {
     const order: Record<CardIndicatorTier, number> = { critical: 0, warning: 1, info: 2 };
     return order[a.tier] - order[b.tier];

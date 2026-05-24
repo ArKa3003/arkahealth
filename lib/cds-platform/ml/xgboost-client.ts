@@ -89,7 +89,6 @@ export class XGBoostClient {
   async predict(scenario: ClinicalScenario): Promise<MLPrediction> {
     const features = extractFeatures(scenario);
     const start = performance.now();
-    let lastError: Error | null = null;
 
     for (let attempt = 0; attempt <= this.retryCount; attempt++) {
       try {
@@ -111,8 +110,7 @@ export class XGBoostClient {
         const prediction = parsePythonPrediction(data, latencyMs);
         logPrediction(prediction, features);
         return prediction;
-      } catch (err) {
-        lastError = err instanceof Error ? err : new Error(String(err));
+      } catch {
         if (attempt < this.retryCount) continue;
       }
     }

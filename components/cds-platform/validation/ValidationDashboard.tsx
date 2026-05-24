@@ -237,7 +237,11 @@ export default function ValidationDashboard() {
                       <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                       <XAxis dataKey="fpr" type="number" domain={[0, 1]} tickFormatter={(v) => v.toFixed(2)} />
                       <YAxis type="number" domain={[0, 1]} tickFormatter={(v) => v.toFixed(2)} />
-                      <Tooltip formatter={(value: number) => value.toFixed(3)} />
+                      <Tooltip
+                        formatter={(value) =>
+                          typeof value === 'number' ? value.toFixed(3) : String(value ?? '')
+                        }
+                      />
                       <Legend />
                       <Line type="monotone" dataKey="tpr" stroke="#0f766e" strokeWidth={2} name="TPR" dot={false} />
                     </LineChart>

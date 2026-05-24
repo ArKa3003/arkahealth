@@ -41,7 +41,6 @@ export function InformationHierarchy({
   prediction,
   scenario,
   alerts,
-  nudges = [],
   alternatives = [],
   onOrderInstead,
   onInsertIntoNote,

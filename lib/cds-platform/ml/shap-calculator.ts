@@ -397,7 +397,6 @@ function buildClinicalRationale(
   topNegative: FormattedFactor[]
 ): string {
   const indication = scenario.proposedImaging?.indication ?? scenario.chiefComplaint ?? 'clinical indication';
-  const modality = scenario.proposedImaging?.modality ?? 'Imaging';
   const pos1 = topPositive[0]?.displayName;
   const neg1 = topNegative[0]?.displayName;
   const sentences = [

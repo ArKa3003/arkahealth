@@ -18,10 +18,8 @@ import {
   SUS_QUESTIONS,
   CUSTOM_CDS_QUESTIONS,
   LIKERT_LABELS,
-  computeSusScore,
   interpretSusScore,
 } from '@/lib/cds-platform/usability/sus-survey';
-import type { ClinicalScenario } from '@/lib/cds-platform/types';
 import type { MLPrediction } from '@/lib/cds-platform/ml/types';
 import type { TieredAlert } from '@/lib/cds-platform/alerting/types';
 import type { AlternativeOption } from '@/components/cds-platform/sidebar/AlternativesPanel';
@@ -55,13 +53,18 @@ export default function UsabilityTestRunner() {
     alerts: TieredAlert[];
     alternatives?: AlternativeOption[];
   } | null>(null);
-  const [loadingScenario, setLoadingScenario] = useState(false);
+  const [scenarioFetchError, setScenarioFetchError] = useState(false);
   const [susResponses, setSusResponses] = useState<number[]>([]);
   const [customResponses, setCustomResponses] = useState<number[]>([]);
 
   const scenarios = USABILITY_TEST_SCENARIOS.filter((s) => selectedScenarioIds.includes(s.id));
   const currentScenario = scenarios[currentScenarioIndex];
   const isLastScenario = currentScenarioIndex >= scenarios.length - 1;
+  const loadingScenario =
+    phase === 'scenario' &&
+    currentScenario != null &&
+    scenarioData === null &&
+    !scenarioFetchError;
 
   const record = useCallback(
     (type: Parameters<typeof framework.recordEvent>[1]['type'], target?: string, data?: Record<string, unknown>) => {
@@ -91,6 +94,7 @@ export default function UsabilityTestRunner() {
     setPhase('scenario');
     setCurrentScenarioIndex(0);
     setScenarioData(null);
+    setScenarioFetchError(false);
   }, [
     participantId,
     participantRole,
@@ -101,10 +105,10 @@ export default function UsabilityTestRunner() {
   ]);
 
   useEffect(() => {
-    if (phase !== 'scenario' || !currentScenario) return;
-    framework.startScenario(sessionId!, currentScenario.id);
+    if (phase !== 'scenario' || !currentScenario || !sessionId) return;
+    let cancelled = false;
+    framework.startScenario(sessionId, currentScenario.id);
     record('page_view', 'scenario');
-    setLoadingScenario(true);
     fetch('/api/usability/score', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -112,6 +116,7 @@ export default function UsabilityTestRunner() {
     })
       .then((res) => res.json())
       .then((data) => {
+        if (cancelled) return;
         if (data.error) throw new Error(data.error);
         setScenarioData({
           prediction: data.prediction,
@@ -119,9 +124,16 @@ export default function UsabilityTestRunner() {
           alternatives: data.alternatives,
         });
       })
-      .catch(() => setScenarioData(null))
-      .finally(() => setLoadingScenario(false));
-  }, [phase, sessionId, currentScenario?.id]);
+      .catch(() => {
+        if (!cancelled) {
+          setScenarioData(null);
+          setScenarioFetchError(true);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [phase, sessionId, currentScenario, framework, record]);
 
   const completeTask = useCallback(
     (action: ExpectedAction | 'modify' | 'abandon') => {
@@ -139,6 +151,7 @@ export default function UsabilityTestRunner() {
       } else {
         setCurrentScenarioIndex((i) => i + 1);
         setScenarioData(null);
+        setScenarioFetchError(false);
       }
     },
     [sessionId, currentScenario, isLastScenario, framework, record]
@@ -286,12 +299,16 @@ export default function UsabilityTestRunner() {
           </div>
         </div>
         <div className="shrink-0 border-l border-slate-200 bg-slate-50">
-          {loadingScenario || !scenarioData ? (
+          {scenarioFetchError ? (
+            <div className="flex w-[380px] flex-col items-center justify-center gap-3 p-8">
+              <p className="text-sm text-red-600">Failed to load CDS data. Check that /api/usability/score is available.</p>
+            </div>
+          ) : loadingScenario ? (
             <div className="flex w-[380px] flex-col items-center justify-center gap-3 p-8">
               <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
               <p className="text-sm text-slate-600">Loading CDS…</p>
             </div>
-          ) : (
+          ) : scenarioData ? (
             <SidebarLayout
               scenario={currentScenario.scenario}
               prediction={scenarioData.prediction}
@@ -305,7 +322,7 @@ export default function UsabilityTestRunner() {
               onOverrideSubmit={handleOverrideSubmit}
               onLayerInteraction={handleLayerInteraction}
             />
-          )}
+          ) : null}
         </div>
       </div>
     );
@@ -397,7 +414,6 @@ export default function UsabilityTestRunner() {
 
   if (phase === 'results' && sessionId) {
     const metrics = framework.computeSessionMetrics(sessionId);
-    const aggregate = framework.computeAggregateMetrics();
     const susScore = metrics.satisfactionScore ?? 0;
     const interpretation = interpretSusScore(susScore);
 

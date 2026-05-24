@@ -15,7 +15,7 @@ import { AlertCard } from './AlertCard';
 import { QuickActions } from './QuickActions';
 import { OverrideDialog } from './OverrideDialog';
 import { ProgressiveContainer } from './ProgressiveContainer';
-import { AlternativesPanel, type AlternativeOption } from './AlternativesPanel';
+import type { AlternativeOption } from './AlternativesPanel';
 import { STANDARD_OVERRIDE_OPTIONS } from '@/lib/cds-platform/alerting/types';
 
 export interface SidebarLayoutProps {

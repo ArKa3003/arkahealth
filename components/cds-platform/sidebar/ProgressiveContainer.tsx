@@ -6,7 +6,7 @@
 
 'use client';
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import type { MLPrediction } from '@/lib/cds-platform/ml/types';
 import type { ClinicalScenario } from '@/lib/cds-platform/types';
@@ -62,7 +62,6 @@ export function ProgressiveContainer({
   prediction,
   scenario,
   alerts,
-  nudges = [],
   alternatives = [],
   onOrderInstead,
   onInsertIntoNote,
@@ -95,11 +94,6 @@ export function ProgressiveContainer({
 
   const [expandedSections, setExpandedSections] = useState<Set<string>>(() => new Set(getInitialExpandedForLevel(level)));
 
-  // Sync default expanded when level changes
-  useEffect(() => {
-    setExpandedSections(new Set(getInitialExpandedForLevel(level)));
-  }, [level, getInitialExpandedForLevel]);
-
   const handleSectionToggle = useCallback(
     (section: string, expanded: boolean) => {
       setExpandedSections((s) => {
@@ -121,13 +115,19 @@ export function ProgressiveContainer({
 
   const handleShowMore = useCallback(() => {
     const next = nextLevel(level);
-    if (next) setLevel(next);
-  }, [level, setLevel]);
+    if (next) {
+      setLevel(next);
+      setExpandedSections(new Set(getInitialExpandedForLevel(next)));
+    }
+  }, [level, setLevel, getInitialExpandedForLevel]);
 
   const handleShowLess = useCallback(() => {
     const prev = prevLevel(level);
-    if (prev) setLevel(prev);
-  }, [level, setLevel]);
+    if (prev) {
+      setLevel(prev);
+      setExpandedSections(new Set(getInitialExpandedForLevel(prev)));
+    }
+  }, [level, setLevel, getInitialExpandedForLevel]);
 
   const canShowMore = nextLevel(level) !== null;
   const canShowLess = prevLevel(level) !== null;

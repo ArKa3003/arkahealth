@@ -9,8 +9,6 @@ import React, { useState, useCallback } from 'react';
 import { Copy, Check, FileText } from 'lucide-react';
 import type { MLPrediction } from '@/lib/cds-platform/ml/types';
 import type { ClinicalScenario } from '@/lib/cds-platform/types';
-import type { SHAPFeatureContribution } from '@/lib/cds-platform/ml/types';
-
 export interface CopyableDocumentationProps {
   prediction: MLPrediction;
   scenario: ClinicalScenario;

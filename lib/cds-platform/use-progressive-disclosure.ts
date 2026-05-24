@@ -58,7 +58,9 @@ export function useProgressiveDisclosure({
   const levelRef = useRef<DisclosureLevel>(initialLevel);
   const userId = context.userId;
 
-  levelRef.current = level;
+  useEffect(() => {
+    levelRef.current = level;
+  }, [level]);
 
   const defaultExpandedSections =
     level === 'DETAILED'

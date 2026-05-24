@@ -75,7 +75,6 @@ export function AlertCard({
   const styles = getTierStyles(alert.tier);
   const Icon = styles.icon;
   const isPassive = alert.tier === 'passive';
-  const needsAck = alert.tier === 'warning' && alert.actionRequired;
   const showOverride = showOverrideButton && (alert.tier === 'warning' || alert.tier === 'critical') && (alert.overrideOptions?.length ?? 0) > 0;
 
   useEffect(() => {
