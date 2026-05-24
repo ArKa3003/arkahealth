@@ -180,7 +180,7 @@ export function medicalBasisFromScenario(scenario: {
     return medicalBasisFromCitation(
       'doi:10.1016/j.jacr.2022.02.018',
       'guideline',
-      'ACR Appropriateness Criteria for low back pain generally favor conservative management before lumbar MRI when red flags are absent; duration, prior therapy, and neurologic status determine the appropriate variant.',
+      'Evidence-based imaging appropriateness criteria for low back pain generally favor conservative management before lumbar MRI when red flags are absent; duration, prior therapy, and neurologic status determine the appropriate variant.',
     );
   }
 

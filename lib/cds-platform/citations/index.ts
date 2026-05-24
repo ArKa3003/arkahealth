@@ -28,8 +28,8 @@ const LAST_VERIFIED = '2026-05-24';
 export const CITATIONS: Record<string, Citation> = {
   'doi:10.1016/j.jacr.2022.02.018': {
     id: 'doi:10.1016/j.jacr.2022.02.018',
-    label: 'ACR Appropriateness Criteria — Low Back Pain (2022)',
-    title: 'ACR Appropriateness Criteria — Low Back Pain (2022)',
+    label: 'Imaging appropriateness criteria — Low Back Pain (2022)',
+    title: 'Imaging appropriateness criteria — Low Back Pain (2022)',
     url: 'https://doi.org/10.1016/j.jacr.2022.02.018',
     authorityClass: 'guideline',
     year: 2022,
@@ -37,8 +37,8 @@ export const CITATIONS: Record<string, Citation> = {
   },
   'acr:duplicate-imaging-90d': {
     id: 'acr:duplicate-imaging-90d',
-    label: 'ACR Appropriateness Criteria — repeat imaging within 90 days',
-    title: 'ACR Appropriateness Criteria — repeat imaging within 90 days',
+    label: 'Imaging appropriateness criteria — repeat imaging within 90 days',
+    title: 'Imaging appropriateness criteria — repeat imaging within 90 days',
     url: 'https://acsearch.acr.org/list',
     authorityClass: 'guideline',
     year: 2023,
@@ -100,7 +100,7 @@ export const CITATIONS: Record<string, Citation> = {
   },
   'acr:ped-rlq-pain': {
     id: 'acr:ped-rlq-pain',
-    label: 'ACR Appropriateness Criteria — Right Lower Quadrant Pain, Pediatric (2023)',
+    label: 'Imaging appropriateness criteria — Right Lower Quadrant Pain, Pediatric (2023)',
     url: 'https://acsearch.acr.org/docs/6948342/Narrative/',
     authorityClass: 'guideline',
     year: 2023,
@@ -116,7 +116,7 @@ export const CITATIONS: Record<string, Citation> = {
   },
   'acr:knee-oa': {
     id: 'acr:knee-oa',
-    label: 'ACR Appropriateness Criteria — Chronic Knee Pain (2022)',
+    label: 'Imaging appropriateness criteria — Chronic Knee Pain (2022)',
     url: 'https://acsearch.acr.org/docs/6948394/Narrative/',
     authorityClass: 'guideline',
     year: 2022,
@@ -124,7 +124,7 @@ export const CITATIONS: Record<string, Citation> = {
   },
   'acr:sudden-headache': {
     id: 'acr:sudden-headache',
-    label: 'ACR Appropriateness Criteria — Headache (2019)',
+    label: 'Imaging appropriateness criteria — Headache (2019)',
     url: 'https://acsearch.acr.org/docs/6948396/Narrative/',
     authorityClass: 'guideline',
     year: 2019,
@@ -133,7 +133,7 @@ export const CITATIONS: Record<string, Citation> = {
   // TODO(clinical-signoff): confirm narrative URL with clinical team
   'acr:head-trauma': {
     id: 'acr:head-trauma',
-    label: 'ACR Appropriateness Criteria — Head Trauma (2020 revision)',
+    label: 'Imaging appropriateness criteria — Head Trauma (2020 revision)',
     url: 'https://acsearch.acr.org/docs/3083021/Narrative/',
     authorityClass: 'guideline',
     year: 2020,
@@ -141,7 +141,7 @@ export const CITATIONS: Record<string, Citation> = {
   },
   'acr:contrast-media-manual': {
     id: 'acr:contrast-media-manual',
-    label: 'ACR Manual on Contrast Media (2024)',
+    label: 'Published contrast-media safety manual (2024)',
     url: 'https://www.acr.org/Clinical-Resources/Contrast-Manual',
     authorityClass: 'guideline',
     year: 2024,

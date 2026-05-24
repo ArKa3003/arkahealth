@@ -21,7 +21,7 @@ const services = [
     hook: "order-select",
     title: "ARKA-CLIN Imaging Appropriateness",
     description:
-      "Guideline-anchored imaging-appropriateness CDS for the order-select hook. Recommendations cite ACR, USPSTF, and specialty-society guidelines; ML-derived patient-specific refinement is shown as a non-authoritative confidence layer.",
+      "Guideline-anchored imaging-appropriateness CDS for the order-select hook. Recommendations cite USPSTF and specialty-society guidelines; ML-derived patient-specific refinement is shown as a non-authoritative confidence layer.",
     id: "arka-clin-appropriateness",
     prefetch: {
       patient: "Patient/{{context.patientId}}",
@@ -35,7 +35,7 @@ const services = [
     id: "arka-clin-appropriateness-sign",
     title: "ARKA-CLIN Final Imaging Review",
     description:
-      "Final guideline-anchored appropriateness check at order-sign. Returns a non-blocking critical-tier card with descriptive override reasons when the proposed study departs from ACR Appropriateness Criteria or specialty-society guidance for the indication.",
+      "Final guideline-anchored appropriateness check at order-sign. Returns a non-blocking critical-tier card with descriptive override reasons when the proposed study departs from evidence-based appropriateness criteria or specialty-society guidance for the indication.",
     prefetch: {
       patient: "Patient/{{context.patientId}}",
       conditions: "Condition?patient={{context.patientId}}",

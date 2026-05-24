@@ -26,7 +26,7 @@ export function evaluateRules(score: number): Alert[] {
       detail:
         'Evidence suggests lower appropriateness (score 1–3). Consider alternative imaging or non-imaging workup.',
       suggestionLabel: 'Review alternatives',
-      // TODO(fda-criterion-2): LOW_APPROPRIATENESS — seed ACR/Choosing Wisely citation in citations/index.ts
+      // TODO(fda-criterion-2): LOW_APPROPRIATENESS — seed specialty-society / Choosing Wisely citation in citations/index.ts
     });
   } else if (score <= WARNING_MAX) {
     alerts.push({
@@ -36,7 +36,7 @@ export function evaluateRules(score: number): Alert[] {
       detail:
         'Moderate appropriateness (score 4–6). Review clinical indication and alternative options.',
       suggestionLabel: 'See alternatives',
-      // TODO(fda-criterion-2): MAY_BE_APPROPRIATE — seed ACR appropriateness citation in citations/index.ts
+      // TODO(fda-criterion-2): MAY_BE_APPROPRIATE — seed appropriateness guideline citation in citations/index.ts
     });
   } else {
     alerts.push({
@@ -44,7 +44,7 @@ export function evaluateRules(score: number): Alert[] {
       code: 'APPROPRIATE',
       summary: 'Imaging order appears appropriate.',
       detail: 'High appropriateness score (7–9). Proceed if clinically indicated.',
-      // TODO(fda-criterion-2): APPROPRIATE — seed ACR appropriateness citation in citations/index.ts
+      // TODO(fda-criterion-2): APPROPRIATE — seed appropriateness guideline citation in citations/index.ts
     });
   }
   return alerts;
@@ -67,7 +67,7 @@ export function getCriticalThreshold(): number {
 }
 
 /**
- * Guideline-anchored scenario rules (ACR / Choosing Wisely). Independent of ML score;
+ * Guideline-anchored scenario rules (specialty-society guidelines / Choosing Wisely). Independent of ML score;
  * used at order-sign so critical cards require a cited rule, not ML signal alone.
  *
  * @param scenario - Mapped prefetch + draft order context.
@@ -102,10 +102,10 @@ export function evaluateGuidelineRules(scenario: ClinicalScenario): Alert[] {
   if (isLowBack && isMri && noRedFlags && durationDays >= 0 && durationDays < 42 && !conservativeTried) {
     alerts.push({
       tier: 'critical',
-      code: 'ACR_LBP_EARLY_MRI',
+      code: 'GUIDELINE_LBP_EARLY_MRI',
       summary: 'Lumbar MRI may be inappropriate for uncomplicated low back pain without conservative trial',
       detail:
-        'ACR Appropriateness Criteria and Choosing Wisely guidance favor conservative management before lumbar MRI when red flags are absent and symptoms are under six weeks.',
+        'Evidence-based imaging appropriateness criteria and Choosing Wisely guidance favor conservative management before lumbar MRI when red flags are absent and symptoms are under six weeks.',
       suggestionLabel: 'Review alternatives',
     });
   }

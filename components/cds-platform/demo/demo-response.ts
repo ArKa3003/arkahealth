@@ -122,7 +122,7 @@ function fallbackShapRows(scenario: DemoScenario): ShapRowWithRationale[] {
       rationale: durationEntry.rationale.slice(0, 120) + '…',
       citationId: durationEntry.citationId,
       citationUrl: durationEntry.url,
-      citationLabel: 'ACR §3',
+      citationLabel: 'Guideline §3',
     });
   }
 
@@ -134,7 +134,7 @@ function fallbackShapRows(scenario: DemoScenario): ShapRowWithRationale[] {
       rationale: redFlagEntry.rationale.slice(0, 100) + '…',
       citationId: redFlagEntry.citationId,
       citationUrl: redFlagEntry.url,
-      citationLabel: 'ACR §2',
+      citationLabel: 'Guideline §2',
     });
   }
 

@@ -40,7 +40,7 @@ export const FEATURE_CATALOG: Record<string, FeatureCatalogEntry> = {
   patient_age: {
     label: 'Patient age (years)',
     rationale:
-      'Age is a context input to the appropriateness model: it shifts baseline pretest probability and which indication-specific ACR variant applies (for example, pediatric RLQ pathways versus geriatric fall protocols). Age alone does not mandate or forbid imaging; the model uses it to calibrate scores alongside indication, red flags, and proposed modality rather than as a standalone clinical recommendation.',
+      'Age is a context input to the appropriateness model: it shifts baseline pretest probability and which indication-specific variant applies (for example, pediatric RLQ pathways versus geriatric fall protocols). Age alone does not mandate or forbid imaging; the model uses it to calibrate scores alongside indication, red flags, and proposed modality rather than as a standalone clinical recommendation.',
     citationId: ARKA_CONTEXT,
     url: 'https://arkahealth.com/docs/feature-catalog#context-dependent',
     authorityClass: 'context_dependent',
@@ -62,7 +62,7 @@ export const FEATURE_CATALOG: Record<string, FeatureCatalogEntry> = {
   modality_code: {
     label: 'Proposed imaging modality',
     rationale:
-      'The ordered modality (CT, MRI, radiograph, ultrasound, and so on) is a core model input describing what study is being requested. Appropriateness depends on whether that modality can answer the clinical question with acceptable risk; this catalogue entry documents the feature as structured context for the XGBoost vector, not as a substitute for indication-specific ACR variant selection performed at scoring time.',
+      'The ordered modality (CT, MRI, radiograph, ultrasound, and so on) is a core model input describing what study is being requested. Appropriateness depends on whether that modality can answer the clinical question with acceptable risk; this catalogue entry documents the feature as structured context for the XGBoost vector, not as a substitute for indication-specific variant selection performed at scoring time.',
     citationId: ARKA_CONTEXT,
     url: 'https://arkahealth.com/docs/feature-catalog#context-dependent',
     authorityClass: 'context_dependent',
@@ -95,7 +95,7 @@ export const FEATURE_CATALOG: Record<string, FeatureCatalogEntry> = {
   symptom_duration_days: {
     label: 'Symptom duration (days)',
     rationale:
-      'For uncomplicated low back pain without red flags, ACR variant 3 generally favors conservative management before lumbar MRI when symptoms are subacute. Duration helps distinguish early presentations (often managed without immediate imaging) from persistent symptoms that may warrant reconsideration after an adequate trial of therapy.',
+      'For uncomplicated low back pain without red flags, Indication-specific variant 3 generally favors conservative management before lumbar MRI when symptoms are subacute. Duration helps distinguish early presentations (often managed without immediate imaging) from persistent symptoms that may warrant reconsideration after an adequate trial of therapy.',
     citationId: LBP_CITATION,
     url: 'https://acsearch.acr.org/docs/3108272/Narrative/',
     authorityClass: 'guideline',
@@ -106,7 +106,7 @@ export const FEATURE_CATALOG: Record<string, FeatureCatalogEntry> = {
   has_red_flags: {
     label: 'Red-flag symptoms',
     rationale:
-      'ACR Appropriateness Criteria for low back pain (variant 1) prioritize urgent evaluation when red flags are present—such as cauda equina symptoms, progressive neurologic deficit, fever with spine pain, or major trauma. Their presence generally increases the appropriateness of timely advanced imaging rather than delayed outpatient MRI.',
+      'Evidence-based imaging appropriateness criteria for low back pain (variant 1) prioritize urgent evaluation when red flags are present—such as cauda equina symptoms, progressive neurologic deficit, fever with spine pain, or major trauma. Their presence generally increases the appropriateness of timely advanced imaging rather than delayed outpatient MRI.',
     citationId: LBP_CITATION,
     url: 'https://acsearch.acr.org/docs/3108272/Narrative/',
     authorityClass: 'guideline',
@@ -117,7 +117,7 @@ export const FEATURE_CATALOG: Record<string, FeatureCatalogEntry> = {
   cancer_history: {
     label: 'History of malignancy (red-flag derived)',
     rationale:
-      'Active or recent cancer history changes pretest probability for metastatic or structural causes of pain and is treated as a red-flag modifier in ACR musculoskeletal scenarios. This feature generally increases appropriateness of timely cross-sectional imaging when new or worsening symptoms suggest possible malignant involvement.',
+      'Active or recent cancer history changes pretest probability for metastatic or structural causes of pain and is treated as a red-flag modifier in Published musculoskeletal imaging scenarios. This feature generally increases appropriateness of timely cross-sectional imaging when new or worsening symptoms suggest possible malignant involvement.',
     citationId: LBP_CITATION,
     url: 'https://acsearch.acr.org/docs/3108272/Narrative/',
     authorityClass: 'guideline',
@@ -128,7 +128,7 @@ export const FEATURE_CATALOG: Record<string, FeatureCatalogEntry> = {
   neurological_deficit: {
     label: 'Neurological deficit documented',
     rationale:
-      'ACR low back pain criteria (section 1) treat suspected radiculopathy, progressive motor weakness, saddle anesthesia, and cauda equina syndrome as escalated presentations where advanced imaging is more often appropriate than watchful waiting. A documented neurologic deficit signals possible nerve root or cauda equina compromise and generally increases appropriateness of timely MRI or equivalent cross-sectional evaluation.',
+      'Low back pain imaging guidance (section 1) treat suspected radiculopathy, progressive motor weakness, saddle anesthesia, and cauda equina syndrome as escalated presentations where advanced imaging is more often appropriate than watchful waiting. A documented neurologic deficit signals possible nerve root or cauda equina compromise and generally increases appropriateness of timely MRI or equivalent cross-sectional evaluation.',
     citationId: LBP_CITATION,
     url: 'https://doi.org/10.1016/j.jacr.2022.02.018',
     authorityClass: 'guideline',
@@ -139,7 +139,7 @@ export const FEATURE_CATALOG: Record<string, FeatureCatalogEntry> = {
   fever_present: {
     label: 'Fever documented',
     rationale:
-      'Fever modifies appropriateness by clinical context: ACR pediatric right lower quadrant pain criteria treat fever as a red-flag modifier favoring timely imaging when appendicitis is suspected, whereas ACR headache criteria use fever with sudden severe headache to escalate evaluation for intracranial infection or hemorrhage. The model encodes fever as a binary modifier whose direction depends on indication, not as a universal mandate to image.',
+      'Fever modifies appropriateness by clinical context: Published pediatric RLQ imaging criteria treat fever as a red-flag modifier favoring timely imaging when appendicitis is suspected, whereas Published headache imaging criteria use fever with sudden severe headache to escalate evaluation for intracranial infection or hemorrhage. The model encodes fever as a binary modifier whose direction depends on indication, not as a universal mandate to image.',
     citationId: 'acr:ped-rlq-pain',
     url: 'https://acsearch.acr.org/docs/6948342/Narrative/',
     authorityClass: 'guideline',
@@ -150,7 +150,7 @@ export const FEATURE_CATALOG: Record<string, FeatureCatalogEntry> = {
   is_pregnant: {
     label: 'Pregnancy status',
     rationale:
-      'ACR guidance on radiation safety stresses minimizing fetal exposure and selecting modalities without ionizing radiation when clinically appropriate. Pregnancy status is a safety and appropriateness modifier: it can decrease appropriateness of CT with radiation or increase appropriateness of ultrasound/MRI alternatives depending on clinical question and gestational age.',
+      'Published radiation safety guidance stresses minimizing fetal exposure and selecting modalities without ionizing radiation when clinically appropriate. Pregnancy status is a safety and appropriateness modifier: it can decrease appropriateness of CT with radiation or increase appropriateness of ultrasound/MRI alternatives depending on clinical question and gestational age.',
     citationId: LBP_CITATION,
     url: 'https://acsearch.acr.org/docs/3108272/Narrative/',
     authorityClass: 'guideline',
@@ -161,7 +161,7 @@ export const FEATURE_CATALOG: Record<string, FeatureCatalogEntry> = {
   has_contrast_allergy: {
     label: 'Contrast allergy documented',
     rationale:
-      'Documented allergy or prior contrast reaction affects modality and protocol selection under ACR contrast safety principles. This safety feature is context-dependent for appropriateness scoring: it may decrease appropriateness of contrast-enhanced CT while increasing appropriateness of non-contrast MRI or alternative studies that answer the clinical question.',
+      'Documented allergy or prior contrast reaction affects modality and protocol selection under published contrast safety principles. This safety feature is context-dependent for appropriateness scoring: it may decrease appropriateness of contrast-enhanced CT while increasing appropriateness of non-contrast MRI or alternative studies that answer the clinical question.',
     citationId: LBP_CITATION,
     url: 'https://acsearch.acr.org/docs/3108272/Narrative/',
     authorityClass: 'guideline',
@@ -172,7 +172,7 @@ export const FEATURE_CATALOG: Record<string, FeatureCatalogEntry> = {
   egfr_value: {
     label: 'Estimated glomerular filtration rate (eGFR)',
     rationale:
-      'ACR contrast safety guidance uses renal function to weigh iodinated contrast risk and consider alternative strategies when eGFR is reduced. Low eGFR does not automatically forbid contrast-enhanced CT but shifts appropriateness toward non-contrast or non-ionizing options and may trigger hydration or nephrology pathways.',
+      'Published contrast safety guidance uses renal function to weigh iodinated contrast risk and consider alternative strategies when eGFR is reduced. Low eGFR does not automatically forbid contrast-enhanced CT but shifts appropriateness toward non-contrast or non-ionizing options and may trigger hydration or nephrology pathways.',
     citationId: LBP_CITATION,
     url: 'https://acsearch.acr.org/docs/3108272/Narrative/',
     authorityClass: 'guideline',
@@ -183,7 +183,7 @@ export const FEATURE_CATALOG: Record<string, FeatureCatalogEntry> = {
   on_anticoagulation: {
     label: 'Anticoagulation therapy active',
     rationale:
-      'ACR Appropriateness Criteria for head trauma recognize that anticoagulated patients have higher risk of intracranial hemorrhage after even minor head injury, lowering the threshold for CT when symptoms are present or mechanism is concerning. Anticoagulation therefore generally increases appropriateness of head CT in trauma contexts while remaining indication-specific for non-trauma orders.',
+      'Evidence-based imaging appropriateness criteria for head trauma recognize that anticoagulated patients have higher risk of intracranial hemorrhage after even minor head injury, lowering the threshold for CT when symptoms are present or mechanism is concerning. Anticoagulation therefore generally increases appropriateness of head CT in trauma contexts while remaining indication-specific for non-trauma orders.',
     citationId: 'acr:head-trauma',
     url: 'https://acsearch.acr.org/docs/3083021/Narrative/',
     authorityClass: 'guideline',
@@ -194,7 +194,7 @@ export const FEATURE_CATALOG: Record<string, FeatureCatalogEntry> = {
   on_metformin: {
     label: 'Metformin therapy active',
     rationale:
-      'The ACR Manual on Contrast Media addresses metformin when iodinated contrast is contemplated: historical concern linked contrast-induced nephropathy with metformin-associated lactic acidosis, while current guidance favors risk stratification by eGFR and often permits continued metformin when renal function is adequate. This feature is relevant primarily for contrast studies and is context-dependent for appropriateness scoring.',
+      'The published contrast-media safety manual addresses metformin when iodinated contrast is contemplated: historical concern linked contrast-induced nephropathy with metformin-associated lactic acidosis, while current guidance favors risk stratification by eGFR and often permits continued metformin when renal function is adequate. This feature is relevant primarily for contrast studies and is context-dependent for appropriateness scoring.',
     citationId: 'acr:contrast-media-manual',
     url: 'https://www.acr.org/Clinical-Resources/Contrast-Manual',
     authorityClass: 'guideline',
@@ -205,7 +205,7 @@ export const FEATURE_CATALOG: Record<string, FeatureCatalogEntry> = {
   prior_imaging_count_90d: {
     label: 'Prior imaging count (90 days)',
     rationale:
-      'ACR low back pain variant 3 and related duplicate-imaging guidance discourage repeat advanced imaging when prior studies of the relevant region are recent and clinical status is unchanged. A higher count of prior imaging within 90 days generally decreases appropriateness of repeat orders unless new red flags, neurologic change, or documented clinical escalation is present.',
+      'Low back pain imaging guidance variant 3 and related duplicate-imaging guidance discourage repeat advanced imaging when prior studies of the relevant region are recent and clinical status is unchanged. A higher count of prior imaging within 90 days generally decreases appropriateness of repeat orders unless new red flags, neurologic change, or documented clinical escalation is present.',
     citationId: LBP_CITATION,
     url: 'https://acsearch.acr.org/docs/3108272/Narrative/',
     authorityClass: 'guideline',
@@ -227,7 +227,7 @@ export const FEATURE_CATALOG: Record<string, FeatureCatalogEntry> = {
   same_modality_prior_30d: {
     label: 'Same modality prior study within 30 days',
     rationale:
-      'ACR low back pain guidance (section 3 on repeat imaging intervals) and related duplicate-utilization principles hold that repeat same-modality imaging within 30 days rarely changes management when symptoms are stable and non-radicular. Yield of new actionable findings drops sharply in that window, so a recent same-modality study generally decreases appropriateness of repeat advanced imaging absent escalation.',
+      'Low back pain imaging guidance (section 3 on repeat imaging intervals) and related duplicate-utilization principles hold that repeat same-modality imaging within 30 days rarely changes management when symptoms are stable and non-radicular. Yield of new actionable findings drops sharply in that window, so a recent same-modality study generally decreases appropriateness of repeat advanced imaging absent escalation.',
     citationId: LBP_CITATION,
     url: 'https://doi.org/10.1016/j.jacr.2022.02.018',
     authorityClass: 'guideline',
@@ -238,7 +238,7 @@ export const FEATURE_CATALOG: Record<string, FeatureCatalogEntry> = {
   same_body_site_prior_30d: {
     label: 'Same body site prior study within 30 days',
     rationale:
-      'ACR low back pain variant 3 and related duplicate-imaging guidance discourage repeat lumbar MRI or CT when prior studies of the same anatomic region are recent and clinical status is unchanged—even across modalities (for example, MRI lumbar within 30 days of CT lumbar). A prior study of the same body site within 30 days generally decreases appropriateness unless new red flags or clinical change are documented.',
+      'Low back pain imaging guidance variant 3 and related duplicate-imaging guidance discourage repeat lumbar MRI or CT when prior studies of the same anatomic region are recent and clinical status is unchanged—even across modalities (for example, MRI lumbar within 30 days of CT lumbar). A prior study of the same body site within 30 days generally decreases appropriateness unless new red flags or clinical change are documented.',
     citationId: LBP_CITATION,
     url: 'https://acsearch.acr.org/docs/3108272/Narrative/',
     authorityClass: 'guideline',
@@ -260,7 +260,7 @@ export const FEATURE_CATALOG: Record<string, FeatureCatalogEntry> = {
   comorbidity_count: {
     label: 'Comorbidity burden (count)',
     rationale:
-      'Aggregate comorbidity count summarizes chronic disease burden from problem-list and condition resources as a model context feature. It shifts baseline risk and resilience estimates in the feature vector but is not anchored to a single ACR variant; interpreters should combine it with indication-specific criteria rather than treating the count alone as a reason to order or defer imaging.',
+      'Aggregate comorbidity count summarizes chronic disease burden from problem-list and condition resources as a model context feature. It shifts baseline risk and resilience estimates in the feature vector but is not anchored to a single indication-specific variant; interpreters should combine it with indication-specific criteria rather than treating the count alone as a reason to order or defer imaging.',
     citationId: ARKA_CONTEXT,
     url: 'https://arkahealth.com/docs/feature-catalog#context-dependent',
     authorityClass: 'context_dependent',
@@ -271,7 +271,7 @@ export const FEATURE_CATALOG: Record<string, FeatureCatalogEntry> = {
   conservative_tx_tried: {
     label: 'Conservative treatment tried (chart-derived)',
     rationale:
-      'ACR low back pain variant 4 supports advanced imaging after an adequate trial of conservative management for persistent uncomplicated low back pain without red flags. Documentation that physical therapy, NSAIDs, or comparable conservative care was tried generally increases appropriateness of lumbar MRI when symptoms persist and neurologic status remains stable.',
+      'Low back pain imaging guidance variant 4 supports advanced imaging after an adequate trial of conservative management for persistent uncomplicated low back pain without red flags. Documentation that physical therapy, NSAIDs, or comparable conservative care was tried generally increases appropriateness of lumbar MRI when symptoms persist and neurologic status remains stable.',
     citationId: LBP_CITATION,
     url: 'https://acsearch.acr.org/docs/3108272/Narrative/',
     authorityClass: 'guideline',

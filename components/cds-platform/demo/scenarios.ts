@@ -68,29 +68,29 @@ export interface DemoScenario {
 const LBP_BASIS = medicalBasisFromCitation(
   'doi:10.1016/j.jacr.2022.02.018',
   'guideline',
-  'For non-radicular low back pain under six weeks without red flags, ACR Appropriateness Criteria generally rate lumbar MRI as low utility (often 2/9, "Usually Not Appropriate"). Conservative management and reassessment are favored before advanced imaging.',
-  'ACR Appropriateness Criteria 2022 — Low Back Pain',
+  'For non-radicular low back pain under six weeks without red flags, evidence-based imaging appropriateness criteria generally rate lumbar MRI as low utility (often 2/9, "Usually Not Appropriate"). Conservative management and reassessment are favored before advanced imaging.',
+  'Imaging appropriateness criteria — Low Back Pain (2022)',
 );
 
 const HA_BASIS = medicalBasisFromCitation(
   'acr:sudden-headache',
   'guideline',
-  'For sudden severe headache with features concerning for subarachnoid hemorrhage, ACR Headache criteria support timely non-contrast head CT as an appropriate initial study when clinical suspicion warrants exclusion of emergent pathology.',
-  'ACR Appropriateness Criteria 2019 — Headache',
+  'For sudden severe headache with features concerning for subarachnoid hemorrhage, published headache imaging criteria support timely non-contrast head CT as an appropriate initial study when clinical suspicion warrants exclusion of emergent pathology.',
+  'Imaging appropriateness criteria — Headache (2019)',
 );
 
 const BELLY_BASIS = medicalBasisFromCitation(
   'acr:ped-rlq-pain',
   'guideline',
-  'For pediatric right lower quadrant pain with fever, ACR Appropriateness Criteria favor ultrasound as first-line imaging before CT when appendicitis is suspected, reserving CT for inconclusive ultrasound or complications.',
-  'ACR Appropriateness Criteria 2023 — Pediatric RLQ Pain',
+  'For pediatric right lower quadrant pain with fever, evidence-based imaging appropriateness criteria favor ultrasound as first-line imaging before CT when appendicitis is suspected, reserving CT for inconclusive ultrasound or complications.',
+  'Imaging appropriateness criteria — Pediatric RLQ Pain (2023)',
 );
 
 const KNEE_BASIS = medicalBasisFromCitation(
   'acr:knee-oa',
   'guideline',
-  'For chronic knee pain due to osteoarthritis without red flags, ACR criteria generally recommend plain radiographs before MRI to establish structural baseline and avoid low-yield advanced imaging.',
-  'ACR Appropriateness Criteria 2022 — Chronic Knee Pain',
+  'For chronic knee pain due to osteoarthritis without red flags, published appropriateness criteria generally recommend plain radiographs before MRI to establish structural baseline and avoid low-yield advanced imaging.',
+  'Imaging appropriateness criteria — Chronic Knee Pain (2022)',
 );
 
 interface DraftServiceRequestOptions {
@@ -201,8 +201,8 @@ export const DEMO_SCENARIOS: Record<DemoScenarioId, DemoScenario> = {
       basis: medicalBasisFromCitation(
         'doi:10.1016/j.jacr.2022.02.018',
         'guideline',
-        'ACR low back pain variants emphasize an adequate trial of conservative therapy before MRI when red flags are absent.',
-        'ACR §5 — Conservative management',
+        'Low back pain imaging guidance variants emphasize an adequate trial of conservative therapy before MRI when red flags are absent.',
+        'Guideline §5 — Conservative management',
       ),
       considerations: [
         'May not apply when red flags, progressive deficit, or suspected serious pathology are present.',
@@ -286,8 +286,8 @@ export const DEMO_SCENARIOS: Record<DemoScenarioId, DemoScenario> = {
       basis: medicalBasisFromCitation(
         'acr:ped-rlq-pain',
         'guideline',
-        'Pediatric RLQ ACR criteria rate ultrasound as usually appropriate first-line before CT in suspected appendicitis.',
-        'ACR Pediatric RLQ — Ultrasound first',
+        'Published pediatric RLQ imaging criteria rate ultrasound as usually appropriate first-line before CT in suspected appendicitis.',
+        'Pediatric RLQ — Ultrasound first',
       ),
       considerations: [
         'May not apply when perforation, abscess, or complicated appendicitis is suspected on exam.',
@@ -342,8 +342,8 @@ export const DEMO_SCENARIOS: Record<DemoScenarioId, DemoScenario> = {
       basis: medicalBasisFromCitation(
         'acr:knee-oa',
         'guideline',
-        'ACR knee osteoarthritis pathways recommend radiographs before MRI when evaluating chronic mechanical knee pain without red flags.',
-        'ACR Knee OA — Radiograph first',
+        'Published knee osteoarthritis pathways recommend radiographs before MRI when evaluating chronic mechanical knee pain without red flags.',
+        'Knee OA — Radiograph first',
       ),
       considerations: [
         'May not apply when acute trauma, infection, or rapidly progressive effusion is present.',

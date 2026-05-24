@@ -3,7 +3,7 @@
  * Hook: order-sign
  * Final guideline-anchored appropriateness check before order is signed.
  * Returns NON-BLOCKING critical-tier cards with descriptive override reasons
- * when the proposed study departs from ACR / specialty guidance.
+ * when the proposed study departs from specialty-society guidance.
  * FDA Criterion 3: critical indicator is a styling cue. No structural blocking.
  */
 
