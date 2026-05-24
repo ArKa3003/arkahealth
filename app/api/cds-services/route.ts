@@ -17,19 +17,25 @@ const discoveryHeaders = {
 } as const;
 
 const services = [
-  {
-    hook: "order-select",
-    title: "ARKA-CLIN Imaging Appropriateness",
-    description:
-      "AIIE-based clinical appropriateness scoring for imaging orders. FDA Non-Device CDS compliant.",
-    id: "arka-clin-appropriateness",
-    prefetch: {
-      patient: "Patient/{{context.patientId}}",
-      conditions: "Condition?patient={{context.patientId}}",
-      observations: "Observation?patient={{context.patientId}}&category=laboratory",
-      imagingStudies: "ImagingStudy?patient={{context.patientId}}",
-    },
-  },
+  /*
+   * TEMPORARILY REMOVED — Phase 4 of ARKA_CDS_HOOKS_UNIFIED_PLAYBOOK.md will restore this entry
+   * along with the actual route at app/api/cds-services/arka-clin-appropriateness/route.ts.
+   * Re-enable when the route ships.
+   *
+   * {
+   *   hook: "order-select",
+   *   title: "ARKA-CLIN Imaging Appropriateness",
+   *   description:
+   *     "AIIE-based clinical appropriateness scoring for imaging orders. FDA Non-Device CDS compliant.",
+   *   id: "arka-clin-appropriateness",
+   *   prefetch: {
+   *     patient: "Patient/{{context.patientId}}",
+   *     conditions: "Condition?patient={{context.patientId}}",
+   *     observations: "Observation?patient={{context.patientId}}&category=laboratory",
+   *     imagingStudies: "ImagingStudy?patient={{context.patientId}}",
+   *   },
+   * },
+   */
   {
     hook: "order-select",
     title: "ARKA-INS Coverage & Cost Intelligence",
