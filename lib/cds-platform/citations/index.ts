@@ -90,6 +90,14 @@ export const CITATIONS: Record<string, Citation> = {
     year: 2026,
     lastVerifiedISO: LAST_VERIFIED,
   },
+  'arka:context': {
+    id: 'arka:context',
+    label: 'ARKA context-dependent feature (not guideline-anchored)',
+    url: 'https://arkahealth.com/docs/feature-catalog#context-dependent',
+    authorityClass: 'context_dependent',
+    year: 2026,
+    lastVerifiedISO: LAST_VERIFIED,
+  },
   'acr:ped-rlq-pain': {
     id: 'acr:ped-rlq-pain',
     label: 'ACR Appropriateness Criteria — Right Lower Quadrant Pain, Pediatric (2023)',
@@ -120,6 +128,23 @@ export const CITATIONS: Record<string, Citation> = {
     url: 'https://acsearch.acr.org/docs/6948396/Narrative/',
     authorityClass: 'guideline',
     year: 2019,
+    lastVerifiedISO: LAST_VERIFIED,
+  },
+  // TODO(clinical-signoff): confirm narrative URL with clinical team
+  'acr:head-trauma': {
+    id: 'acr:head-trauma',
+    label: 'ACR Appropriateness Criteria — Head Trauma (2020 revision)',
+    url: 'https://acsearch.acr.org/docs/3083021/Narrative/',
+    authorityClass: 'guideline',
+    year: 2020,
+    lastVerifiedISO: LAST_VERIFIED,
+  },
+  'acr:contrast-media-manual': {
+    id: 'acr:contrast-media-manual',
+    label: 'ACR Manual on Contrast Media (2024)',
+    url: 'https://www.acr.org/Clinical-Resources/Contrast-Manual',
+    authorityClass: 'guideline',
+    year: 2024,
     lastVerifiedISO: LAST_VERIFIED,
   },
 };

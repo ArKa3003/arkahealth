@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "eslint --quiet lib/aiie lib/cards lib/coding lib/compliance lib/federated lib/fhir lib/ins lib/lake lib/nlp lib/retrieval lib/viewer lib/server app/api/ins app/api/cds-services app/api/federated components/ins components/shared components/demos/ins components/demos/clin __tests__ scripts/test-cds-sandbox.ts",
     "lint:scope": "tsx scripts/lint-scope-boundary.ts",
+    "export:feature-catalog": "tsx scripts/export-feature-catalog.ts",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:compliance": "vitest run __tests__/compliance",
