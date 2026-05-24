@@ -5,6 +5,10 @@ import {
   noopSuggestionActions,
 } from "@/lib/cards/card-shared";
 import type { AIIEOrder } from "@/lib/types/aiie";
+import {
+  mapOveruseCitationToCitationId,
+  medicalBasisFromCitation,
+} from "@/lib/cds-platform/cds-hooks/medical-basis";
 import { bump } from "@/lib/server/metrics-counters";
 import type { CDSCard, CDSOverrideReason } from "@/lib/types/cds-hooks";
 
@@ -47,6 +51,14 @@ export function buildOveruseCard(rule: OveruseRule, input: OveruseCardInput): CD
   const procedure = input.order.procedure.trim() || "Imaging order";
   const cpt = input.order.cpt?.trim();
   const citationList = rule.citations.map((c) => `- ${c}`).join("\n");
+  const primaryCitation = rule.citations[0] ?? rule.rationale;
+  const mapped = mapOveruseCitationToCitationId(primaryCitation);
+  const overuseMedicalBasis = medicalBasisFromCitation(
+    mapped.citationId,
+    mapped.authorityClass,
+    `${rule.rationale} Primary reference: ${primaryCitation}. // TODO(clinical-signoff): overuse rule citations are plain strings — verify citationId mapping`,
+    rule.cardTitle,
+  );
 
   const detailCore = `<details><summary>${rule.cardTitle}</summary>
 
@@ -77,6 +89,7 @@ An **override reason with free-text justification** is required to proceed with 
     detail: appendFdaDetailDisclaimer(detailCore),
     indicator: "critical",
     source: { ...ARKA_INS_CARD_SOURCE },
+    medicalBasis: overuseMedicalBasis,
     selectionBehavior: "at-most-one",
     suggestions: [
       {

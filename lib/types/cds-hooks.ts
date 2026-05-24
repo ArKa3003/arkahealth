@@ -2,6 +2,8 @@
  * Shared CDS Hooks 2.0 type definitions used by ARKA applications.
  */
 
+import type { MedicalBasis } from "@/lib/cds-platform/cds-hooks/medical-basis";
+
 /**
  * Supported CDS Hooks card indicators.
  */
@@ -151,6 +153,9 @@ export interface CDSCard<TResource = unknown> {
   overrideReasons?: CDSOverrideReason[];
   /** External or SMART links related to the recommendation. */
   links?: CDSLink[];
+  // TODO(phase-2): make required once all card builders supply it. See ARKA_CDS_HOOKS_UNIFIED_PLAYBOOK.md Phase 2.
+  /** Structured evidence basis for regulatory traceability (playbook Appendix A). */
+  medicalBasis?: MedicalBasis;
 }
 
 /**

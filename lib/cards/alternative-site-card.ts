@@ -6,6 +6,7 @@ import {
   formatUsd,
   noopSuggestionActions,
 } from "@/lib/cards/card-shared";
+import { medicalBasisFromCitation } from "@/lib/cds-platform/cds-hooks/medical-basis";
 
 /** Shoppable imaging site row used for site-shopping CDS content. */
 export interface ShoppableSite {
@@ -89,6 +90,12 @@ ${rows}
     detail: appendFdaDetailDisclaimer(detailCore),
     indicator: "info",
     source: { ...ARKA_INS_CARD_SOURCE },
+    medicalBasis: medicalBasisFromCitation(
+      "context_dependent",
+      "context_dependent",
+      "Site-of-care optimization weighs modeled patient responsibility at the ordering facility against shoppable in-network alternatives with comparable modality and quality signals. When savings exceed policy thresholds, rerouting may reduce out-of-pocket cost without changing the clinical indication. // TODO(clinical-signoff)",
+      "Site-of-care cost comparison",
+    ),
     selectionBehavior: "at-most-one",
     suggestions: [
       {

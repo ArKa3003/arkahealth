@@ -5,6 +5,7 @@ import {
   appendFdaDetailDisclaimer,
   ARKA_INS_CARD_SOURCE,
 } from "@/lib/cards/card-shared";
+import { medicalBasisFromCitation } from "@/lib/cds-platform/cds-hooks/medical-basis";
 import {
   buildAppointmentCheaperAlternativeCard,
   buildAppointmentSiteOptimalCard,
@@ -309,6 +310,12 @@ function buildAppointmentFallbackInfoCard(
     detail: appendFdaDetailDisclaimer(detail),
     indicator: "info",
     source: { ...ARKA_INS_CARD_SOURCE },
+    medicalBasis: medicalBasisFromCitation(
+      "context_dependent",
+      "context_dependent",
+      `${detail} Appointment-book site comparison depends on resolved patient, procedure, and shoppable pricing context; when prefetch is incomplete this informational card explains why comparator pricing was not evaluated. // TODO(clinical-signoff)`,
+      "Appointment scheduling context",
+    ),
   };
 }
 

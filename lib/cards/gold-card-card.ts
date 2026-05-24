@@ -6,6 +6,7 @@ import {
   ARKA_INS_CARD_SOURCE,
   noopSuggestionActions,
 } from "@/lib/cards/card-shared";
+import { medicalBasisFromCitation } from "@/lib/cds-platform/cds-hooks/medical-basis";
 
 const SKIP_PA_UUID = "a1111111-1111-4111-8111-111111111101";
 
@@ -45,6 +46,12 @@ ${score.nextMilestone ? `- **Next milestone:** ${score.nextMilestone}` : ""}
     detail: appendFdaDetailDisclaimer(detailCore),
     indicator: "info",
     source: { ...ARKA_INS_CARD_SOURCE },
+    medicalBasis: medicalBasisFromCitation(
+      "cms:gold-card-medicare-advantage",
+      "cms_lcd",
+      `This provider meets CMS Medicare Advantage gold-carding thresholds (historical approval ${approvalPct}%, n=${score.sampleSize}, Wilson lower bound ${wilsonLb}%) for CPT ${cpt}, supporting auto-approval without standard prior authorization when plan policy aligns. // TODO(clinical-signoff)`,
+      "CMS Medicare Advantage Gold Card",
+    ),
     selectionBehavior: "at-most-one",
     suggestions: [
       {

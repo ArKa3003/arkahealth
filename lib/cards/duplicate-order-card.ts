@@ -4,6 +4,7 @@ import {
   ARKA_INS_CARD_SOURCE,
   noopSuggestionActions,
 } from "@/lib/cards/card-shared";
+import { medicalBasisFromCitation } from "@/lib/cds-platform/cds-hooks/medical-basis";
 import type { CDSCard, CDSOverrideReason } from "@/lib/types/cds-hooks";
 
 const DUPLICATE_ORDER_SUGGESTION_UUID = "b3333333-3333-4333-8333-333333333301";
@@ -94,6 +95,12 @@ ${overrideNote}
     detail: appendFdaDetailDisclaimer(detailCore),
     indicator,
     source: { ...ARKA_INS_CARD_SOURCE },
+    medicalBasis: medicalBasisFromCitation(
+      "acr:duplicate-imaging-90d",
+      "guideline",
+      `${assessment.reason} Ordering repeat imaging within a short interval without a new clinical question or non-diagnostic prior study increases radiation burden and cost without improving outcomes. // TODO(clinical-signoff)`,
+      "ACR Appropriateness Criteria — repeat imaging",
+    ),
     selectionBehavior: "at-most-one",
     suggestions: [
       {

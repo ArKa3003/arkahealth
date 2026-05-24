@@ -12,8 +12,16 @@ import {
 import type { INSAuthorizationBand } from "@/lib/aiie/denial-risk";
 import type { ParsedCoverage } from "@/lib/fhir/coverage";
 import type { AIIEScore, GoldCardStatus, OOPEstimate } from "@/lib/types/aiie";
+import { medicalBasisFromCitation } from "@/lib/cds-platform/cds-hooks/medical-basis";
 import type { CDSCard, CDSOverrideReason } from "@/lib/types/cds-hooks";
 import type { Coverage } from "@/lib/types/fhir";
+
+const DAVINCI_CRD_MEDICAL_BASIS = medicalBasisFromCitation(
+  "hl7:davinci-crd",
+  "regulatory",
+  "This card implements HL7 Da Vinci Coverage Requirements Discovery (CRD) workflows for prior authorization, documentation templates, and patient cost transparency at order entry. // TODO(clinical-signoff)",
+  "HL7 Da Vinci CRD",
+);
 
 export type { InsPaHistorySimilarMetrics, ShoppableSite };
 
@@ -80,6 +88,12 @@ Denial risk is elevated. Completing a Documentation Templates and Rules (DTR) qu
     ),
     indicator: "warning",
     source: { ...ARKA_INS_CARD_SOURCE },
+    medicalBasis: medicalBasisFromCitation(
+      "hl7:davinci-crd",
+      "regulatory",
+      "Documentation Templates and Rules (DTR) questionnaires strengthen prior authorization packets when denial risk is elevated, per Da Vinci CRD and PAS companion guides. // TODO(clinical-signoff)",
+      "HL7 Da Vinci CRD — DTR documentation gap",
+    ),
     links: [
       {
         label: "Launch DTR questionnaire (SMART)",
@@ -152,6 +166,7 @@ export function buildCoverageUnavailableCard(): CDSCard {
     ),
     indicator: "info",
     source: { ...ARKA_INS_CARD_SOURCE },
+    medicalBasis: DAVINCI_CRD_MEDICAL_BASIS,
   };
 }
 
@@ -250,6 +265,12 @@ Complete structured documentation first, or choose an override reason if you are
     ),
     indicator: "critical",
     source: { ...ARKA_INS_CARD_SOURCE },
+    medicalBasis: medicalBasisFromCitation(
+      "hl7:davinci-crd",
+      "regulatory",
+      "Order-sign CDS implements Da Vinci CRD/PAS gating: high modeled denial risk requires completed DTR documentation or a documented override before signature. // TODO(clinical-signoff)",
+      "HL7 Da Vinci CRD — order-sign block",
+    ),
     overrideReasons: [...ORDER_SIGN_OVERRIDE_REASONS],
     links: [
       {
@@ -282,6 +303,12 @@ export function buildOrderSignLowRiskConfirmationCard(params: {
     ),
     indicator: "info",
     source: { ...ARKA_INS_CARD_SOURCE },
+    medicalBasis: medicalBasisFromCitation(
+      "hl7:davinci-crd",
+      "regulatory",
+      "Low modeled denial risk supports proactive prior authorization submission aligned with Da Vinci PAS workflows at order sign. // TODO(clinical-signoff)",
+      "HL7 Da Vinci CRD — order-sign confirmation",
+    ),
     links: [
       {
         label: "Submit PA now (SMART)",
@@ -309,6 +336,12 @@ export function buildOrderSignModerateRiskCard(params: { denialRisk: number; cpt
     ),
     indicator: "info",
     source: { ...ARKA_INS_CARD_SOURCE },
+    medicalBasis: medicalBasisFromCitation(
+      "hl7:davinci-crd",
+      "regulatory",
+      "Moderate denial risk at order sign triggers Da Vinci CRD documentation review guidance before signature when schedule allows. // TODO(clinical-signoff)",
+      "HL7 Da Vinci CRD — order-sign review",
+    ),
     links: [
       {
         label: "Open DTR / PA assistant (SMART)",
@@ -345,6 +378,12 @@ export function buildAppointmentSiteOptimalCard(params: {
     ),
     indicator: "info",
     source: { ...ARKA_INS_CARD_SOURCE },
+    medicalBasis: medicalBasisFromCitation(
+      "hl7:davinci-crd",
+      "regulatory",
+      "Appointment-book CDS applies Da Vinci CRD site-of-care and patient cost transparency when the booked location is optimal versus shoppable comparators. // TODO(clinical-signoff)",
+      "HL7 Da Vinci CRD — appointment optimal site",
+    ),
   };
 }
 
@@ -385,6 +424,12 @@ Staying with **${currentSiteLabel}** leaves an estimated **${formatUsd(delta)} m
     ),
     indicator: "info",
     source: { ...ARKA_INS_CARD_SOURCE },
+    medicalBasis: medicalBasisFromCitation(
+      "hl7:davinci-crd",
+      "regulatory",
+      "Appointment-book CDS surfaces Da Vinci CRD-aligned shoppable site alternatives when a lower patient-responsibility option exists for the same service class. // TODO(clinical-signoff)",
+      "HL7 Da Vinci CRD — appointment reroute nudge",
+    ),
     links: [
       {
         label: "Review reroute in SMART site optimizer",

@@ -3,6 +3,7 @@ import type { OOPEstimate } from "@/lib/types/aiie";
 import type { CDSCard } from "@/lib/types/cds-hooks";
 
 import { appendFdaDetailDisclaimer, ARKA_INS_CARD_SOURCE, formatUsd } from "@/lib/cards/card-shared";
+import { medicalBasisFromCitation } from "@/lib/cds-platform/cds-hooks/medical-basis";
 
 const HDHP_MIN_DEDUCTIBLE_USD = 1600;
 
@@ -106,5 +107,11 @@ Use the **Patient explainer** and **Good Faith Estimate** links on this card (ad
     detail: appendFdaDetailDisclaimer(detailCore),
     indicator: "info",
     source: { ...ARKA_INS_CARD_SOURCE },
+    medicalBasis: medicalBasisFromCitation(
+      "acr:price-transparency",
+      "cms_lcd",
+      "Patient out-of-pocket estimates are derived from in-network allowed amounts, deductible remaining, and coinsurance under the CMS Hospital Price Transparency and No Surprises Act good-faith estimate framework so clinicians can counsel on cost before scheduling. // TODO(clinical-signoff)",
+      "CMS price transparency — patient responsibility",
+    ),
   };
 }

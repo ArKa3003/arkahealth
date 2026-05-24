@@ -15,7 +15,16 @@ import {
   CDSHooksResponse,
   CDSHooksCard,
 } from "./types";
+import { medicalBasisFromCitation } from "@/lib/cds-platform/cds-hooks/medical-basis";
+
 import { calculateAIIEScore, AIIEInput } from "./aiie/scoring-engine";
+
+const CLIN_DEMO_MEDICAL_BASIS = medicalBasisFromCitation(
+  "context_dependent",
+  "context_dependent",
+  "AIIE evidence-based methodology applies RAND/UCLA appropriateness framing and GRADE-aligned factor scoring to the presenting complaint, red flags, and proposed modality until Phase 4 wires feature-catalog citations. // TODO(phase-4)",
+  "AIIE evidence-based methodology",
+);
 
 // ============================================================================
 // DEMO PATH: Standalone Evaluation
@@ -264,9 +273,37 @@ export function extractScenarioFromCDSHooks(request: CDSHooksRequest): ClinicalS
 export function convertResultToCDSCards(result: EvaluationResult): CDSHooksCard[] {
   const cards: CDSHooksCard[] = [];
   const indicator: 'info' | 'warning' | 'critical' = result.trafficLight === 'green' ? 'info' : result.trafficLight === 'yellow' ? 'warning' : 'critical';
-  cards.push({ summary: `Appropriateness Score: ${result.appropriatenessScore.value}/9 (${result.appropriatenessScore.category})`, indicator, source: { label: 'ARKA Imaging Advisor' }, detail: result.reasoning.join('\n\n') });
-  result.warnings.forEach(w => { if (w.severity === 'critical' || w.severity === 'warning') cards.push({ summary: w.message, indicator: w.severity === 'critical' ? 'critical' : 'warning', source: { label: 'ARKA Imaging Advisor' }, detail: w.message }); });
-  if (result.alternatives.length) cards.push({ summary: 'Alternative imaging options available', indicator: 'info', source: { label: 'ARKA Imaging Advisor' }, detail: result.alternatives.map(a => `${a.procedure} (${a.rating}/9) — ${a.reasoning}`).join('\n'), suggestions: result.alternatives.map(a => ({ label: a.procedure, uuid: `alt-${a.procedure.replace(/\s+/g, '-').toLowerCase() }` })) });
+  cards.push({
+    summary: `Appropriateness Score: ${result.appropriatenessScore.value}/9 (${result.appropriatenessScore.category})`,
+    indicator,
+    source: { label: "ARKA Imaging Advisor" },
+    detail: result.reasoning.join("\n\n"),
+    medicalBasis: CLIN_DEMO_MEDICAL_BASIS,
+  });
+  result.warnings.forEach((w) => {
+    if (w.severity === "critical" || w.severity === "warning") {
+      cards.push({
+        summary: w.message,
+        indicator: w.severity === "critical" ? "critical" : "warning",
+        source: { label: "ARKA Imaging Advisor" },
+        detail: w.message,
+        medicalBasis: CLIN_DEMO_MEDICAL_BASIS,
+      });
+    }
+  });
+  if (result.alternatives.length) {
+    cards.push({
+      summary: "Alternative imaging options available",
+      indicator: "info",
+      source: { label: "ARKA Imaging Advisor" },
+      detail: result.alternatives.map((a) => `${a.procedure} (${a.rating}/9) — ${a.reasoning}`).join("\n"),
+      suggestions: result.alternatives.map((a) => ({
+        label: a.procedure,
+        uuid: `alt-${a.procedure.replace(/\s+/g, "-").toLowerCase()}`,
+      })),
+      medicalBasis: CLIN_DEMO_MEDICAL_BASIS,
+    });
+  }
   return cards;
 }
 

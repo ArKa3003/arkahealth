@@ -1,5 +1,7 @@
 // Types for ARKA-CLIN demo – clinical scenario and evaluation result
 
+import type { MedicalBasis } from "@/lib/cds-platform/cds-hooks/medical-basis";
+
 export interface ClinicalScenario {
   patientId: string;
   age: number;
@@ -142,6 +144,7 @@ export interface CDSHooksCard {
   source: { label: string };
   detail?: string;
   suggestions?: { label: string; uuid: string }[];
+  medicalBasis?: MedicalBasis;
 }
 
 export interface CDSHooksResponse {

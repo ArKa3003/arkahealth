@@ -7,6 +7,7 @@ import {
   appendFdaDetailDisclaimer,
   ARKA_INS_CARD_SOURCE,
 } from "@/lib/cards/card-shared";
+import { medicalBasisFromCitation } from "@/lib/cds-platform/cds-hooks/medical-basis";
 import { bump } from "@/lib/server/metrics-counters";
 import type { CDSCard, CDSOverrideReason } from "@/lib/types/cds-hooks";
 import type { ServiceRequest } from "@/lib/types/fhir";
@@ -86,6 +87,12 @@ ARKA suggests changing priority to **Urgent** (target: next 4 hours) unless you 
     detail: appendFdaDetailDisclaimer(detailCore),
     indicator: "warning",
     source: { ...ARKA_INS_CARD_SOURCE },
+    medicalBasis: medicalBasisFromCitation(
+      "choosing-wisely:imaging-stat",
+      "guideline",
+      `${gate.rationale} Choosing Wisely and specialty guidance discourage STAT priority when emergent criteria are not met; Urgent scheduling preserves access without inappropriately expediting non-emergent studies. // TODO(clinical-signoff)`,
+      "Choosing Wisely — STAT imaging appropriateness",
+    ),
     selectionBehavior: "at-most-one",
     suggestions: [
       {

@@ -8,6 +8,7 @@ import {
   ARKA_INS_CARD_SOURCE,
   noopSuggestionActions,
 } from "@/lib/cards/card-shared";
+import { medicalBasisFromDominantFactor } from "@/lib/cds-platform/cds-hooks/medical-basis";
 
 /** Optional approval metrics derived from `ins_pa_history` for social-proof copy. */
 export interface InsPaHistorySimilarMetrics {
@@ -185,6 +186,7 @@ ${aiie.narrativeRationale}
     detail: appendFdaDetailDisclaimer(detailCore),
     indicator: "info",
     source: { ...ARKA_INS_CARD_SOURCE },
+    medicalBasis: medicalBasisFromDominantFactor(aiie.factors),
     selectionBehavior: "at-most-one",
     suggestions: suggestionsForAction(action),
     links: [
