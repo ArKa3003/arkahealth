@@ -24,9 +24,10 @@
 
 - `components/demos/rural/cds/DualScoreDisplay.tsx:125-177` — render `ResourceFactor.explanation` and add citation field
 
-## Scope-boundary follow-ups
+## Scope-boundary follow-ups (track until counsel signs off)
 
-- **RESOLVED** (`adb6d5d`) — DICOM pixel pipeline removed; `docs/SCOPE_BOUNDARY.md` updated; counsel sign-off N/A (Criterion 1 question moot).
+- `docs/SCOPE_BOUNDARY.md` Counsel sign-off section
+- Phase 11.1 includes scope boundary statement in the rationale memo
 
 ## CI
 
