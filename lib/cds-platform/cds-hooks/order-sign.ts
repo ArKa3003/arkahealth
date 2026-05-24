@@ -18,7 +18,7 @@ import { mapPrefetchToClinicalScenario } from '@/lib/cds-platform/fhir/mappers';
 import type { PrefetchData } from '@/lib/cds-platform/fhir/prefetch';
 import { createFHIRClient } from '@/lib/cds-platform/fhir/client';
 import { PrefetchResolver } from '@/lib/cds-platform/fhir/prefetch';
-import { XGBoostClient, DEFAULT_ML_SERVICE_URL } from '@/lib/cds-platform/ml/xgboost-client';
+import { createMlClient } from '@/lib/cds-platform/ml/ml-config';
 import { runTieredEngine } from '@/lib/cds-platform/alerting/tiered-engine';
 import type { ClinicalScenario } from '@/lib/cds-platform/types';
 import type { FHIRServiceRequest } from '@/lib/cds-platform/fhir/resources';
@@ -158,17 +158,14 @@ export async function handleOrderSign(request: CDSHooksRequest): Promise<CDSHook
     return { cards: [] };
   }
 
-  const mlClient = new XGBoostClient({
-    baseUrl: typeof process !== 'undefined' ? process.env?.ML_SERVICE_URL ?? DEFAULT_ML_SERVICE_URL : DEFAULT_ML_SERVICE_URL,
-    timeout: 10000,
-  });
+  const mlClient = createMlClient();
 
   const cards: CDSHooksResponse['cards'] = [];
   const patientId = request.context?.patientId ?? '';
 
   for (const draftOrder of imagingOrders) {
     const scenario = mapPrefetchToClinicalScenario(prefetch, draftOrder);
-    let prediction: Awaited<ReturnType<XGBoostClient['predict']>>;
+    let prediction: Awaited<ReturnType<ReturnType<typeof createMlClient>['predict']>>;
     try {
       prediction = await mlClient.predict(scenario as ClinicalScenario);
     } catch {

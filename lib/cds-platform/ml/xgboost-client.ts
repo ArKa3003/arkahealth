@@ -8,6 +8,7 @@ import type { ClinicalScenario } from '@/lib/cds-platform/types';
 import type { FeatureVector, MLPrediction, SHAPValues, SHAPFeatureContribution } from './types';
 import { extractFeatures } from './feature-engineer';
 import { scoreScenario } from '@/lib/cds-platform/scoring-fallback';
+import { isMlFallbackEnabled } from './ml-config';
 import { logPrediction } from './model-registry';
 
 /** Raw response shape from Python POST /predict */
@@ -115,6 +116,9 @@ export class XGBoostClient {
       }
     }
 
+    if (!isMlFallbackEnabled()) {
+      throw new Error('ML service unavailable and ML_FALLBACK_ENABLED=false');
+    }
     const fallback = scoreScenario(scenario);
     logPrediction(fallback, features);
     return fallback;
@@ -154,6 +158,9 @@ export class XGBoostClient {
       });
       return predictions;
     } catch {
+      if (!isMlFallbackEnabled()) {
+        throw new Error('ML batch service unavailable and ML_FALLBACK_ENABLED=false');
+      }
       return scenarios.map((scenario) => {
         const pred = scoreScenario(scenario);
         const features = extractFeatures(scenario);
