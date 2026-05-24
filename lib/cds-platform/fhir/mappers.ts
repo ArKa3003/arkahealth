@@ -530,7 +530,17 @@ export function mapPrefetchToClinicalScenario(
   const chiefComplaint = extractChiefComplaint(draftOrder, conditionList);
   const clinicalHistory = buildClinicalHistory(conditionList);
   const symptoms = extractSymptoms(conditionList);
-  const duration = extractDuration(conditionList);
+  let duration = extractDuration(conditionList);
+  if (duration == null) {
+    for (const note of draftOrder?.note ?? []) {
+      const days = parseDurationToDays(note?.text);
+      if (days != null) {
+        duration = days;
+        logger.debug({ orderId: draftOrder?.id, note: note?.text, days }, 'Duration from ServiceRequest note');
+        break;
+      }
+    }
+  }
 
   const redFlags = findRedFlags(prefetch.activeConditions, prefetch.relevantLabs);
 
@@ -556,7 +566,16 @@ export function mapPrefetchToClinicalScenario(
   };
 
   const codeCodings = getCodings(draftOrder?.code);
-  const modality = mapFHIRModalityToInternal(codeCodings) ?? undefined;
+  const cptCode = codeCodings.find((c) => c.system?.toLowerCase().includes('cpt'))?.code?.trim();
+  let modality = mapFHIRModalityToInternal(codeCodings) ?? undefined;
+  if (cptCode && ['72148', '72149', '72158'].includes(cptCode)) {
+    modality = 'MRI';
+  } else if (!modality || modality === 'X-ray') {
+    const orderText = `${draftOrder?.code?.text ?? ''} ${getDisplayFromCodeableConcept(draftOrder?.code) ?? ''}`.toLowerCase();
+    if (/\bmri\b/.test(orderText)) {
+      modality = orderText.includes('contrast') ? 'MRI with contrast' : 'MRI';
+    }
+  }
   if (codeCodings.length > 0 && modality == null) {
     logger.debug(
       { codings: codeCodings.map((c) => ({ system: c.system, code: c.code, display: c.display })) },
@@ -601,6 +620,15 @@ export function mapPrefetchToClinicalScenario(
       urgency,
     },
     priorImaging,
+    serviceRequests: [
+      {
+        code: cptCode,
+        display: draftOrder?.code?.text ?? getDisplayFromCodeableConcept(draftOrder?.code),
+        reasonCodes: (draftOrder?.reasonCode ?? [])
+          .map((rc) => rc?.text ?? getDisplayFromCodeableConcept(rc))
+          .filter((t): t is string => Boolean(t)),
+      },
+    ],
   };
 
   logger.debug(

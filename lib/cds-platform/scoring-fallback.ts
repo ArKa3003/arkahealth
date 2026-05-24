@@ -65,6 +65,17 @@ function ruleBasedScore(features: Record<string, number>): number {
   if (getFeature(features, 'conservative_tx_tried') === 1) score += 0.3;
   if (getFeature(features, 'imaging_in_problem_list') === 1) score += 0.2;
 
+  if (
+    getFeature(features, 'indication_category') === 2 &&
+    getFeature(features, 'modality_code') === 2 &&
+    symptomDays >= 0 &&
+    symptomDays < 42 &&
+    getFeature(features, 'conservative_tx_tried') === 0 &&
+    getFeature(features, 'has_red_flags') === 0
+  ) {
+    score -= 2.5;
+  }
+
   if (getFeature(features, 'is_pregnant') === 1) score -= 0.2;
   if (getFeature(features, 'has_contrast_allergy') === 1) score -= 0.2;
 

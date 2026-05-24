@@ -31,6 +31,17 @@ const services = [
     },
   },
   {
+    hook: "order-sign",
+    id: "arka-clin-appropriateness-sign",
+    title: "ARKA-CLIN Final Imaging Review",
+    description:
+      "Final guideline-anchored appropriateness check at order-sign. Returns a non-blocking critical-tier card with descriptive override reasons when the proposed study departs from ACR Appropriateness Criteria or specialty-society guidance for the indication.",
+    prefetch: {
+      patient: "Patient/{{context.patientId}}",
+      conditions: "Condition?patient={{context.patientId}}",
+    },
+  },
+  {
     hook: "order-select",
     title: "ARKA-INS Coverage & Cost Intelligence",
     description:

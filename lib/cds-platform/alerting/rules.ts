@@ -3,6 +3,7 @@
  * @description Clinical alerting rules: thresholds and conditions that map score + context to alerts.
  */
 
+import type { ClinicalScenario } from '@/lib/cds-platform/types';
 import type { Alert } from './types';
 
 /** Score is 1–9 (CDS appropriateness scale). */
@@ -63,4 +64,51 @@ export function getWarningThreshold(): number {
  */
 export function getCriticalThreshold(): number {
   return CRITICAL_MAX;
+}
+
+/**
+ * Guideline-anchored scenario rules (ACR / Choosing Wisely). Independent of ML score;
+ * used at order-sign so critical cards require a cited rule, not ML signal alone.
+ *
+ * @param scenario - Mapped prefetch + draft order context.
+ */
+export function evaluateGuidelineRules(scenario: ClinicalScenario): Alert[] {
+  const alerts: Alert[] = [];
+  const modality = String(scenario.proposedImaging?.modality ?? '').toLowerCase();
+  const orderCode = scenario.serviceRequests?.[0]?.code?.trim() ?? '';
+  const orderDisplay = String(scenario.serviceRequests?.[0]?.display ?? '').toLowerCase();
+  const bodyPart = String(scenario.proposedImaging?.bodyPart ?? '').toLowerCase();
+  const indicationText = [
+    scenario.chiefComplaint,
+    scenario.proposedImaging?.indication,
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
+  const isLowBack =
+    /low back|lumbar|m54\.5|m54\b/.test(indicationText) ||
+    /lumbar|spine/.test(bodyPart);
+  const isMri =
+    modality.includes('mri') ||
+    modality === 'mr' ||
+    ['72148', '72149', '72158'].includes(orderCode) ||
+    (/\bmri\b/.test(orderDisplay) && /lumbar|spine/.test(orderDisplay));
+  const durationDays = typeof scenario.duration === 'number' && scenario.duration >= 0 ? scenario.duration : -1;
+  const noRedFlags = !(scenario.redFlags ?? []).some((r) => r.present);
+  const conservativeTried = /conservative|physical therapy|\bpt\b|nsaid|trial of/i.test(
+    scenario.clinicalHistory ?? '',
+  );
+
+  if (isLowBack && isMri && noRedFlags && durationDays >= 0 && durationDays < 42 && !conservativeTried) {
+    alerts.push({
+      tier: 'critical',
+      code: 'ACR_LBP_EARLY_MRI',
+      summary: 'Lumbar MRI may be inappropriate for uncomplicated low back pain without conservative trial',
+      detail:
+        'ACR Appropriateness Criteria and Choosing Wisely guidance favor conservative management before lumbar MRI when red flags are absent and symptoms are under six weeks.',
+      suggestionLabel: 'Review alternatives',
+    });
+  }
+
+  return alerts;
 }

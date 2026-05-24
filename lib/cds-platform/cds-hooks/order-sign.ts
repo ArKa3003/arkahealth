@@ -1,29 +1,41 @@
 /**
  * @file order-sign.ts
  * @description POST handler for the order-sign hook. Invoked when a clinician signs an order.
- *   Same pipeline as order-select but with definitive language, override reasons, and documentation suggestion.
+ *   Returns non-blocking critical-tier cards with descriptive override reasons when a
+ *   guideline-anchored rule fires and ML score is low; never criticalises on ML alone.
  */
 
-import type { CDSHooksRequest, CDSHooksResponse, CDSCard, CDSSuggestion } from './types';
+import type { CDSHooksRequest, CDSHooksResponse, CDSCard, CDSSuggestion, CDSOverrideReason } from './types';
 import { getImagingDraftOrders } from './request-validator';
 import {
   buildAppropriatenessCard,
   buildSafetyCard,
   buildAlternativesSuggestions,
-  buildNoRecommendationsCard,
   type Alternative,
   type SafetyWarning,
 } from './card-builder';
+import { medicalBasisFromScenario } from '@/lib/cds-platform/cds-hooks/medical-basis';
 import { mapPrefetchToClinicalScenario } from '@/lib/cds-platform/fhir/mappers';
 import type { PrefetchData } from '@/lib/cds-platform/fhir/prefetch';
 import { createFHIRClient } from '@/lib/cds-platform/fhir/client';
 import { PrefetchResolver } from '@/lib/cds-platform/fhir/prefetch';
 import { createMlClient } from '@/lib/cds-platform/ml/ml-config';
 import { runTieredEngine } from '@/lib/cds-platform/alerting/tiered-engine';
+import { evaluateGuidelineRules } from '@/lib/cds-platform/alerting/rules';
+import { STANDARD_OVERRIDE_REASONS } from '@/lib/cds-platform/alerting/override-reasons';
 import type { ClinicalScenario } from '@/lib/cds-platform/types';
 import type { FHIRServiceRequest } from '@/lib/cds-platform/fhir/resources';
 import { checkPregnancy, extractEGFR } from '@/lib/cds-platform/fhir/mappers';
 import { v4 as uuidv4 } from 'uuid';
+
+const ORDER_SIGN_DISCRETION_LABEL =
+  'This is a final-check recommendation. The clinician may proceed at their discretion; if proceeding, please document the reasoning.';
+
+/** CDS Hooks card with optional non-blocking actionRequired cue (not a sign block). */
+export type OrderSignCard = CDSCard & {
+  medicalBasis: NonNullable<ReturnType<typeof medicalBasisFromScenario>>;
+  actionRequired?: boolean;
+};
 
 function emptyBundle(): { resourceType: 'Bundle'; type: string; entry: unknown[] } {
   return { resourceType: 'Bundle', type: 'searchset', entry: [] };
@@ -120,8 +132,34 @@ function getAlternatives(scenario: ClinicalScenario): Alternative[] {
   return alternatives.slice(0, 3);
 }
 
+/**
+ * Maps standard override reasons to CDS Hooks overrideReasons (Criterion 3 — descriptive, neutral first).
+ */
+function standardOverrideReasonsForCard(): CDSOverrideReason[] {
+  return STANDARD_OVERRIDE_REASONS.map((reason) => ({
+    code: reason.id,
+    display: reason.label,
+  }));
+}
+
+/**
+ * True when a guideline rule with registered citation fired (not ML score threshold alone).
+ */
+function hasGuidelineAnchoredRule(scenario: ClinicalScenario, score: number): boolean {
+  const medicalBasis = medicalBasisFromScenario(scenario);
+  if (medicalBasis.citationId === 'context_dependent') {
+    return false;
+  }
+  const guidelineAlerts = evaluateGuidelineRules(scenario);
+  if (guidelineAlerts.length > 0) {
+    return true;
+  }
+  const { alerts } = runTieredEngine({ score });
+  return alerts.some((alert) => alert.tier === 'critical');
+}
+
 /** Add suggestion to document override justification (DocumentReference) for critical cards. */
-function addOverrideDocumentSuggestion(card: CDSCard, patientId: string): void {
+function addOverrideDocumentSuggestion(card: OrderSignCard, patientId: string): void {
   const docRef = {
     resourceType: 'DocumentReference',
     status: 'current',
@@ -143,14 +181,13 @@ function addOverrideDocumentSuggestion(card: CDSCard, patientId: string): void {
 
 /**
  * Handles the order-sign CDS Hook request.
- * Same flow as order-select with: definitive language, overrideReasons, evidence links,
- * and for critical alerts a suggestion to create DocumentReference with override justification.
+ * Emits critical-tier, non-blocking cards only when ML score &lt; 4 and a cited guideline rule fired.
  */
 export async function handleOrderSign(request: CDSHooksRequest): Promise<CDSHooksResponse> {
   const draftOrders = request.context?.draftOrders as { entry?: Array<{ resource?: FHIRServiceRequest }> } | undefined;
   const imagingOrders = getImagingDraftOrders(draftOrders as Parameters<typeof getImagingDraftOrders>[0]);
   if (imagingOrders.length === 0) {
-    return { cards: [buildNoRecommendationsCard()] };
+    return { cards: [] };
   }
 
   const prefetch = await resolvePrefetch(request);
@@ -165,20 +202,41 @@ export async function handleOrderSign(request: CDSHooksRequest): Promise<CDSHook
 
   for (const draftOrder of imagingOrders) {
     const scenario = mapPrefetchToClinicalScenario(prefetch, draftOrder);
+    const medicalBasis = medicalBasisFromScenario(scenario);
+
     let prediction: Awaited<ReturnType<ReturnType<typeof createMlClient>['predict']>>;
     try {
       prediction = await mlClient.predict(scenario as ClinicalScenario);
     } catch {
       continue;
     }
-    runTieredEngine({ score: prediction.score, scenarioSummary: { modality: scenario.proposedImaging?.modality } });
-    const card = buildAppropriatenessCard(prediction, scenario as ClinicalScenario, 'order-sign');
+
+    const score = prediction.score;
+    runTieredEngine({ score, scenarioSummary: { modality: scenario.proposedImaging?.modality } });
+
+    // FDA Criterion 2: no critical card without a rule + citation as primary basis.
+    const ruleFired = hasGuidelineAnchoredRule(scenario as ClinicalScenario, score);
+    if (score >= 4 || !ruleFired) {
+      continue;
+    }
+
+    const baseCard = buildAppropriatenessCard(prediction, scenario as ClinicalScenario, 'order-sign');
+    const card: OrderSignCard = {
+      ...baseCard,
+      medicalBasis,
+      indicator: 'critical',
+      actionRequired: true,
+      overrideReasons: standardOverrideReasonsForCard(),
+      detail: [baseCard.detail ?? '', '', ORDER_SIGN_DISCRETION_LABEL].join('\n'),
+    };
+
     const alternatives = getAlternatives(scenario as ClinicalScenario);
     if (alternatives.length > 0 && patientId) {
       card.suggestions = buildAlternativesSuggestions(alternatives, patientId);
     }
+
     // FDA Criterion 3: critical indicator is a styling cue only. No structural blocking — CDS Hooks has no block primitive and we will not add one.
-    if (card.indicator === 'critical' && patientId) {
+    if (patientId) {
       addOverrideDocumentSuggestion(card, patientId);
     }
     cards.push(card);
@@ -190,8 +248,5 @@ export async function handleOrderSign(request: CDSHooksRequest): Promise<CDSHook
     cards.push(buildSafetyCard(w));
   }
 
-  if (cards.length === 0) {
-    return { cards: [buildNoRecommendationsCard()] };
-  }
   return { cards };
 }
