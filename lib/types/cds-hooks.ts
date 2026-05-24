@@ -153,9 +153,8 @@ export interface CDSCard<TResource = unknown> {
   overrideReasons?: CDSOverrideReason[];
   /** External or SMART links related to the recommendation. */
   links?: CDSLink[];
-  // TODO(phase-2): make required once all card builders supply it. See ARKA_CDS_HOOKS_UNIFIED_PLAYBOOK.md Phase 2.
   /** Structured evidence basis for regulatory traceability (playbook Appendix A). */
-  medicalBasis?: MedicalBasis;
+  medicalBasis: MedicalBasis;
 }
 
 /**
