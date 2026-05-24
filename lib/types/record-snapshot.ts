@@ -77,6 +77,10 @@ export interface PriorImagingStudy {
   laterality?: string;
   /** Study description (PHI-scrubbed). */
   description?: string;
+  /** Accession number from ImagingStudy.identifier when present. */
+  accessionNumber?: string;
+  /** Ordering or referring provider display from ImagingStudy.referrer when present. */
+  orderingProvider?: string;
 }
 
 /** Prior diagnostic report narrative excerpt. */

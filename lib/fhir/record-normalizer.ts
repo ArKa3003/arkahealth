@@ -59,7 +59,12 @@ export interface RawFhirResource {
   }>;
   started?: string;
   uid?: string;
-  identifier?: Array<{ system?: string; value?: string }>;
+  identifier?: Array<{
+    system?: string;
+    value?: string;
+    type?: RawFhirCodeableConcept;
+  }>;
+  referrer?: { display?: string; reference?: string };
   modality?: Array<{ system?: string; code?: string; display?: string }>;
   bodySite?: RawFhirCodeableConcept[];
   description?: string;
@@ -92,6 +97,50 @@ export interface RawFhirBundle {
   ttlSeconds: number;
   /** All resources collected from $everything and supplemental searches. */
   resources: RawFhirResource[];
+}
+
+const ACCESSION_TYPE_CODES = new Set(["ACSN", "AC"]);
+
+/**
+ * Extracts accession number from ImagingStudy identifiers.
+ */
+function accessionFromIdentifiers(
+  identifiers: RawFhirResource["identifier"],
+): string | undefined {
+  if (!identifiers?.length) {
+    return undefined;
+  }
+  for (const id of identifiers) {
+    const typeCodes = id.type?.coding?.map((c) => (c.code ?? "").toUpperCase()) ?? [];
+    const isAccession =
+      typeCodes.some((c) => ACCESSION_TYPE_CODES.has(c)) ||
+      (id.system ?? "").toLowerCase().includes("accession");
+    if (isAccession && id.value?.trim()) {
+      return id.value.trim();
+    }
+  }
+  const fallback = identifiers.find((id) => id.value?.trim());
+  return fallback?.value?.trim();
+}
+
+/**
+ * Display name for ordering/referring provider from ImagingStudy.referrer.
+ */
+function orderingProviderFromReferrer(
+  referrer: RawFhirResource["referrer"],
+): string | undefined {
+  if (!referrer) {
+    return undefined;
+  }
+  const display = referrer.display?.trim();
+  if (display) {
+    return scrubPhiText(display);
+  }
+  const ref = referrer.reference?.trim();
+  if (ref) {
+    return ref;
+  }
+  return undefined;
 }
 
 function codingDisplay(concept: RawFhirCodeableConcept | undefined): string {
@@ -301,6 +350,8 @@ export function normalizeRecord(raw: RawFhirBundle): PatientRecordSnapshot {
       view,
       laterality,
       description,
+      accessionNumber: accessionFromIdentifiers(r.identifier),
+      orderingProvider: orderingProviderFromReferrer(r.referrer),
     });
   }
 
