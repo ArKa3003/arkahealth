@@ -110,7 +110,7 @@ export function Footer() {
                 |
               </span>
               <Link
-                href="/api/cds-services"
+                href="/cds-hooks-discovery"
                 className="arka-link-underline font-medium text-arka-cyan hover:text-white"
               >
                 CDS Hooks Discovery
