@@ -8,6 +8,7 @@
     "type-check": "tsc --noEmit",
     "start": "next start",
     "lint": "eslint --quiet lib/aiie lib/cards lib/coding lib/compliance lib/federated lib/fhir lib/ins lib/lake lib/nlp lib/retrieval lib/viewer lib/server app/api/ins app/api/cds-services app/api/federated components/ins components/shared components/demos/ins components/demos/clin __tests__ scripts/test-cds-sandbox.ts",
+    "lint:scope": "tsx scripts/lint-scope-boundary.ts",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:compliance": "vitest run __tests__/compliance",
@@ -32,7 +33,6 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
-    "dicom-parser": "^1.8.21",
     "fhir-kit-client": "^1.9.2",
     "framer-motion": "^12.31.0",
     "lucide-react": "^0.563.0",
@@ -41,7 +41,6 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "recharts": "^3.8.1",
-    "sharp": "^0.34.5",
     "tailwind-merge": "^2.6.0",
     "zod": "^4.3.6",
     "zustand": "^5.0.2"
