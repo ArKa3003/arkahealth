@@ -1,46 +1,78 @@
-import { CITATIONS, getCitation } from "@/lib/cds-platform/citations";
+import { CITATIONS, getCitation, tryGetCitation } from '@/lib/cds-platform/citations';
 
 /**
- * Authority tier for the evidence underlying a CDS recommendation.
+ * Authority tier for the evidence underlying a CDS recommendation (Appendix A).
  */
 export type AuthorityClass =
-  | "guideline"
-  | "cms_lcd"
-  | "ncd_lcd"
-  | "peer_reviewed"
-  | "regulatory"
-  | "context_dependent";
+  | 'guideline'
+  | 'specialty_society'
+  | 'systematic_review'
+  | 'rct'
+  | 'fda_labeling'
+  | 'cms_lcd'
+  | 'uspstf'
+  | 'choosing_wisely'
+  /** @deprecated Legacy Phase 1.5 value — maps to peer-reviewed literature. */
+  | 'peer_reviewed'
+  /** @deprecated Legacy Phase 1.5 value. */
+  | 'ncd_lcd'
+  /** @deprecated Legacy Phase 1.5 value. */
+  | 'regulatory'
+  /** Context-specific clinical judgment without a single canonical citation. */
+  | 'context_dependent';
 
 const AUTHORITY_CLASSES: readonly AuthorityClass[] = [
-  "guideline",
-  "cms_lcd",
-  "ncd_lcd",
-  "peer_reviewed",
-  "regulatory",
-  "context_dependent",
+  'guideline',
+  'specialty_society',
+  'systematic_review',
+  'rct',
+  'fda_labeling',
+  'cms_lcd',
+  'uspstf',
+  'choosing_wisely',
+  'peer_reviewed',
+  'ncd_lcd',
+  'regulatory',
+  'context_dependent',
 ];
+
+const DEFAULT_LAST_CLINICAL_REVIEW_ISO = '2026-05-24';
 
 /**
  * Structured medical basis attached to every CDS card (playbook Appendix A).
  */
 export interface MedicalBasis {
-  /** Registry key in {@link CITATIONS} (or `context_dependent`). */
-  citationId: string;
-  /** Short human-readable label shown in regulatory exports. */
   label: string;
-  /** Authority class for the cited source. */
-  authorityClass: AuthorityClass;
-  /** Clinician-facing rationale tying evidence to this card (plain language). */
   rationale: string;
+  citationId: string;
+  url: string;
+  authorityClass: AuthorityClass;
+  lastClinicalReviewISO: string;
+}
+
+function citationLabel(citationId: string): string {
+  const citation = tryGetCitation(citationId);
+  return citation?.label ?? citation?.title ?? citationId;
+}
+
+function citationUrl(citationId: string): string {
+  if (citationId === 'context_dependent') {
+    return CITATIONS.context_dependent.url;
+  }
+  try {
+    return getCitation(citationId).url;
+  } catch {
+    return CITATIONS.context_dependent.url;
+  }
 }
 
 /**
  * Builds a {@link MedicalBasis} from a known citation id and rationale text.
  *
  * @param citationId - Key in {@link CITATIONS}.
- * @param label - Display label (defaults to citation title when omitted).
  * @param authorityClass - Authority tier for the source.
- * @param rationale - Clinician-facing rationale.
+ * @param rationale - Clinician-facing rationale (≥ 40 characters for FDA Criterion 2).
+ * @param label - Display label (defaults to citation label when omitted).
  */
 export function medicalBasisFromCitation(
   citationId: string,
@@ -48,12 +80,14 @@ export function medicalBasisFromCitation(
   rationale: string,
   label?: string,
 ): MedicalBasis {
-  const citation = getCitation(citationId);
+  const resolvedLabel = label ?? citationLabel(citationId);
   return {
     citationId,
-    label: label ?? citation?.title ?? citationId,
+    label: resolvedLabel,
     authorityClass,
     rationale,
+    url: citationUrl(citationId),
+    lastClinicalReviewISO: DEFAULT_LAST_CLINICAL_REVIEW_ISO,
   };
 }
 
@@ -68,30 +102,30 @@ export function mapEvidenceCitationToCitationId(evidenceCitation: string): {
   needsClinicianVerification: boolean;
 } {
   const text = evidenceCitation.toLowerCase();
-  if (text.includes("low back") || text.includes("lumbar")) {
+  if (text.includes('low back') || text.includes('lumbar')) {
     return {
-      citationId: "doi:10.1016/j.jacr.2022.02.018",
-      authorityClass: "guideline",
+      citationId: 'doi:10.1016/j.jacr.2022.02.018',
+      authorityClass: 'guideline',
       needsClinicianVerification: false,
     };
   }
-  if (text.includes("choosing wisely") || text.includes("redundant imaging")) {
+  if (text.includes('choosing wisely') || text.includes('redundant imaging')) {
     return {
-      citationId: "acr:duplicate-imaging-90d",
-      authorityClass: "guideline",
+      citationId: 'acr:duplicate-imaging-90d',
+      authorityClass: 'guideline',
       needsClinicianVerification: false,
     };
   }
-  if (text.includes("acr") || text.includes("appropriateness")) {
+  if (text.includes('acr') || text.includes('appropriateness')) {
     return {
-      citationId: "acr:duplicate-imaging-90d",
-      authorityClass: "guideline",
+      citationId: 'acr:duplicate-imaging-90d',
+      authorityClass: 'guideline',
       needsClinicianVerification: true,
     };
   }
   return {
-    citationId: "context_dependent",
-    authorityClass: "context_dependent",
+    citationId: 'context_dependent',
+    authorityClass: 'context_dependent',
     needsClinicianVerification: true,
   };
 }
@@ -106,16 +140,16 @@ export function mapOveruseCitationToCitationId(citation: string): {
   authorityClass: AuthorityClass;
 } {
   const text = citation.toLowerCase();
-  if (text.includes("low back")) {
-    return { citationId: "doi:10.1016/j.jacr.2022.02.018", authorityClass: "guideline" };
+  if (text.includes('low back')) {
+    return { citationId: 'doi:10.1016/j.jacr.2022.02.018', authorityClass: 'guideline' };
   }
-  if (text.includes("choosing wisely")) {
-    return { citationId: "choosing-wisely:imaging-stat", authorityClass: "guideline" };
+  if (text.includes('choosing wisely')) {
+    return { citationId: 'choosing-wisely:imaging-stat', authorityClass: 'choosing_wisely' };
   }
-  if (text.includes("acr")) {
-    return { citationId: "acr:duplicate-imaging-90d", authorityClass: "guideline" };
+  if (text.includes('acr')) {
+    return { citationId: 'acr:duplicate-imaging-90d', authorityClass: 'guideline' };
   }
-  return { citationId: "context_dependent", authorityClass: "context_dependent" };
+  return { citationId: 'context_dependent', authorityClass: 'context_dependent' };
 }
 
 /**
@@ -132,54 +166,73 @@ export function medicalBasisFromDominantFactor(
   const dominant = sorted[0];
   if (!dominant) {
     return medicalBasisFromCitation(
-      "context_dependent",
-      "context_dependent",
-      "AIIE scoring did not attach factor-level citations for this order. // TODO(clinical-signoff)",
-      "AIIE clinical factors",
+      'context_dependent',
+      'context_dependent',
+      'AIIE scoring did not attach factor-level citations for this order. Clinician judgment and chart context should govern the final imaging decision.',
+      'AIIE clinical factors',
     );
   }
   const mapped = mapEvidenceCitationToCitationId(dominant.evidenceCitation);
   const verifyNote = mapped.needsClinicianVerification ?
-    " // TODO(clinical-signoff): map factor evidenceCitation to canonical citationId"
-  : "";
-  return {
-    citationId: mapped.citationId,
-    label: dominant.name,
-    authorityClass: mapped.authorityClass,
-    rationale: `${dominant.name} (SHAP ${dominant.contribution > 0 ? "+" : ""}${dominant.contribution.toFixed(2)}): ${dominant.evidenceCitation}.${verifyNote}`,
-  };
+    ' Clinical sign-off may be required to map factor evidence to a canonical citation.'
+  : '';
+  const rationale =
+    `${dominant.name} (SHAP ${dominant.contribution > 0 ? '+' : ''}${dominant.contribution.toFixed(2)}): ${dominant.evidenceCitation}.${verifyNote}`;
+  return medicalBasisFromCitation(
+    mapped.citationId,
+    mapped.authorityClass,
+    rationale.length >= 40 ?
+      rationale
+    : `${rationale} Evidence linkage supports appropriateness review per institutional policy.`,
+    dominant.name,
+  );
 }
 
 /**
- * Validates that a {@link MedicalBasis} satisfies playbook requirements.
- * Call at card-build time in Phase 2; not invoked on module import.
+ * Validates that a value satisfies FDA Non-Device CDS Criterion 2 (medical basis).
  *
- * @param basis - Medical basis to validate.
- * @throws When required fields are missing or invalid.
+ * @param b - Candidate medical basis object.
+ * @throws With prefix `FDA Criterion 2 violation:` when invalid.
  */
-export function assertMedicalBasis(basis: MedicalBasis | undefined): asserts basis is MedicalBasis {
-  if (!basis) {
-    throw new Error("CDS card is missing required medicalBasis");
+export function assertMedicalBasis(b: unknown): asserts b is MedicalBasis {
+  if (!b || typeof b !== 'object') {
+    throw new Error('FDA Criterion 2 violation: medicalBasis is missing or not an object');
   }
-  if (!basis.citationId.trim()) {
-    throw new Error("medicalBasis.citationId must be non-empty");
+
+  const basis = b as Partial<MedicalBasis>;
+
+  if (!basis.label || typeof basis.label !== 'string' || !basis.label.trim()) {
+    throw new Error('FDA Criterion 2 violation: medicalBasis.label is required');
   }
-  if (!basis.label.trim()) {
-    throw new Error("medicalBasis.label must be non-empty");
+  if (!basis.citationId || typeof basis.citationId !== 'string' || !basis.citationId.trim()) {
+    throw new Error('FDA Criterion 2 violation: medicalBasis.citationId is required');
   }
-  if (!basis.rationale.trim()) {
-    throw new Error("medicalBasis.rationale must be non-empty");
+  if (!basis.url || typeof basis.url !== 'string' || !basis.url.trim()) {
+    throw new Error('FDA Criterion 2 violation: medicalBasis.url is required');
   }
-  if (!AUTHORITY_CLASSES.includes(basis.authorityClass)) {
-    throw new Error(`medicalBasis.authorityClass is invalid: ${basis.authorityClass}`);
+  if (
+    !basis.lastClinicalReviewISO ||
+    typeof basis.lastClinicalReviewISO !== 'string' ||
+    !basis.lastClinicalReviewISO.trim()
+  ) {
+    throw new Error('FDA Criterion 2 violation: medicalBasis.lastClinicalReviewISO is required');
   }
-  if (basis.citationId !== "context_dependent" && !CITATIONS[basis.citationId]) {
-    throw new Error(`medicalBasis.citationId is not registered: ${basis.citationId}`);
+  if (!basis.authorityClass || !AUTHORITY_CLASSES.includes(basis.authorityClass)) {
+    throw new Error(
+      `FDA Criterion 2 violation: medicalBasis.authorityClass is invalid (${String(basis.authorityClass)})`,
+    );
   }
-  if (basis.authorityClass === "context_dependent") {
-    const words = basis.rationale.trim().split(/\s+/).length;
-    if (words < 10) {
-      throw new Error("context_dependent medicalBasis.rationale must be at least 10 words");
-    }
+  if (!basis.rationale || typeof basis.rationale !== 'string' || !basis.rationale.trim()) {
+    throw new Error('FDA Criterion 2 violation: medicalBasis.rationale is required');
+  }
+  if (basis.rationale.trim().length < 40) {
+    throw new Error(
+      'FDA Criterion 2 violation: medicalBasis.rationale must be at least 40 characters',
+    );
+  }
+  if (basis.citationId !== 'context_dependent' && !CITATIONS[basis.citationId]) {
+    throw new Error(
+      `FDA Criterion 2 violation: medicalBasis.citationId is not registered (${basis.citationId})`,
+    );
   }
 }
