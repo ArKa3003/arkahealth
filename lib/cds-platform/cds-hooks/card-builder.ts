@@ -17,7 +17,10 @@ import type { MLPrediction } from '../ml/types';
 import type { ClinicalScenario } from '@/lib/cds-platform/types';
 import type { FHIRServiceRequest } from '../fhir/resources';
 import type { MedicalBasis } from '@/lib/cds-platform/cds-hooks/medical-basis';
-import { assertMedicalBasis } from '@/lib/cds-platform/cds-hooks/medical-basis';
+import {
+  assertMedicalBasis,
+  medicalBasisFromScenario,
+} from '@/lib/cds-platform/cds-hooks/medical-basis';
 
 const ARKA_SOURCE: CDSSource = {
   label: 'ARKA Imaging Intelligence Engine v2.0',
@@ -78,13 +81,14 @@ export function buildAppropriatenessCard(
   prediction: MLPrediction,
   scenario: ClinicalScenario,
   hookType: 'order-select' | 'order-sign'
-): CDSCard {
+): CDSCard & { medicalBasis: MedicalBasis } {
   const score = prediction.score;
   const indicator = scoreToIndicator(score);
   const emoji = scoreToEmoji(score);
   const category = scoreCategory(score);
   const modality = scenario.proposedImaging?.modality ?? 'Imaging';
   const indication = scenario.proposedImaging?.indication ?? scenario.chiefComplaint ?? 'clinical indication';
+  const medicalBasis = medicalBasisFromScenario(scenario);
 
   const summary =
     score >= 7
@@ -95,46 +99,60 @@ export function buildAppropriatenessCard(
   const truncatedSummary = summary.length > 140 ? summary.slice(0, 137) + '...' : summary;
 
   const shapBlock = formatShapDetail(prediction);
+  const mlLayerNote = prediction.usedFallback
+    ? 'AIIE rule-based scoring (ML service offline).'
+    : `Model confidence: ${(prediction.confidence * 100).toFixed(0)}%.`;
   const detail = [
+    `**Guideline basis:** ${medicalBasis.label}`,
+    medicalBasis.rationale,
+    '',
+    '**ARKA regulatory posture:** FDA Non-Device CDS under the 21st Century Cures Act.',
+    '',
     `**Score:** ${score} ${emoji} — ${category}`,
     '',
     '**Top factors (SHAP):**',
     shapBlock,
     '',
-    `**Rationale:** ${indication}. Model confidence: ${(prediction.confidence * 100).toFixed(0)}%.`,
+    `**Rationale:** ${indication}. ${mlLayerNote}`,
   ].join('\n');
 
-  const card: CDSCard = {
-    uuid: uuidv4(),
-    summary: truncatedSummary,
-    detail,
-    indicator,
-    source: ARKA_SOURCE,
-  };
-
-  if (hookType === 'order-sign' && (indicator === 'warning' || indicator === 'critical')) {
-    card.overrideReasons = [
-      { display: 'Clinical judgment — benefits outweigh risks' },
-      { display: 'Additional clinical information not captured in system' },
-      { display: 'Discussed with radiologist' },
-      { display: 'Patient preference after informed discussion' },
-      { display: 'Emergency/time-sensitive clinical situation' },
-    ];
-  }
+  const overrideReasons =
+    hookType === 'order-sign' && (indicator === 'warning' || indicator === 'critical')
+      ? [
+          { display: 'Clinical judgment — benefits outweigh risks' },
+          { display: 'Additional clinical information not captured in system' },
+          { display: 'Discussed with radiologist' },
+          { display: 'Patient preference after informed discussion' },
+          { display: 'Emergency/time-sensitive clinical situation' },
+        ]
+      : undefined;
 
   const indicationSlug = (indication ?? 'imaging')
     .toLowerCase()
     .replace(/\s+/g, '-')
     .replace(/[^a-z0-9-]/g, '');
-  card.links = [
+  const links: CDSLink[] = [
     {
       label: 'ARKA AIIE Evidence Library',
       url: `https://arka-health.com/evidence/${indicationSlug || 'imaging'}`,
       type: 'absolute',
     },
+    {
+      label: medicalBasis.label,
+      url: medicalBasis.url,
+      type: 'absolute',
+    },
   ];
 
-  return card;
+  return build({
+    summary: truncatedSummary,
+    detail,
+    indicator,
+    source: ARKA_SOURCE,
+    medicalBasis,
+    overrideReasons,
+    links,
+  });
 }
 
 /**

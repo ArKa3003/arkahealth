@@ -153,6 +153,46 @@ export function mapOveruseCitationToCitationId(citation: string): {
 }
 
 /**
+ * Derives guideline-anchored {@link MedicalBasis} from the clinical scenario (primary FDA Criterion 2 source).
+ *
+ * @param scenario - Mapped prefetch + draft order context.
+ */
+export function medicalBasisFromScenario(scenario: {
+  proposedImaging?: { indication?: string; modality?: string; bodyPart?: string };
+  chiefComplaint?: string;
+  serviceRequests?: { reasonCodes?: string[]; display?: string }[];
+}): MedicalBasis {
+  const indication = (
+    scenario.proposedImaging?.indication ??
+    scenario.chiefComplaint ??
+    scenario.serviceRequests?.[0]?.display ??
+    ''
+  ).toLowerCase();
+  const reasonText = (scenario.serviceRequests?.[0]?.reasonCodes ?? []).join(' ').toLowerCase();
+  const bodyPart = (scenario.proposedImaging?.bodyPart ?? '').toLowerCase();
+  const combined = `${indication} ${reasonText} ${bodyPart}`;
+
+  if (
+    combined.includes('low back') ||
+    combined.includes('lumbar') ||
+    combined.includes('m54')
+  ) {
+    return medicalBasisFromCitation(
+      'doi:10.1016/j.jacr.2022.02.018',
+      'guideline',
+      'ACR Appropriateness Criteria for low back pain generally favor conservative management before lumbar MRI when red flags are absent; duration, prior therapy, and neurologic status determine the appropriate variant.',
+    );
+  }
+
+  return medicalBasisFromCitation(
+    'context_dependent',
+    'context_dependent',
+    'No indication-specific guideline mapping is registered for this order. Apply institutional appropriateness policies and peer-reviewed sources when interpreting the AIIE score.',
+    'Clinical context',
+  );
+}
+
+/**
  * Derives {@link MedicalBasis} from the AIIE factor with the largest |contribution|.
  *
  * @param factors - SHAP-style factors on the active score.

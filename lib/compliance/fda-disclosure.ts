@@ -2,6 +2,10 @@
  * Canonical FDA non-device CDS footer required on every ARKA-INS CDS card `detail` field.
  * Keep in sync with `.cursorrules` and go-live grep tests.
  */
+
+/** Version string recorded in decision logs and regulatory exports. */
+export const FDA_DISCLOSURE_VERSION = '1.1.0';
+
 export const FDA_NON_DEVICE_CDS_DISCLOSURE =
   "This recommendation is provided by ARKA Imaging Intelligence Engine, an FDA Non-Device Clinical Decision Support tool under the 21st Century Cures Act. The ordering clinician retains full responsibility for the final decision.";
 

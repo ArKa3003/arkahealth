@@ -153,11 +153,6 @@ export async function handleOrderSelect(request: CDSHooksRequest): Promise<CDSHo
 
   for (const draftOrder of imagingOrders) {
     const scenario = mapPrefetchToClinicalScenario(prefetch, draftOrder);
-    const ruleFindings = getSafetyWarnings(prefetch, scenario as ClinicalScenario);
-    if (ruleFindings.length === 0) {
-      // FDA Non-Device CDS: we never ship a card whose primary basis is ML-only. Silence is regulatory-safe. See Phase 0.4 of the unified playbook.
-      return { cards: [] };
-    }
     let prediction: Awaited<ReturnType<XGBoostClient['predict']>>;
     try {
       prediction = await mlClient.predict(scenario as ClinicalScenario);
