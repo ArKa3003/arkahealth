@@ -1,9 +1,11 @@
 "use client";
 
 import * as React from "react";
+import { X } from "lucide-react";
 
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -31,14 +33,28 @@ export function AIIEEvidenceModal({ open, onOpenChange, mnai }: AIIEEvidenceModa
         aria-describedby={undefined}
         className="fixed left-0 top-0 z-50 flex h-[100dvh] w-full max-w-none translate-x-0 translate-y-0 flex-col gap-0 overflow-hidden rounded-none border-0 bg-white p-0 shadow-none duration-200 data-[state=open]:slide-in-from-bottom-0 data-[state=closed]:slide-out-to-bottom-0 dark:bg-slate-950 sm:inset-4 sm:h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-2rem)] sm:rounded-xl sm:border sm:border-slate-200 sm:shadow-xl dark:sm:border-slate-800"
       >
-        <DialogHeader className="shrink-0 space-y-1 border-b border-slate-200 bg-slate-50 px-4 py-4 pr-14 text-left dark:border-slate-800 dark:bg-slate-900 sm:px-6 sm:pr-16">
-          <DialogTitle className="text-xl font-semibold text-slate-900 dark:text-slate-100">
-            ARKA evidence & compliance
-          </DialogTitle>
-          <DialogDescription className="text-sm text-slate-600 dark:text-slate-400">
-            FDA Non-Device Clinical Decision Support (21st Century Cures Act), AIIE methodology, and CMS interoperability
-            alignment.
-          </DialogDescription>
+        <DialogHeader className="shrink-0 border-b border-slate-200 bg-slate-50 px-4 py-4 pr-14 text-left dark:border-slate-800 dark:bg-slate-900 sm:px-6 sm:pr-16">
+          <div className="flex items-start gap-3">
+            <DialogClose asChild>
+              <button
+                type="button"
+                aria-label="Close evidence and compliance modal"
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-arka-teal focus:ring-offset-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+              >
+                <X className="h-3.5 w-3.5" aria-hidden />
+                Close
+              </button>
+            </DialogClose>
+            <div className="min-w-0 flex-1 space-y-1">
+              <DialogTitle className="text-xl font-semibold text-slate-900 dark:text-slate-100">
+                ARKA evidence & compliance
+              </DialogTitle>
+              <DialogDescription className="text-sm text-slate-600 dark:text-slate-400">
+                FDA Non-Device Clinical Decision Support (21st Century Cures Act), AIIE methodology, and CMS interoperability
+                alignment.
+              </DialogDescription>
+            </div>
+          </div>
         </DialogHeader>
 
         <div className="flex min-h-0 flex-1 flex-col px-4 py-3 sm:px-6 sm:pb-4">
