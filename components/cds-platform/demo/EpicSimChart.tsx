@@ -31,22 +31,22 @@ export function EpicSimChart({
 
   return (
     <section
-      className="flex flex-col gap-4 rounded-xl border border-arka-primary/15 bg-white p-4 shadow-sm dark:border-arka-primary/25 dark:bg-arka-bg-dark/40"
+      className="flex flex-col gap-4 rounded-xl border border-arka-light bg-white p-4 shadow-sm"
       aria-label="EpicSim patient chart"
     >
       <header className="border-b border-arka-primary/10 pb-3">
         <p className="text-xs font-semibold uppercase tracking-wider text-arka-muted">EpicSim™ — Patient Chart</p>
-        <h2 className="mt-2 text-lg font-semibold text-arka-text-dark dark:text-white">
+        <h2 className="mt-2 text-lg font-semibold text-arka-text-dark">
           {scenario.patientName} · {scenario.age}
           {sexLabel} · MRN {scenario.mrn}
         </h2>
-        <p className="mt-1 text-sm text-arka-muted">
+        <p className="mt-1 text-sm text-arka-text-dark-muted">
           Allergies: {scenario.allergies} · eGFR: {scenario.eGFR}
         </p>
       </header>
 
       <div>
-        <h3 className="text-sm font-medium text-arka-text-dark dark:text-white">Active problems</h3>
+        <h3 className="text-sm font-medium text-arka-text-dark">Active problems</h3>
         <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-arka-text-dark-muted" aria-label="Active problems">
           {scenario.problems.map((p) => (
             <li key={p.icd10}>
@@ -61,12 +61,12 @@ export function EpicSimChart({
           <CardTitle className="text-sm font-medium text-arka-teal">Imaging order (draft)</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 text-sm">
-          <p className="font-medium text-arka-text-dark dark:text-white">{scenario.orderDisplay}</p>
-          <p className="text-arka-muted">CPT {scenario.cpt}</p>
-          <p>
+          <p className="font-medium text-arka-text-dark">{scenario.orderDisplay}</p>
+          <p className="text-arka-text-dark-muted">CPT {scenario.cpt}</p>
+          <p className="text-arka-text-dark-muted">
             Indication: {scenario.chiefComplaint} ({scenario.icd10})
           </p>
-          <p>
+          <p className="text-arka-text-dark-muted">
             Duration:{' '}
             {scenario.duration % 7 === 0
               ? `${scenario.duration / 7} weeks`

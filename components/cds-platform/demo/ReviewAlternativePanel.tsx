@@ -171,7 +171,7 @@ export function ReviewAlternativePanel({
       aria-labelledby={headingId}
       aria-label="Review alternative imaging"
     >
-      <h3 id={headingId} className="text-sm font-semibold text-arka-text-dark dark:text-white">
+      <h3 id={headingId} className="text-sm font-semibold text-arka-text-dark">
         Alternative imaging consistent with {basis.label}
       </h3>
 
@@ -190,7 +190,7 @@ export function ReviewAlternativePanel({
         className="mt-4 rounded-md border border-arka-primary/15 bg-white/80 p-3 text-xs dark:bg-arka-bg-dark/40"
         aria-label="Alternative order summary"
       >
-        <p className="font-medium text-arka-text-dark dark:text-white">{displayName}</p>
+        <p className="font-medium text-arka-text-dark">{displayName}</p>
         <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-arka-text-dark-muted">
           <dt className="font-medium text-arka-muted">CPT</dt>
           <dd>{detail.cpt}</dd>

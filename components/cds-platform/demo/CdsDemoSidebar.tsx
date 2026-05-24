@@ -74,7 +74,7 @@ export function CdsDemoSidebar({
   const guidelineShort = medicalBasis.label.split('—')[0]?.trim() ?? medicalBasis.label;
 
   const asideClass =
-    'flex w-full flex-col rounded-xl border border-arka-primary/15 bg-white shadow-sm lg:w-[40%] lg:min-w-[320px] lg:max-w-[420px]';
+    'flex w-full flex-col rounded-xl border border-arka-light bg-white shadow-sm lg:w-[40%] lg:min-w-[320px] lg:max-w-[420px]';
 
   return (
     <AnimatePresence mode="wait">
@@ -105,7 +105,7 @@ export function CdsDemoSidebar({
           aria-label="ARKA CDS recommendations"
         >
       <header className="border-b border-arka-primary/10 px-4 py-3">
-        <p className="text-xs font-semibold uppercase tracking-wider text-arka-muted">ARKA Sidebar</p>
+        <p className="text-xs font-semibold uppercase tracking-wider text-arka-text-dark-muted">ARKA Sidebar</p>
       </header>
 
       <div className="flex flex-1 flex-col gap-4 overflow-y-auto p-4">
@@ -119,13 +119,13 @@ export function CdsDemoSidebar({
               <h2 id="primary-basis-heading" className="text-xs font-bold uppercase tracking-wide text-arka-teal">
                 Primary basis
               </h2>
-              <p className="mt-2 text-sm font-medium text-arka-text-dark dark:text-white">{medicalBasis.label}</p>
-              <p className="mt-2 text-sm text-arka-text-dark-muted">{medicalBasis.rationale}</p>
+              <p className="mt-2 text-sm font-medium text-arka-text-dark">{medicalBasis.label}</p>
+              <p className="mt-2 text-sm leading-relaxed text-arka-text-dark">{medicalBasis.rationale}</p>
               <a
                 href={medicalBasis.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-2 inline-flex items-center gap-1 text-sm text-arka-cyan hover:underline"
+                className="mt-2 inline-flex items-center gap-1 text-sm text-arka-cyan underline-offset-2 hover:text-arka-teal"
               >
                 View citation
                 <ExternalLink className="h-3.5 w-3.5" aria-hidden />
@@ -135,13 +135,13 @@ export function CdsDemoSidebar({
             <hr className="border-arka-primary/10" />
 
             <section aria-labelledby="refinement-heading">
-              <h2 id="refinement-heading" className="text-xs font-medium text-arka-muted">
+              <h2 id="refinement-heading" className="text-xs font-medium text-arka-text-dark-muted">
                 Patient-specific refinement
               </h2>
-              <p className="mt-2 text-2xl font-semibold text-arka-text-dark dark:text-white">
+              <p className="mt-2 text-2xl font-semibold text-arka-text-dark">
                 ARKA risk: {score}/9
               </p>
-              <p className="mt-1 text-xs text-arka-muted">Top factors (SHAP)</p>
+              <p className="mt-1 text-xs text-arka-text-dark-muted">Top factors (SHAP)</p>
               <ShapFactorsBlock rows={shapRows} />
             </section>
 
@@ -203,7 +203,7 @@ export function CdsDemoSidebar({
               setAboutOpen((o) => !o);
               onAboutRecommendation();
             }}
-            className="mt-2 text-xs text-arka-cyan hover:underline"
+            className="mt-2 text-xs text-arka-cyan underline-offset-2 hover:text-arka-teal"
             aria-expanded={aboutOpen}
           >
             About this recommendation

@@ -34,7 +34,7 @@ export function ShapFactorsBlock({ rows }: ShapFactorsBlockProps) {
             className="rounded-md border border-arka-primary/10 bg-arka-bg-light/80 p-2.5 dark:bg-arka-bg-dark/20"
           >
             <div className="flex items-center justify-between gap-2">
-              <span className="text-sm font-medium text-arka-text-dark dark:text-white">{row.label}</span>
+              <span className="text-sm font-medium text-arka-text-dark">{row.label}</span>
               <span
                 className={`shrink-0 tabular-nums text-sm font-semibold ${
                   isPositive ? 'text-amber-600' : 'text-emerald-600'

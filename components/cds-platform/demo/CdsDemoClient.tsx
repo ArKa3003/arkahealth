@@ -159,9 +159,9 @@ export function CdsDemoClient() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-arka-primary/15 bg-white px-4 py-3 dark:bg-arka-bg-dark/30">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-arka-primary/15 bg-white px-4 py-3">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-arka-text-dark dark:text-white">
+          <span className="text-sm font-semibold text-arka-text-dark">
             ARKA · CDS Hooks Live Demo
           </span>
           <Badge
@@ -212,16 +212,16 @@ export function CdsDemoClient() {
       </div>
 
       <section
-        className="rounded-lg border border-arka-primary/15 bg-arka-bg-light p-4 dark:bg-arka-bg-dark/20"
+        className="rounded-lg border border-arka-primary/15 bg-arka-deep p-4"
         aria-labelledby="live-cds-json-heading"
       >
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 id="live-cds-json-heading" className="text-sm font-medium text-arka-text-dark dark:text-white">
+          <h2 id="live-cds-json-heading" className="text-sm font-medium text-white">
             Live CDS Hooks JSON
           </h2>
           <button
             type="button"
-            className="text-xs text-arka-cyan hover:underline"
+            className="text-xs text-arka-cyan hover:text-white"
             onClick={() => setShowRawJson((v) => !v)}
             aria-expanded={showRawJson}
           >
@@ -231,7 +231,7 @@ export function CdsDemoClient() {
         {showRawJson && (
           <div className="mt-4 space-y-4">
             {exchanges.length === 0 && (
-              <p className="text-xs text-arka-muted">No requests yet. Select a scenario or sign an order.</p>
+              <p className="text-xs text-arka-text-soft">No requests yet. Select a scenario or sign an order.</p>
             )}
             {exchanges.map((ex) => (
               <div key={ex.hook} className="space-y-2">
@@ -255,13 +255,13 @@ export function CdsDemoClient() {
       </section>
 
       <footer className="grid gap-4 sm:grid-cols-3" aria-label="Demo session statistics">
-        <div className="rounded-lg border border-arka-primary/15 bg-white p-4 text-center dark:bg-arka-bg-dark/30">
-          <p className="text-xs uppercase text-arka-muted">Median score</p>
-          <p className="mt-1 text-2xl font-semibold text-arka-text-dark dark:text-white">{medianScore}</p>
+        <div className="rounded-lg border border-arka-primary/15 bg-white p-4 text-center">
+          <p className="text-xs uppercase text-arka-text-dark-muted">Median score</p>
+          <p className="mt-1 text-2xl font-semibold text-arka-text-dark">{medianScore}</p>
         </div>
-        <div className="rounded-lg border border-arka-primary/15 bg-white p-4 text-center dark:bg-arka-bg-dark/30">
-          <p className="text-xs uppercase text-arka-muted">Orders reviewed</p>
-          <p className="mt-1 text-2xl font-semibold text-arka-text-dark dark:text-white">{ordersReviewed}</p>
+        <div className="rounded-lg border border-arka-primary/15 bg-white p-4 text-center">
+          <p className="text-xs uppercase text-arka-text-dark-muted">Orders reviewed</p>
+          <p className="mt-1 text-2xl font-semibold text-arka-text-dark">{ordersReviewed}</p>
         </div>
         <RoiCounter dollarsAvoided={roi.dollarsAvoided} ordersOptimized={roi.ordersOptimized} />
       </footer>
