@@ -1,0 +1,41 @@
+{
+  "rmse": 1.4134465456008911,
+  "mae": 1.1359988451004028,
+  "r2": 0.5792534351348877,
+  "three_category_accuracy": 0.7386666666666667,
+  "confusion_matrix": [
+    [
+      152,
+      80,
+      0
+    ],
+    [
+      40,
+      329,
+      6
+    ],
+    [
+      3,
+      67,
+      73
+    ]
+  ],
+  "feature_importance_gain": {
+    "patient_age": 3.470036745071411,
+    "modality_code": 8.033130645751953,
+    "body_site_code": 13.979909896850586,
+    "indication_category": 24.986785888671875,
+    "symptom_duration_days": 4.999419212341309,
+    "has_red_flags": 77.55323791503906,
+    "cancer_history": 10.08646011352539,
+    "neurological_deficit": 18.382152557373047,
+    "fever_present": 8.900375366210938,
+    "is_pregnant": 25.979421615600586,
+    "has_contrast_allergy": 17.47697639465332,
+    "egfr_value": 4.088578701019287,
+    "same_modality_prior_30d": 114.30952453613281,
+    "same_body_site_prior_30d": 40.823829650878906,
+    "comorbidity_count": 2.937558174133301,
+    "conservative_tx_tried": 15.159736633300781
+  }
+}

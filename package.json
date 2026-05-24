@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "npm run export:feature-catalog",
     "build": "next build",
     "type-check": "tsc --noEmit",
     "start": "next start",
