@@ -86,6 +86,9 @@ export interface ValidationMetrics {
   metrics_by_modality: Record<string, SubgroupMetrics>;
   metrics_by_indication: Record<string, SubgroupMetrics>;
   metrics_by_age_group: Record<string, SubgroupMetrics>;
+  /** Pediatric (&lt;18), adult (18–64), older adult (65+) for fairness reporting. */
+  metrics_by_age_fairness: Record<string, SubgroupMetrics>;
+  metrics_by_sex: Record<string, SubgroupMetrics>;
   metrics_by_confidence: Record<string, SubgroupMetrics>;
   false_negative_rate_safety: number;
   safety_alert_sensitivity: number;

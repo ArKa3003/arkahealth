@@ -50,7 +50,40 @@ export const routes = {
   ruralTele: "/rural/tele",
   cdsHooksDemo: "/cds-hooks-demo",
   cdsHooksDemoValidation: "/cds-hooks-demo/validation",
+  regulatoryRationale: "/docs/regulatory-rationale",
 } as const;
+
+/** FDA §520(o)(1)(E) non-device CDS criteria — links anchor Phase 11 regulatory memo route. */
+export const FDA_NON_DEVICE_CRITERIA = [
+  {
+    id: "criterion-1",
+    name: "Not device software",
+    implementation:
+      "ARKA ingests structured FHIR resources only; the Feature Rationale Catalogue documents permitted source types and excludes image-pixel pipelines.",
+    href: `${routes.regulatoryRationale}#criterion-1`,
+  },
+  {
+    id: "criterion-2",
+    name: "Basis in published evidence",
+    implementation:
+      "Cards and ML features link to ACR Appropriateness Criteria and registered citations in the Citation Library with last-verified dates.",
+    href: `${routes.regulatoryRationale}#criterion-2`,
+  },
+  {
+    id: "criterion-3",
+    name: "Recommendations, not directives",
+    implementation:
+      "FDA disclosure text on every surface states that the ordering clinician retains full responsibility for the final decision.",
+    href: `${routes.regulatoryRationale}#criterion-3`,
+  },
+  {
+    id: "criterion-4",
+    name: "Independent review",
+    implementation:
+      "SHAP contributions, feature metadata on /predict, and this validation dashboard expose why each score was produced.",
+    href: `${routes.regulatoryRationale}#criterion-4`,
+  },
+] as const;
 
 export const navLinks = [
   { href: routes.home, label: "Home" },

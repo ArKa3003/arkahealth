@@ -407,6 +407,8 @@ export function computeMetrics(
   const metricsByModality: Record<string, SubgroupMetrics> = {};
   const metricsByIndication: Record<string, SubgroupMetrics> = {};
   const metricsByAgeGroup: Record<string, SubgroupMetrics> = {};
+  const metricsByAgeFairness: Record<string, SubgroupMetrics> = {};
+  const metricsBySex: Record<string, SubgroupMetrics> = {};
   const metricsByConfidence: Record<string, SubgroupMetrics> = {};
 
   for (const mod of ['X-ray', 'CT', 'MRI', 'Ultrasound', 'Other']) {
@@ -470,6 +472,48 @@ export function computeMetrics(
     }
   }
 
+  const fairnessAgeBands: Array<{ key: string; match: (age: number) => boolean }> = [
+    { key: 'pediatric', match: (age) => age < 18 },
+    { key: 'adult', match: (age) => age >= 18 && age < 65 },
+    { key: 'older adult', match: (age) => age >= 65 },
+  ];
+  for (const band of fairnessAgeBands) {
+    const subPred = predictions.filter((p) => {
+      const c = caseMap.get(p.caseId);
+      const age = c?.scenario?.age ?? 50;
+      return band.match(age);
+    });
+    const subCases = subPred.map((p) => caseMap.get(p.caseId)!).filter(Boolean);
+    if (subCases.length > 0) {
+      metricsByAgeFairness[band.key] = subgroupMetricsFromPairs(
+        subPred.map((p) => p.score),
+        subPred.map((p) => p.predictedAppropriate),
+        subCases.map((c) => c.expertLabel.appropriatenessScore),
+        subCases.map((c) => c.expertLabel.category)
+      );
+      metricsByAgeFairness[band.key]!.aucRoc = aucRoc(subPred, subCases);
+    }
+  }
+
+  for (const sexLabel of ['Male', 'Female', 'Other']) {
+    const subPred = predictions.filter((p) => {
+      const c = caseMap.get(p.caseId);
+      const sex = c?.scenario?.sex ?? 'Other';
+      if (sexLabel === 'Other') return sex !== 'Male' && sex !== 'Female';
+      return sex === sexLabel;
+    });
+    const subCases = subPred.map((p) => caseMap.get(p.caseId)!).filter(Boolean);
+    if (subCases.length > 0) {
+      metricsBySex[sexLabel] = subgroupMetricsFromPairs(
+        subPred.map((p) => p.score),
+        subPred.map((p) => p.predictedAppropriate),
+        subCases.map((c) => c.expertLabel.appropriatenessScore),
+        subCases.map((c) => c.expertLabel.category)
+      );
+      metricsBySex[sexLabel]!.aucRoc = aucRoc(subPred, subCases);
+    }
+  }
+
   const confGroups = ['low', 'medium', 'high'];
   for (const cg of confGroups) {
     const subPred = predictions.filter((p) => {
@@ -512,6 +556,8 @@ export function computeMetrics(
     metrics_by_modality: metricsByModality,
     metrics_by_indication: metricsByIndication,
     metrics_by_age_group: metricsByAgeGroup,
+    metrics_by_age_fairness: metricsByAgeFairness,
+    metrics_by_sex: metricsBySex,
     metrics_by_confidence: metricsByConfidence,
     false_negative_rate_safety: 1 - bin.sensitivity,
     safety_alert_sensitivity: bin.sensitivity,

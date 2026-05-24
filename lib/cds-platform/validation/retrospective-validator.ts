@@ -140,6 +140,45 @@ export class RetrospectiveValidator {
       for (const [key, m] of Object.entries(metrics.metrics_by_age_group)) {
         if (m && m.n > 0) subgroupAnalysis.push({ name: `Age: ${key}`, key: `age-${key}`, metrics: m, n: m.n });
       }
+      for (const [key, m] of Object.entries(metrics.metrics_by_age_fairness)) {
+        if (m && m.n > 0) {
+          subgroupAnalysis.push({ name: `Age band: ${key}`, key: `fairness-age-${key}`, metrics: m, n: m.n });
+        }
+      }
+      for (const [key, m] of Object.entries(metrics.metrics_by_sex)) {
+        if (m && m.n > 0) subgroupAnalysis.push({ name: `Sex: ${key}`, key: `fairness-sex-${key}`, metrics: m, n: m.n });
+      }
+      const regulatoryModalityLabels: Array<{ keys: string[]; label: string }> = [
+        { keys: ['CT', 'CT with contrast'], label: 'CT' },
+        { keys: ['MRI', 'MRI with contrast'], label: 'MRI' },
+        { keys: ['Ultrasound'], label: 'US' },
+        { keys: ['X-ray'], label: 'XR' },
+      ];
+      for (const { keys, label } of regulatoryModalityLabels) {
+        let combined: SubgroupReport['metrics'] | undefined;
+        let totalN = 0;
+        for (const modKey of keys) {
+          const m = metrics.metrics_by_modality[modKey];
+          if (m && m.n > 0) {
+            totalN += m.n;
+            combined = combined ?
+              {
+                ...combined,
+                n: combined.n + m.n,
+                aucRoc: (combined.aucRoc * combined.n + m.aucRoc * m.n) / (combined.n + m.n),
+              }
+            : m;
+          }
+        }
+        if (combined && totalN > 0) {
+          subgroupAnalysis.push({
+            name: `Modality: ${label}`,
+            key: `fairness-modality-${label}`,
+            metrics: { ...combined, n: totalN },
+            n: totalN,
+          });
+        }
+      }
     }
 
     const confusionLabels = ['inappropriate', 'uncertain', 'appropriate'];
