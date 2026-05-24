@@ -7,6 +7,7 @@ import { NavigationProgress } from "./NavigationProgress";
 import { cn } from "@/lib/utils";
 
 const DEMO_PATHS = ["/clin", "/ed", "/ins"];
+const NO_TRANSITION_PATHS = ["/cds-hooks-demo"];
 
 const pageVariants = {
   initial: { opacity: 0, y: 10 },
@@ -17,6 +18,9 @@ const pageVariants = {
 export function MainWithDemoNav({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isDemoPage = DEMO_PATHS.some((p) => pathname.startsWith(p));
+  const skipPageTransition = NO_TRANSITION_PATHS.some((p) =>
+    pathname.startsWith(p)
+  );
 
   return (
     <>
@@ -29,19 +33,23 @@ export function MainWithDemoNav({ children }: { children: React.ReactNode }) {
         )}
         tabIndex={-1}
       >
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={pathname}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            variants={pageVariants}
-            transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
-            className="min-h-0 flex-1"
-          >
-            {children}
-          </motion.div>
-        </AnimatePresence>
+        {skipPageTransition ? (
+          <div className="min-h-0 flex-1">{children}</div>
+        ) : (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={pathname}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              variants={pageVariants}
+              transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
+              className="min-h-0 flex-1"
+            >
+              {children}
+            </motion.div>
+          </AnimatePresence>
+        )}
       </main>
       <DemoBottomNav />
     </>
