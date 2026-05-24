@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-23  
 **Author:** Arri  
-**Status:** DICOM pixel pipeline removed (Phase 0.10 Option C); Criterion 1 question moot for viewer
+**Status:** Draft pending regulatory counsel review (see Phase 0.10)
 
 ## In-scope (Non-Device CDS functions under FD&C Act §520(o)(1)(E))
 
@@ -14,27 +14,19 @@
 
 ## Out-of-scope (separate functions, NOT Non-Device CDS)
 
-- `lib/viewer/projection-matcher.ts`, `lib/viewer/snapshot-study.ts`, `lib/viewer/checklists/*`, `lib/viewer/view-infer.ts` — FHIR **metadata-only** helpers for prior-study matching and reference checklists (no pixel I/O)
-- `components/shared/ReferenceViewer.tsx` — text-metadata reference cards and systematic checklist UI (no thumbnails or DICOM)
-- Rationale: these surfaces help a user identify prior studies from structured ImagingStudy metadata. They do **not** analyse pixel data and no CDS Hooks card content is derived from medical images.
-
-## Removed (no longer in repo)
-
-- `lib/viewer/dicom-phi-scrub.ts` — DICOM Part 10 PHI scrub before thumbnail use
-- `lib/viewer/dicom-to-webp.ts` — embedded JPEG extraction and WebP conversion
-- `lib/viewer/fetch-study-dicom.ts` — WADO/DICOM fetch chain
-- `lib/viewer/thumbnail-cache.ts` — in-process WebP thumbnail cache
-- `app/api/ins/viewer/image/[studyUid]/route.ts` — study thumbnail API
-- `dicom-parser` npm dependency (and `sharp` usage tied to that pipeline)
+- `lib/viewer/*` — DICOM-to-WebP thumbnail rendering for reference display
+- `app/api/ins/viewer/image/[studyUid]/route.ts` — thumbnail-serving route
+- `components/shared/ReferenceViewer.tsx` — thumbnail UI
+- Rationale: these functions display previously-acquired imaging studies as reference thumbnails to help a user identify prior studies. They do NOT analyse pixel data to derive a CDS recommendation. No CDS Hooks card content is derived from this code path.
 
 ## Boundary enforcement
 
-- An import-lint guard at `scripts/lint-scope-boundary.ts` fails CI if any in-scope file imports from removed DICOM paths or image-processing viewer modules.
+- An import-lint guard at `scripts/lint-scope-boundary.ts` (added in 1.5.B) fails CI if any in-scope file imports from any out-of-scope path.
 - The regulatory rationale memo (Phase 11) cites this document in Section 3.1 (Criterion 1).
 
 ## Counsel sign-off
 
 - Reviewer: _pending_
 - Date: _pending_
-- Opinion: **N/A — DICOM viewer removed; Criterion 1 question moot.**
-- Document on file at: _n/a_
+- Opinion: _pending counsel review_
+- Document on file at: _pending_
