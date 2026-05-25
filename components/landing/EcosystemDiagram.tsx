@@ -39,23 +39,31 @@ const nodes = [
   },
 ] as const;
 
-/* Desktop layout: center (ARKA), CLIN/ED/INS equidistant at 120° (triangle) */
-const DESKTOP_RADIUS = 115;
+/**
+ * Desktop layout — true equilateral triangle around a centered ARKA.
+ * CLIN is the apex (top), ED is the lower-right vertex, INS is the
+ * lower-left vertex. This makes all three legs diagonal (visually
+ * equivalent length and angle) and prevents the CLIN connection from
+ * looking "missing" against the horizontal grid.
+ */
+const DESKTOP_RADIUS = 150;
+const DESKTOP_CX = 360; // half of width
+const DESKTOP_CY = 220; // visually centered with room for label below
 const DESKTOP = {
-  width: 640,
-  height: 320,
-  center: { x: 220, y: 160 },
+  width: 720,
+  height: 440,
+  center: { x: DESKTOP_CX, y: DESKTOP_CY },
   clin: {
-    x: 220 - DESKTOP_RADIUS,
-    y: 160,
+    x: DESKTOP_CX,
+    y: DESKTOP_CY - DESKTOP_RADIUS,
   },
   ed: {
-    x: 220 + DESKTOP_RADIUS * 0.5,
-    y: 160 - DESKTOP_RADIUS * (Math.sqrt(3) / 2),
+    x: DESKTOP_CX + DESKTOP_RADIUS * (Math.sqrt(3) / 2),
+    y: DESKTOP_CY + DESKTOP_RADIUS * 0.5,
   },
   ins: {
-    x: 220 + DESKTOP_RADIUS * 0.5,
-    y: 160 + DESKTOP_RADIUS * (Math.sqrt(3) / 2),
+    x: DESKTOP_CX - DESKTOP_RADIUS * (Math.sqrt(3) / 2),
+    y: DESKTOP_CY + DESKTOP_RADIUS * 0.5,
   },
 };
 
@@ -328,12 +336,12 @@ export function EcosystemDiagram() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.1 }}
-          className="relative z-10 mx-auto mt-12 hidden w-full max-w-[640px] md:block"
+          className="relative z-10 mx-auto mt-12 hidden w-full max-w-[720px] md:block"
         >
           <svg
             viewBox={`0 0 ${DESKTOP.width} ${DESKTOP.height}`}
             className="w-full"
-            style={{ minHeight: 320 }}
+            style={{ minHeight: 440 }}
             role="img"
             aria-labelledby={`${desktopId}-diagram-title`}
           >
@@ -369,7 +377,7 @@ export function EcosystemDiagram() {
             {/* Shared knowledge base label */}
             <text
               x={DESKTOP.center.x}
-              y={DESKTOP.center.y + 48}
+              y={DESKTOP.center.y + 64}
               textAnchor="middle"
               className="fill-arka-teal/80 text-[10px] font-medium uppercase tracking-wider"
             >
@@ -380,7 +388,7 @@ export function EcosystemDiagram() {
             <NodeCircle
               cx={DESKTOP.center.x}
               cy={DESKTOP.center.y}
-              r={36}
+              r={44}
               label="ARKA"
               isCenter
               isHighlighted={hoveredNode === "arka" || hoveredNode === null}
@@ -407,7 +415,7 @@ export function EcosystemDiagram() {
                       ? DESKTOP.ed.y
                       : DESKTOP.ins.y
                 }
-                r={28}
+                r={34}
                 label={node.label}
                 isHighlighted={hoveredNode === node.id || hoveredNode === null}
                 onClick={() => handleNodeClick(node.href)}
