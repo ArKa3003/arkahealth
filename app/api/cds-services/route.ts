@@ -9,7 +9,9 @@ import { withInsApiLogging } from "@/lib/server/with-ins-api-logging";
 
 const discoveryHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Methods": "GET, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+  "Content-Type": "application/json",
   "Cache-Control": "public, max-age=300",
   "X-ARKA-FDA-Compliance": "non-device-cds",
   "X-ARKA-CMS-0057-F-Ready": "true",
@@ -79,7 +81,7 @@ export const GET = withInsApiLogging(discoveryGet);
  * CORS preflight for CDS Hooks clients (sandbox, local dev, EHR-hosted apps).
  */
 async function discoveryOptions(_request: Request): Promise<NextResponse> {
-  return new NextResponse(null, { status: 204, headers: discoveryHeaders });
+  return new NextResponse(null, { status: 200, headers: discoveryHeaders });
 }
 
 export const OPTIONS = withInsApiLogging(discoveryOptions);
