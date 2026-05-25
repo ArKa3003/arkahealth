@@ -7,16 +7,30 @@ import { NextResponse } from "next/server";
 import { APPOINTMENT_PREFETCH, COVERAGE_PREFETCH } from "@/lib/fhir/prefetch";
 import { withInsApiLogging } from "@/lib/server/with-ins-api-logging";
 
-const discoveryHeaders = {
+/** Set on every response from this route (not via next.config.ts). */
+const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type",
+} as const;
+
+const discoveryMetaHeaders = {
   "Content-Type": "application/json",
   "Cache-Control": "public, max-age=300",
   "X-ARKA-FDA-Compliance": "non-device-cds",
   "X-ARKA-CMS-0057-F-Ready": "true",
   "X-ARKA-Platform-Version": "unified-2.0",
 } as const;
+
+/**
+ * Applies CORS headers directly on the response object before it is returned.
+ */
+function withCorsHeaders(response: NextResponse): NextResponse {
+  for (const [key, value] of Object.entries(CORS_HEADERS)) {
+    response.headers.set(key, value);
+  }
+  return response;
+}
 
 const services = [
   {
@@ -72,16 +86,17 @@ const services = [
  * CDS Hooks service discovery (GET). Returns ARKA-CLIN and ARKA-INS service metadata for a single EHR registration URL.
  */
 async function discoveryGet(_request: Request): Promise<NextResponse> {
-  return NextResponse.json({ services }, { headers: discoveryHeaders });
+  const response = NextResponse.json({ services }, { headers: discoveryMetaHeaders });
+  return withCorsHeaders(response);
 }
 
 export const GET = withInsApiLogging(discoveryGet);
 
 /**
  * CORS preflight for CDS Hooks clients (sandbox, local dev, EHR-hosted apps).
+ * Standalone export — no logging wrapper; headers set only in this handler.
  */
-async function discoveryOptions(_request: Request): Promise<NextResponse> {
-  return new NextResponse(null, { status: 200, headers: discoveryHeaders });
+export async function OPTIONS(_request: Request): Promise<NextResponse> {
+  const response = new NextResponse(null, { status: 200 });
+  return withCorsHeaders(response);
 }
-
-export const OPTIONS = withInsApiLogging(discoveryOptions);
