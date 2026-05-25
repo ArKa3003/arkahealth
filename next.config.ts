@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const cdsDiscoveryCorsHeaders = [
   { key: "Access-Control-Allow-Origin", value: "*" },
   { key: "Access-Control-Allow-Methods", value: "GET, OPTIONS" },
-  { key: "Access-Control-Allow-Headers", value: "Content-Type" },
+  { key: "Access-Control-Allow-Headers", value: "Content-Type, Authorization" },
   { key: "Content-Type", value: "application/json" },
 ] as const;
 
