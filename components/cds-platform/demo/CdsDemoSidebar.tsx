@@ -168,8 +168,8 @@ export function CdsDemoSidebar({
               )}
               <Button
                 type="button"
-                variant="ghost"
-                className="w-full border border-arka-primary/20 text-sm focus-visible:ring-2 focus-visible:ring-arka-cyan"
+                variant="secondary"
+                className="w-full border border-arka-primary/20 bg-transparent text-left text-sm text-arka-text-dark hover:bg-arka-cyan/10 hover:text-arka-cyan focus-visible:ring-2 focus-visible:ring-arka-cyan dark:border-arka-primary/20 dark:bg-transparent dark:text-arka-text-dark dark:hover:bg-arka-cyan/10 dark:hover:text-arka-cyan"
                 onClick={onOverride}
                 aria-label="Document override with reason"
               >
