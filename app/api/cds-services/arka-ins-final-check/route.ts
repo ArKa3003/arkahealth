@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { FDA_DISCLOSURE_VERSION } from "@/lib/compliance/fda-disclosure";
 import { invertToDenialRisk } from "@/lib/aiie/denial-risk";
 import { scoreOrder } from "@/lib/aiie/scoring-engine";
 import { clinicalDocumentationHintsFromServiceRequest } from "@/lib/aiie/service-request-hints";
@@ -40,6 +41,7 @@ const CDS_HEADERS: Record<string, string> = {
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
   "Cache-Control": "no-store",
   "X-ARKA-FDA-Compliance": "non-device-cds",
+  "X-ARKA-FDA-Disclosure-Version": FDA_DISCLOSURE_VERSION,
   "X-ARKA-CMS-0057-F-Ready": "true",
   "X-ARKA-Platform-Version": "unified-2.0",
 };

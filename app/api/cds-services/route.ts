@@ -4,6 +4,7 @@
 
 import { NextResponse } from "next/server";
 
+import { FDA_DISCLOSURE_VERSION } from "@/lib/compliance/fda-disclosure";
 import { APPOINTMENT_PREFETCH, COVERAGE_PREFETCH } from "@/lib/fhir/prefetch";
 import { withInsApiLogging } from "@/lib/server/with-ins-api-logging";
 
@@ -18,6 +19,7 @@ const discoveryMetaHeaders = {
   "Content-Type": "application/json",
   "Cache-Control": "public, max-age=300",
   "X-ARKA-FDA-Compliance": "non-device-cds",
+  "X-ARKA-FDA-Disclosure-Version": FDA_DISCLOSURE_VERSION,
   "X-ARKA-CMS-0057-F-Ready": "true",
   "X-ARKA-Platform-Version": "unified-2.0",
 } as const;

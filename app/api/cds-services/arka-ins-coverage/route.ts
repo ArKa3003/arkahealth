@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { FDA_DISCLOSURE_VERSION } from "@/lib/compliance/fda-disclosure";
 import { classifyAction, invertToDenialRisk } from "@/lib/aiie/denial-risk";
 import {
   buildRarityEventDimensions,
@@ -58,6 +59,7 @@ const CDS_HEADERS: Record<string, string> = {
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
   "Cache-Control": "no-store",
   "X-ARKA-FDA-Compliance": "non-device-cds",
+  "X-ARKA-FDA-Disclosure-Version": FDA_DISCLOSURE_VERSION,
 };
 
 const AIIE_SCORE_TIMEOUT_MS = 650;

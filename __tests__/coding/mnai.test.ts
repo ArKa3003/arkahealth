@@ -151,6 +151,6 @@ describe("computeMNAI", () => {
       snapshot: lumbarSnapshot(50),
       aiie: baseAiie(),
     });
-    expect(result.narrative).toContain("FDA Non-Device Clinical Decision Support");
+    expect(result.narrative).toContain("Non-Device Clinical Decision Support");
   });
 });

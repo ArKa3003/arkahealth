@@ -1,11 +1,10 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/utils";
-
-import { useEvidenceModalOptional } from "./evidence-modal-context";
 
 export type ArkaProduct = "CLIN" | "INS" | "ED";
 
@@ -50,19 +49,21 @@ function productClause(product: ArkaProduct): string {
   }
 }
 
+const REGULATORY_LINK_CLASS =
+  "shrink-0 font-medium text-blue-800 underline decoration-blue-600/80 underline-offset-2 hover:text-blue-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-cyan focus-visible:ring-offset-1";
+
 /**
  * Thin FDA non-device CDS strip for global layout (21st Century Cures Act). Not dismissible.
- * Opens the shared {@link AIIEEvidenceModal} via "Learn more".
+ * Links to regulatory rationale and model card documentation.
  */
 export function FDANonDeviceBanner({ className, product: productProp, variant: variantProp }: FDANonDeviceBannerProps) {
   const pathname = usePathname();
-  const evidence = useEvidenceModalOptional();
 
   const product = productProp ?? inferProduct(pathname);
   const variant = variantProp ?? (isPatientRoute(pathname) ? "patient" : "default");
 
   const coreFda =
-    "ARKA is an FDA Non-Device Clinical Decision Support tool under Section 520(o)(1)(E) of the FD&C Act (21st Century Cures Act). This tool provides information to support clinical decisions; it does not replace clinical judgment.";
+    "ARKA Clinical Decision Support is designed to meet all four criteria for Non-Device CDS under FD&C Act §520(o)(1)(E) and FDA's September 2022 final guidance on Clinical Decision Support Software. Recommendations support, not replace, the clinician's judgment. Every recommendation is anchored in a published guideline or peer-reviewed source, with the basis available for independent review.";
 
   const body =
     variant === "patient" ?
@@ -90,15 +91,14 @@ export function FDANonDeviceBanner({ className, product: productProp, variant: v
       }}
     >
       <p className="min-w-0 flex-1">{body}</p>
-      {evidence ?
-        <button
-          type="button"
-          onClick={() => evidence.setOpen(true)}
-          className="shrink-0 font-medium text-blue-800 underline decoration-blue-600/80 underline-offset-2 hover:text-blue-900"
-        >
-          Learn more
-        </button>
-      : <span className="shrink-0 text-slate-500">Learn more</span>}
+      <div className="flex shrink-0 flex-wrap items-center gap-3">
+        <Link href="/docs/regulatory-rationale" className={REGULATORY_LINK_CLASS}>
+          Read the regulatory rationale ↗
+        </Link>
+        <Link href="/docs/model-card" className={REGULATORY_LINK_CLASS}>
+          Review the model card ↗
+        </Link>
+      </div>
     </div>
   );
 }

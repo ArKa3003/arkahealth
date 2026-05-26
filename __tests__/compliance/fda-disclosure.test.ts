@@ -21,10 +21,10 @@ const CARDS_DIR = join(process.cwd(), "lib", "cards");
 
 describe("FDA non-device CDS disclosure", () => {
   it("exports the canonical sentence used in CI grep", () => {
-    expect(FDA_NON_DEVICE_CDS_DISCLOSURE).toContain("ARKA Imaging Intelligence Engine");
-    expect(FDA_NON_DEVICE_CDS_DISCLOSURE).toContain("21st Century Cures Act");
+    expect(FDA_NON_DEVICE_CDS_DISCLOSURE).toContain("Non-Device Clinical Decision Support");
+    expect(FDA_NON_DEVICE_CDS_DISCLOSURE).toContain("FD&C Act");
     expect(FDA_NON_DEVICE_CDS_DISCLOSURE).toContain(
-      "ordering clinician retains full responsibility for the final decision",
+      "clinician is responsible for the final decision",
     );
   });
 

@@ -4,6 +4,10 @@
  */
 
 import { scoreOrder } from "@/lib/aiie/scoring-engine";
+import {
+  detailIncludesFdaDisclosure,
+  FDA_NON_DEVICE_CDS_DISCLOSURE,
+} from "@/lib/compliance/fda-disclosure";
 import { parseCoverage } from "@/lib/fhir/coverage";
 import type { ParsedCoverage } from "@/lib/fhir/coverage";
 import type { AIIEInput, AIIEScore, AIIEFactor } from "@/lib/types/aiie";
@@ -29,9 +33,6 @@ export const EXT_CQF_LIBRARY = "http://hl7.org/fhir/StructureDefinition/cqf-libr
 /** ARKA extension: stable AIIE factor identifier on each Questionnaire item. */
 export const EXT_AIIE_FACTOR_ID =
   "https://arka.health/fhir/StructureDefinition/aiie-factor-id";
-
-const FDA_NON_DEVICE_DISCLAIMER =
-  "This recommendation is provided by ARKA Imaging Intelligence Engine, an FDA Non-Device Clinical Decision Support tool under the 21st Century Cures Act. The ordering clinician retains full responsibility for the final decision.";
 
 /**
  * Returns true when this factor should surface as a DTR documentation item.
@@ -89,10 +90,10 @@ export function extractPrefetchInitials(
 
 function appendDisclaimer(text: string): string {
   const t = text.trim();
-  if (t.includes("FDA Non-Device Clinical Decision Support")) {
+  if (detailIncludesFdaDisclosure(t)) {
     return t;
   }
-  return `${t} ${FDA_NON_DEVICE_DISCLAIMER}`;
+  return `${t} ${FDA_NON_DEVICE_CDS_DISCLOSURE}`;
 }
 
 function cqlLibraryExtensions(): FHIRExtension[] {

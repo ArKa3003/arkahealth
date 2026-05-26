@@ -4,6 +4,7 @@ import { CalendarClock, X } from "lucide-react";
 
 import { Button } from "@/components/ui/Button";
 import { FDANonDeviceBanner } from "@/components/shared/compliance/FDANonDeviceBanner";
+import { FDA_NON_DEVICE_CDS_DISCLOSURE } from "@/lib/compliance/fda-disclosure";
 import {
   incidentalCategoryLabel,
   type IncidentalFinding,
@@ -18,9 +19,6 @@ export interface IncidentalFollowupCardProps {
   onSchedule?: () => void;
   className?: string;
 }
-
-const FDA_CARD_FOOTER =
-  "This recommendation is provided by ARKA Imaging Intelligence Engine, an FDA Non-Device Clinical Decision Support tool under the 21st Century Cures Act. The ordering clinician retains full responsibility for the final decision.";
 
 /**
  * Surfaces a single untracked incidental finding from prior diagnostic reports.
@@ -96,7 +94,7 @@ export function IncidentalFollowupCard({
         : null}
       </div>
 
-      <p className="text-xs text-amber-900/80 border-t border-amber-500/20 pt-3">{FDA_CARD_FOOTER}</p>
+      <p className="text-xs text-amber-900/80 border-t border-amber-500/20 pt-3">{FDA_NON_DEVICE_CDS_DISCLOSURE}</p>
       <FDANonDeviceBanner product="CLIN" className="rounded-lg" />
     </div>
   );

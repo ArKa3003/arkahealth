@@ -4,6 +4,7 @@
  */
 
 import pairsJson from "@/lib/coding/icd-cpt-pairs.json";
+import { FDA_NON_DEVICE_CDS_DISCLOSURE } from "@/lib/compliance/fda-disclosure";
 import type { AIIEScore } from "@/lib/types/aiie";
 import type { PatientRecordSnapshot } from "@/lib/types/record-snapshot";
 
@@ -76,9 +77,6 @@ export interface ComputeMNAIInput {
 
 const CURATED_PAIRS: IcdCptPair[] = pairsJson as IcdCptPair[];
 
-const FDA_MNAI_FOOTER =
-  "This Medical Necessity Alignment view is provided by ARKA Imaging Intelligence Engine, an FDA Non-Device Clinical Decision Support tool under the 21st Century Cures Act. The ordering clinician retains full responsibility for the final decision.";
-
 const NEUTRAL_NARRATIVE =
   "No curated ICD-10/CPT policy mapping exists for this code combination. ARKA does not infer medical necessity without an evidence-backed pair; review payer policy and clinical documentation directly.";
 
@@ -110,7 +108,7 @@ export function computeMNAI(input: ComputeMNAIInput): MNAIResult {
     tier,
     qualifierStatus,
     policyReferences: pair.policyReferences,
-    narrative: `${narrative} ${FDA_MNAI_FOOTER}`,
+    narrative: `${narrative} ${FDA_NON_DEVICE_CDS_DISCLOSURE}`,
     matchedIcd10: pair.icd10,
     matchedCpt: pair.cpt,
     curated: true,
@@ -119,7 +117,7 @@ export function computeMNAI(input: ComputeMNAIInput): MNAIResult {
 
 /** Standard FDA non-device CDS footer for MNAI UI surfaces. */
 export function mnaiFdaDisclaimer(): string {
-  return FDA_MNAI_FOOTER;
+  return FDA_NON_DEVICE_CDS_DISCLOSURE;
 }
 
 function normalizeCpt(cpt: string): string {
@@ -177,7 +175,7 @@ function buildNeutralResult(icdCodes: string[], cpt: string): MNAIResult {
     tier: "amber",
     qualifierStatus: {},
     policyReferences: [],
-    narrative: `${NEUTRAL_NARRATIVE} ${FDA_MNAI_FOOTER}`,
+    narrative: `${NEUTRAL_NARRATIVE} ${FDA_NON_DEVICE_CDS_DISCLOSURE}`,
     matchedCpt: cpt || undefined,
     matchedIcd10: icdCodes[0],
     curated: false,
