@@ -9,7 +9,11 @@
 
 ## 1. Executive Summary
 
-[TODO: USER FILLS — one paragraph, ~120 words. Cursor: leave a placeholder paragraph that I will rewrite. Placeholder should be: "ARKA Clinical Decision Support is software designed to meet all four criteria for Non-Device CDS under FD&C Act §520(o)(1)(E) (21st Century Cures Act §3060) and FDA's September 2022 final guidance on Clinical Decision Support Software. This memo maps ARKA's architecture to each criterion, with citations to specific files in the repository and external regulatory artefacts. The core architectural commitment is rules-first response composition: every shipped card's primary basis is a published clinical guideline or peer-reviewed source, with ML-derived risk refinement surfaced as an ancillary, optional confidence layer. The DICOM viewer (lib/viewer/) is explicitly out of Non-Device CDS scope per the function-boundary argument in docs/SCOPE_BOUNDARY.md."]
+ARKA is imaging decision support that we built to land cleanly in the Non-Device CDS exclusion. This memo walks through the four criteria—data inputs, medical information sourcing, recommendation framing, and independent review—and shows where in the codebase each one is satisfied. The short version: every recommendation starts with a published guideline, ML only refines what guidelines already support, and the clinician always has the final word. We're not sneaking past the exclusion; we designed the architecture around it.
+
+ARKA Clinical Decision Support fires guideline-anchored imaging-appropriateness recommendations the moment a clinician picks an imaging order, over the HL7 CDS Hooks protocol Epic and Cerner already ship. We chose Non-Device CDS positioning under FD&C Act §520(o)(1)(E) deliberately, not as a fallback after failing the device pathway. We want to integrate as smoothly as possible without any administraive burdens. The thing health systems and payers actually want from us — cite the right guideline, show the math, leave the decision to the doctor — is the same thing the exclusion criteria reward states.
+
+The architecture commitment that holds the positioning together is rules-first response composition: every card's primary basis is a published guideline, cited above any ARKA-derived score in both the wire format and the UI. ML provides refinement, never authority, and the system falls back to rules-only output when ML is offline — by design, not as a degraded mode. The DICOM viewer that existed in the codebase is explicitly scoped out per docs/SCOPE_BOUNDARY.md.
 
 ---
 
