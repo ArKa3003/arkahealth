@@ -5,8 +5,8 @@
  * @description Top SHAP factors with contribution bars, rationale, and citation links (demo sidebar).
  */
 
-import { ExternalLink } from 'lucide-react';
 import type { ShapRowWithRationale } from './demo-response';
+import { CitationLink } from '@/components/cds-platform/sidebar/CitationLink';
 
 export interface ShapFactorsBlockProps {
   rows: ShapRowWithRationale[];
@@ -53,15 +53,12 @@ export function ShapFactorsBlock({ rows }: ShapFactorsBlockProps) {
               />
             </div>
             <p className="mt-2 text-xs leading-relaxed text-arka-text-dark-muted">{row.rationale}</p>
-            <a
+            <CitationLink
               href={row.citationUrl}
-              target="_blank"
-              rel="noopener noreferrer"
               className="mt-1.5 inline-flex items-center gap-1 text-xs font-medium text-arka-cyan hover:underline"
             >
               {row.citationLabel}
-              <ExternalLink className="h-3 w-3" aria-hidden />
-            </a>
+            </CitationLink>
           </li>
         );
       })}

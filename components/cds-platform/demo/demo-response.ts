@@ -3,7 +3,8 @@
  * @description Maps CDS Hooks API responses to sidebar / chart state for the live demo.
  */
 
-import { FEATURE_CATALOG } from '@/lib/cds-platform/ml/feature-catalog';
+import { FEATURE_CATALOG, getFeatureCatalogEntry } from '@/lib/cds-platform/ml/feature-catalog';
+import { buildFeatureCitationUrl } from '@/lib/cds-platform/ml/feature-citation-url';
 import type { MedicalBasis } from '@/lib/cds-platform/cds-hooks/medical-basis';
 import type { MLPrediction, SHAPFeatureContribution } from '@/lib/cds-platform/ml/types';
 import type { TieredAlert } from '@/lib/cds-platform/alerting/types';
@@ -90,13 +91,23 @@ interface ApiShapRow {
 /**
  * Normalizes API SHAP extension rows to sidebar display rows.
  */
+function resolveShapCitationUrl(row: ApiShapRow): string {
+  if (row.feature) {
+    const entry = getFeatureCatalogEntry(row.feature);
+    if (entry) {
+      return buildFeatureCitationUrl(row.feature, entry);
+    }
+  }
+  return row.citationUrl;
+}
+
 function mapApiShapRows(rows: ApiShapRow[]): ShapRowWithRationale[] {
   return rows.slice(0, 5).map((row) => ({
     label: row.label,
     contribution: row.contribution,
     rationale: row.rationale,
     citationId: row.citationId,
-    citationUrl: row.citationUrl,
+    citationUrl: resolveShapCitationUrl(row),
     citationLabel: row.citationLabel ?? row.citationId,
   }));
 }
@@ -121,7 +132,7 @@ function fallbackShapRows(scenario: DemoScenario): ShapRowWithRationale[] {
       contribution: -1.4,
       rationale: durationEntry.rationale.slice(0, 120) + '…',
       citationId: durationEntry.citationId,
-      citationUrl: durationEntry.url,
+      citationUrl: buildFeatureCitationUrl('symptom_duration_days', durationEntry),
       citationLabel: 'Guideline §3',
     });
   }
@@ -133,7 +144,7 @@ function fallbackShapRows(scenario: DemoScenario): ShapRowWithRationale[] {
       contribution: -0.8,
       rationale: redFlagEntry.rationale.slice(0, 100) + '…',
       citationId: redFlagEntry.citationId,
-      citationUrl: redFlagEntry.url,
+      citationUrl: buildFeatureCitationUrl('has_red_flags', redFlagEntry),
       citationLabel: 'Guideline §2',
     });
   }
@@ -144,7 +155,7 @@ function fallbackShapRows(scenario: DemoScenario): ShapRowWithRationale[] {
       contribution: 0.2,
       rationale: ageEntry.rationale.slice(0, 90) + '…',
       citationId: ageEntry.citationId,
-      citationUrl: ageEntry.url,
+      citationUrl: buildFeatureCitationUrl('patient_age', ageEntry),
       citationLabel: 'Context',
     });
   }

@@ -8,6 +8,7 @@ import pino from 'pino';
 import type { CDSHooksRequest, CDSHooksResponse } from './types';
 import { getFeatureCatalogEntry } from '@/lib/cds-platform/ml/feature-catalog';
 import type { WeightDirection } from '@/lib/cds-platform/ml/feature-catalog';
+import { buildFeatureCitationUrl } from '@/lib/cds-platform/ml/feature-citation-url';
 import type { MLPrediction } from '@/lib/cds-platform/ml/types';
 import { getImagingDraftOrders } from './request-validator';
 import {
@@ -67,7 +68,7 @@ function buildShapWithRationales(prediction: MLPrediction): ShapWithRationale[] 
         contribution: value,
         rationale: entry.rationale,
         citationId: entry.citationId,
-        citationUrl: entry.url,
+        citationUrl: buildFeatureCitationUrl(name, entry),
         weightDirection: entry.weightDirection,
       };
     })
