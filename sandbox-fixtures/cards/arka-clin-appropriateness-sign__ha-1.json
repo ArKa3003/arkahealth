@@ -1,0 +1,7 @@
+{
+  "service": "arka-clin-appropriateness-sign",
+  "scenarioId": "ha-1",
+  "hook": "order-sign",
+  "emittedFrom": "app/api/cds-services/arka-clin-appropriateness-sign/route.ts:91",
+  "cards": []
+}

@@ -17,6 +17,7 @@ jobs:
       - run: npm ci
       - run: npm run type-check
       - run: npm run lint
+      - run: npm run lint:cards
       - run: npm run lint:scope
       - run: npm run test
       - run: npm run test:coverage
