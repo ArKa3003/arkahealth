@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { buildDuplicateOrderCard } from "@/lib/cards/duplicate-order-card";
 import type { RedundancyAssessment } from "@/lib/aiie/redundancy";
 
-const FDA_MARKER = "FDA Non-Device Clinical Decision Support tool under the 21st Century Cures Act";
+const FDA_MARKER = "Non-Device Clinical Decision Support under FD&C Act";
 
 describe("buildDuplicateOrderCard", () => {
   it("uses critical indicator and required override copy for high severity", () => {
@@ -24,7 +24,7 @@ describe("buildDuplicateOrderCard", () => {
     expect(card.detail).toContain("img-1");
     expect(card.detail).toContain(FDA_MARKER);
     expect(card.overrideReasons?.some((r) => r.code === "other")).toBe(true);
-    expect(card.detail).toMatch(/free-text/i);
+    expect(card.detail).toMatch(/clinical reasoning/i);
   });
 
   it("uses warning indicator and optional override copy for medium severity", () => {

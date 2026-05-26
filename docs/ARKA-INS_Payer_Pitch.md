@@ -236,7 +236,7 @@ For a commercial fully-insured book at **85% MLR**, the leverage is even higher 
 EviCore generates ~$2.1B in annual revenue but is structurally a labor-intensive business. Carelon MBM is large but bound to Elevance. Cohere Health is the well-funded new entrant ($98M Series C, late 2024) competing on UX.
 
 **Why ARKA-INS sells here:**
-- **RBMs are the highest-velocity ARKA customer.** The economics flip immediately: a $0.40 PMPM SaaS fee on the RBM's covered-lives book is materially less than the FTE labor cost saved on 35–40% auto-approval.
+- **RBMs are the highest-velocity ARKA customer.** The unit economics invert once the prior-auth round-trip is removed: a $0.40 PMPM SaaS fee on the RBM's covered-lives book is materially less than the FTE labor cost saved on 35–40% auto-approval.
 - **No customer-relationship displacement:** ARKA-INS does not displace the RBM's relationship with its payer customer. It augments it. The RBM keeps the payer contract; ARKA-INS makes the RBM's per-case margin higher.
 - **CMS-0057-F is a contract trigger:** every MA/Medicaid/QHP contract the RBM holds gets re-papered on the Jan 1, 2027 mandate. RBMs that show up to the renegotiation with a Da Vinci CRD/DTR/PAS stack ready in production will renew at favorable terms; those that don't will be price-pressured by a payer that can credibly threaten to build internally.
 - **Specifically for Evicore/Evernorth:** Cigna's owned ecosystem makes them the most natural early ARKA-INS partner because the AIIE engine is the same one Cigna's clinical partnerships team is already evaluating for benefit-design purposes.

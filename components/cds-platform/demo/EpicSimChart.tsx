@@ -75,7 +75,7 @@ export function EpicSimChart({
           <Button
             type="button"
             variant="primary"
-            className="mt-2 w-full bg-arka-teal hover:bg-arka-teal-dark"
+            className="mt-2 w-full bg-arka-teal hover:bg-arka-teal-dark focus-visible:ring-2 focus-visible:ring-arka-cyan"
             onClick={onSignOrder}
             disabled={signing}
             aria-label="Sign imaging order"
@@ -92,7 +92,7 @@ export function EpicSimChart({
             key={s.id}
             type="button"
             onClick={() => onScenarioSelect(s.id)}
-            className="focus:outline-none focus-visible:ring-2 focus-visible:ring-arka-teal"
+            className="focus:outline-none focus-visible:ring-2 focus-visible:ring-arka-cyan"
             aria-pressed={scenario.id === s.id}
             aria-label={`Load scenario ${s.label}`}
           >

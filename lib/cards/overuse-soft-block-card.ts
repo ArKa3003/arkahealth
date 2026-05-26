@@ -79,7 +79,7 @@ ${rule.recommendedAlternative}
 
 ${citationList}
 
-An **override reason with free-text justification** is required to proceed with this order.
+If proceeding, please document the clinical reasoning to support quality review.
 
 </details>`;
 

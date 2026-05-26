@@ -180,7 +180,7 @@ export function ReviewAlternativePanel({
         href={basis.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-2 inline-flex items-center gap-1 text-sm text-arka-cyan hover:underline"
+        className="mt-2 inline-flex items-center gap-1 text-sm text-arka-cyan hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-cyan"
       >
         View citation ↗
         <ExternalLink className="h-3.5 w-3.5" aria-hidden />
@@ -227,12 +227,17 @@ export function ReviewAlternativePanel({
         <Button
           type="button"
           variant="primary"
-          className="w-full bg-arka-teal"
+          className="w-full bg-arka-teal focus-visible:ring-2 focus-visible:ring-arka-cyan"
           onClick={onAcceptToChart}
         >
           Open in chart to substitute
         </Button>
-        <Button type="button" variant="ghost" className="w-full" onClick={onDismiss}>
+        <Button
+          type="button"
+          variant="ghost"
+          className="w-full focus-visible:ring-2 focus-visible:ring-arka-cyan"
+          onClick={onDismiss}
+        >
           Keep original order
         </Button>
       </div>

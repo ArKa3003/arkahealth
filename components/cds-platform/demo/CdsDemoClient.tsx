@@ -172,7 +172,13 @@ export function CdsDemoClient() {
             {live ? '● Live' : '○ Idle'}
           </Badge>
         </div>
-        <Button type="button" variant="secondary" onClick={handleReset} aria-label="Reset demo">
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={handleReset}
+          aria-label="Reset demo"
+          className="focus-visible:ring-2 focus-visible:ring-arka-cyan"
+        >
           Reset
         </Button>
       </div>
@@ -221,7 +227,7 @@ export function CdsDemoClient() {
           </h2>
           <button
             type="button"
-            className="text-xs text-arka-cyan hover:text-white"
+            className="text-xs text-arka-cyan hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-cyan"
             onClick={() => setShowRawJson((v) => !v)}
             aria-expanded={showRawJson}
           >

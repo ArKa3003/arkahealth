@@ -150,7 +150,7 @@ export function CdsDemoSidebar({
                 <Button
                   type="button"
                   variant="secondary"
-                  className="w-full text-left text-sm"
+                  className="w-full text-left text-sm focus-visible:ring-2 focus-visible:ring-arka-cyan"
                   onClick={onReviewAlternative}
                   aria-label={`Review alternative imaging consistent with ${guidelineShort}`}
                 >
@@ -169,7 +169,7 @@ export function CdsDemoSidebar({
               <Button
                 type="button"
                 variant="ghost"
-                className="w-full border border-arka-primary/20 text-sm"
+                className="w-full border border-arka-primary/20 text-sm focus-visible:ring-2 focus-visible:ring-arka-cyan"
                 onClick={onOverride}
                 aria-label="Document override with reason"
               >
@@ -179,7 +179,7 @@ export function CdsDemoSidebar({
                 <Button
                   type="button"
                   variant="secondary"
-                  className="w-full text-sm"
+                  className="w-full text-sm focus-visible:ring-2 focus-visible:ring-arka-cyan"
                   onClick={onSignAnywayWithReason}
                   aria-label="Sign anyway with reason"
                 >
@@ -203,7 +203,7 @@ export function CdsDemoSidebar({
               setAboutOpen((o) => !o);
               onAboutRecommendation();
             }}
-            className="mt-2 text-xs text-arka-cyan underline-offset-2 hover:text-arka-teal"
+            className="mt-2 text-xs text-arka-cyan underline-offset-2 hover:text-arka-teal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-cyan"
             aria-expanded={aboutOpen}
           >
             About this recommendation

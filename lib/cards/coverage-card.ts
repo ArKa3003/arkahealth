@@ -100,7 +100,7 @@ function suggestionsForAction(action: INSAuthorizationBand) {
         actions: base,
       },
       {
-        label: "Cancel order",
+        label: "Review order with alternative",
         uuid: "b2222222-2222-4222-8222-222222222203",
         actions: base,
       },

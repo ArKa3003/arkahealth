@@ -253,7 +253,8 @@ export function buildOrderSignCriticalBlockCard(params: {
   const { denialRisk, cpt, payerId } = params;
   return {
     uuid: "arka-ins-order-sign-block",
-    summary: "Likely denial risk — signature requires override or DTR completion",
+    // Da Vinci CRD workflow: payer adjudication requirement, not unsolicited CDS coercion. See Phase 11.1(h) decision in ARKA_CDS_HOOKS_UNIFIED_PLAYBOOK.md.
+    summary: "Likely denial risk under payer policy — DTR completion or documented override needed for adjudication",
     detail: appendFdaDetailDisclaimer(
       `<details><summary>Loss framing — what you may lose by signing now</summary>
 

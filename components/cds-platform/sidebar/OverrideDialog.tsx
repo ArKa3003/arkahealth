@@ -98,7 +98,7 @@ export function OverrideDialog({
           type="button"
           onClick={handleSubmit}
           disabled={!canSubmit}
-          className="w-full rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-[var(--arka-bg)]"
+          className="w-full rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-arka-cyan focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[var(--arka-bg)]"
           aria-label="Submit override"
         >
           Submit Override
@@ -106,7 +106,7 @@ export function OverrideDialog({
         <button
           type="button"
           onClick={onGoBack}
-          className="flex items-center justify-center gap-1 text-sm font-medium text-[var(--arka-fg-muted,#6b7280)] hover:text-[var(--arka-fg,#111827)] dark:text-[var(--arka-fg-muted)] dark:hover:text-[var(--arka-fg)]"
+          className="flex items-center justify-center gap-1 rounded text-sm font-medium text-[var(--arka-fg-muted,#6b7280)] hover:text-[var(--arka-fg,#111827)] focus:outline-none focus-visible:ring-2 focus-visible:ring-arka-cyan dark:text-[var(--arka-fg-muted)] dark:hover:text-[var(--arka-fg)]"
           aria-label="Go back"
         >
           <ChevronDown className="h-4 w-4 rotate-90" aria-hidden />

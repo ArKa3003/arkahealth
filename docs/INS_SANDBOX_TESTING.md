@@ -66,7 +66,7 @@ Create an order such as **MRI Lumbar Spine** with CPT **72148** so ARKA-CLIN and
 
 ### 7. `order-select` — mixed cards
 
-When the hook fires, you should see CDS cards from **ARKA-CLIN** and **ARKA-INS** together (different `source` labels).
+When the hook fires, you will see CDS cards from **ARKA-CLIN** and **ARKA-INS** together (different `source` labels).
 
 ### 8. DTR SMART launch
 

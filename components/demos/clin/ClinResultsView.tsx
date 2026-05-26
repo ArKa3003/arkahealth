@@ -336,7 +336,7 @@ export function ClinResultsView({
                       onEvaluate(updated);
                     }}
                   >
-                    Switch to this order
+                    Review this alternative order
                   </Button>
                 </div>
               ))}

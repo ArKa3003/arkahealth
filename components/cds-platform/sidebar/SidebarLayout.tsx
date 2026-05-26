@@ -153,6 +153,7 @@ export function SidebarLayout({
       className={`flex w-[380px] flex-col overflow-hidden rounded-lg border border-[var(--arka-border,#e5e7eb)] bg-[var(--arka-bg,#fff)] text-[var(--arka-fg,#111827)] dark:border-[var(--arka-border)] dark:bg-[var(--arka-bg)] dark:text-[var(--arka-fg)] ${theme === 'dark' ? 'dark' : ''}`}
       style={{ width: 380 }}
       role="complementary"
+      aria-live="polite"
       aria-label="CDS recommendations"
     >
       <div className="sticky top-0 z-10 shrink-0">

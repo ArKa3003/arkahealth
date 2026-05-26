@@ -72,7 +72,7 @@ export function buildDuplicateOrderCard(assessment: RedundancyAssessment): CDSCa
   const priorId = assessment.priorStudyId ?? "unknown";
   const overrideNote =
     severity === "high" ?
-      "An override reason with **free-text justification** is required to proceed."
+      "If proceeding, please document the clinical reasoning to support quality review."
     : "Override is optional; document rationale if you proceed despite overlap.";
 
   const detailCore = `<details><summary>Prior imaging overlap</summary>

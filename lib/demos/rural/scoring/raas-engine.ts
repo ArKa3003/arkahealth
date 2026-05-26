@@ -297,7 +297,7 @@ function generateTriageRecommendation(
       reasoning: `${proposedImaging.modality} is not available locally or via mobile unit. Transfer to ${transfer.partnerFacilityName} (${transfer.distanceMiles} miles, ~${transfer.estimatedTransferMinutes} min) is recommended.`,
       clinicalSafetyNote:
         urgency === "emergent"
-          ? "CRITICAL: Initiate transfer immediately. Pre-notify receiving facility."
+          ? "CRITICAL: Consider transfer; review urgency criteria and pre-notify the receiving facility if proceeding."
           : "Transfer recommended. Coordinate with patient on logistics and timing.",
     };
   }
