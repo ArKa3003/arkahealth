@@ -28,7 +28,7 @@ from sklearn.metrics import (
 )
 from sklearn.model_selection import train_test_split
 
-from model.features import (
+from features import (
     BODY_SITE_ENCODING,
     FEATURE_NAMES,
     INDICATION_ENCODING,
