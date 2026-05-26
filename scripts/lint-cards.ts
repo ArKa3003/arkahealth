@@ -37,7 +37,7 @@ const BANNED_VERBS_AND_PHRASES = [
 
 const FIXTURES_DIR = join(process.cwd(), "sandbox-fixtures", "cards");
 const SOURCE_LABEL_PREFIX = /^ARKA-/;
-const SOURCE_VERSION_IN_PARENS = /\(v?\d+/;
+const SOURCE_ENGINE_VERSION = /\bv\d+\.\d+/;
 const SUGGESTION_LABEL_PATTERN = /^(Review|Consider|Open|View)/;
 
 const CLIN_SELECT_PATH = "/api/cds-services/arka-clin-appropriateness";
@@ -175,10 +175,10 @@ function assertCardInvariants(
       message: `card.source.label must match /^ARKA-/, got "${card.source.label}" (${loc})`,
     });
   }
-  if (!SOURCE_VERSION_IN_PARENS.test(card.source.label)) {
+  if (!SOURCE_ENGINE_VERSION.test(card.source.label)) {
     outcomes.push({
       level: "fail",
-      message: `card.source.label missing parenthesised version tag /(v?\\d+/ (${loc})`,
+      message: `card.source.label must declare an engine version matching /\\bv\\d+\\.\\d+/ (e.g., 'v2.0') (${loc})`,
     });
   }
 
