@@ -74,7 +74,7 @@ export function CdsDemoSidebar({
   const guidelineShort = medicalBasis.label.split('—')[0]?.trim() ?? medicalBasis.label;
 
   const asideClass =
-    'flex w-full flex-col rounded-xl border border-arka-light bg-white shadow-sm lg:w-[40%] lg:min-w-[320px] lg:max-w-[420px]';
+    'flex h-full max-h-[min(480px,55vh)] min-h-0 w-full flex-col overflow-hidden rounded-xl border border-arka-light bg-white shadow-sm lg:max-h-none lg:w-[380px] lg:shrink-0 lg:rounded-none lg:rounded-r-xl lg:border-0 lg:shadow-none';
 
   return (
     <AnimatePresence mode="wait">
@@ -85,7 +85,7 @@ export function CdsDemoSidebar({
           animate={{ x: 0, opacity: 1 }}
           exit={{ x: 10, opacity: 0 }}
           transition={{ duration: 0.25, ease: 'easeOut' }}
-          className={`${asideClass} min-h-[420px] items-center justify-center p-6`}
+          className={`${asideClass} items-center justify-center p-6`}
           aria-live="polite"
           aria-busy="true"
           aria-label="ARKA CDS recommendations loading"
@@ -104,11 +104,14 @@ export function CdsDemoSidebar({
           aria-live="polite"
           aria-label="ARKA CDS recommendations"
         >
-      <header className="border-b border-arka-primary/10 px-4 py-3">
-        <p className="text-xs font-semibold uppercase tracking-wider text-arka-text-dark-muted">ARKA Sidebar</p>
+      <header className="shrink-0 border-b border-arka-primary/10 bg-slate-50 px-4 py-2.5">
+        <p className="text-[10px] font-semibold uppercase tracking-wider text-arka-text-dark-muted">
+          ARKA Sidebar
+        </p>
+        <p className="mt-0.5 text-xs text-arka-muted">CDS Hooks · order-select</p>
       </header>
 
-      <div className="flex flex-1 flex-col gap-4 overflow-y-auto p-4">
+      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-3">
         {emptyCards ? (
           <p className="rounded-lg border border-arka-primary/10 bg-arka-bg-light p-3 text-sm text-arka-muted">
             No guideline-anchored concerns for this order
@@ -120,7 +123,9 @@ export function CdsDemoSidebar({
                 Primary basis
               </h2>
               <p className="mt-2 text-sm font-medium text-arka-text-dark">{medicalBasis.label}</p>
-              <p className="mt-2 text-sm leading-relaxed text-arka-text-dark">{medicalBasis.rationale}</p>
+              <p className="mt-2 line-clamp-4 text-sm leading-snug text-arka-text-dark">
+                {medicalBasis.rationale}
+              </p>
               <a
                 href={medicalBasis.url}
                 target="_blank"
@@ -142,7 +147,7 @@ export function CdsDemoSidebar({
                 ARKA risk: {score}/9
               </p>
               <p className="mt-1 text-xs text-arka-text-dark-muted">Top factors (SHAP)</p>
-              <ShapFactorsBlock rows={shapRows} />
+              <ShapFactorsBlock rows={shapRows} compact />
             </section>
 
             <div className="flex flex-col gap-2">
@@ -169,7 +174,7 @@ export function CdsDemoSidebar({
               <Button
                 type="button"
                 variant="secondary"
-                className="w-full border border-arka-primary/20 bg-transparent text-left text-sm text-arka-text-dark hover:bg-arka-cyan/10 hover:text-arka-cyan focus-visible:ring-2 focus-visible:ring-arka-cyan dark:border-arka-primary/20 dark:bg-transparent dark:text-arka-text-dark dark:hover:bg-arka-cyan/10 dark:hover:text-arka-cyan"
+                className="w-full border border-arka-primary/20 bg-arka-bg-light text-left text-sm !text-arka-text-dark hover:bg-arka-cyan/10 hover:!text-arka-teal focus-visible:ring-2 focus-visible:ring-arka-cyan dark:border-arka-primary/20 dark:bg-arka-bg-light dark:!text-arka-text-dark dark:hover:bg-arka-cyan/10 dark:hover:!text-arka-teal"
                 onClick={onOverride}
                 aria-label="Document override with reason"
               >
@@ -190,7 +195,7 @@ export function CdsDemoSidebar({
           </>
         )}
 
-        <section className="mt-auto border-t border-arka-primary/10 pt-4" aria-labelledby="disclosure-heading">
+        <section className="shrink-0 border-t border-arka-primary/10 pt-3" aria-labelledby="disclosure-heading">
           <h2 id="disclosure-heading" className="text-xs font-medium text-arka-muted">
             Disclosure
           </h2>

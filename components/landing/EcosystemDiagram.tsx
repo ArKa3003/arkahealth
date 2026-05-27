@@ -67,6 +67,42 @@ const DESKTOP = {
   },
 };
 
+/**
+ * Endpoints on circle perimeters so lines are visible (not buried in nodes)
+ * and paths can be ordered without center overlap hiding a segment.
+ */
+function getEdgeEndpoints(
+  from: { x: number; y: number },
+  to: { x: number; y: number },
+  fromRadius: number,
+  toRadius: number
+): { x1: number; y1: number; x2: number; y2: number } {
+  const dx = to.x - from.x;
+  const dy = to.y - from.y;
+  const len = Math.hypot(dx, dy);
+  if (len === 0) {
+    return { x1: from.x, y1: from.y, x2: to.x, y2: to.y };
+  }
+  const ux = dx / len;
+  const uy = dy / len;
+  return {
+    x1: from.x + ux * fromRadius,
+    y1: from.y + uy * fromRadius,
+    x2: to.x - ux * toRadius,
+    y2: to.y - uy * toRadius,
+  };
+}
+
+function connectionPath(
+  from: { x: number; y: number },
+  to: { x: number; y: number },
+  fromRadius: number,
+  toRadius: number
+): string {
+  const { x1, y1, x2, y2 } = getEdgeEndpoints(from, to, fromRadius, toRadius);
+  return `M ${x1} ${y1} L ${x2} ${y2}`;
+}
+
 /* Mobile layout: vertical stack — ARKA center, CLIN above, ED/INS below */
 const MOBILE = {
   width: 280,
@@ -169,6 +205,23 @@ function AnimatedDashedPath({
 }) {
   return (
     <g filter={`url(#${idPrefix}-glow)`}>
+      {/* Solid underlay — keeps vertical (CLIN) leg visible against grid crosshairs */}
+      <motion.path
+        d={d}
+        fill="none"
+        stroke={ARKA_TEAL}
+        strokeWidth={isHighlighted ? 5 : 3}
+        strokeLinecap="round"
+        initial={{ strokeOpacity: 0.25 }}
+        animate={{
+          strokeOpacity: isHighlighted ? 0.45 : 0.3,
+          strokeWidth: isHighlighted ? 5 : 3,
+        }}
+        transition={{ duration: 0.2 }}
+        style={{
+          filter: `drop-shadow(0 0 6px ${ARKA_TEAL_GLOW})`,
+        }}
+      />
       {/* Static glow track */}
       <motion.path
         d={d}
@@ -357,21 +410,21 @@ export function EcosystemDiagram() {
               opacity="0.15"
             />
 
-            {/* Connection paths */}
+            {/* Connection paths — CLIN last so vertical leg paints above center fan */}
             <AnimatedDashedPath
               idPrefix={desktopId}
-              d={`M ${DESKTOP.center.x} ${DESKTOP.center.y} L ${DESKTOP.clin.x} ${DESKTOP.clin.y}`}
-              isHighlighted={isPathHighlighted("clin")}
-            />
-            <AnimatedDashedPath
-              idPrefix={desktopId}
-              d={`M ${DESKTOP.center.x} ${DESKTOP.center.y} L ${DESKTOP.ed.x} ${DESKTOP.ed.y}`}
+              d={connectionPath(DESKTOP.center, DESKTOP.ed, 44, 34)}
               isHighlighted={isPathHighlighted("ed")}
             />
             <AnimatedDashedPath
               idPrefix={desktopId}
-              d={`M ${DESKTOP.center.x} ${DESKTOP.center.y} L ${DESKTOP.ins.x} ${DESKTOP.ins.y}`}
+              d={connectionPath(DESKTOP.center, DESKTOP.ins, 44, 34)}
               isHighlighted={isPathHighlighted("ins")}
+            />
+            <AnimatedDashedPath
+              idPrefix={desktopId}
+              d={connectionPath(DESKTOP.center, DESKTOP.clin, 44, 34)}
+              isHighlighted={isPathHighlighted("clin")}
             />
 
             {/* Shared knowledge base label */}
@@ -458,18 +511,18 @@ export function EcosystemDiagram() {
 
             <AnimatedDashedPath
               idPrefix={mobileId}
-              d={`M ${MOBILE.center.x} ${MOBILE.center.y} L ${MOBILE.clin.x} ${MOBILE.clin.y}`}
-              isHighlighted={isPathHighlighted("clin")}
-            />
-            <AnimatedDashedPath
-              idPrefix={mobileId}
-              d={`M ${MOBILE.center.x} ${MOBILE.center.y} L ${MOBILE.ed.x} ${MOBILE.ed.y}`}
+              d={connectionPath(MOBILE.center, MOBILE.ed, 32, 24)}
               isHighlighted={isPathHighlighted("ed")}
             />
             <AnimatedDashedPath
               idPrefix={mobileId}
-              d={`M ${MOBILE.center.x} ${MOBILE.center.y} L ${MOBILE.ins.x} ${MOBILE.ins.y}`}
+              d={connectionPath(MOBILE.center, MOBILE.ins, 32, 24)}
               isHighlighted={isPathHighlighted("ins")}
+            />
+            <AnimatedDashedPath
+              idPrefix={mobileId}
+              d={connectionPath(MOBILE.center, MOBILE.clin, 32, 24)}
+              isHighlighted={isPathHighlighted("clin")}
             />
 
             <text

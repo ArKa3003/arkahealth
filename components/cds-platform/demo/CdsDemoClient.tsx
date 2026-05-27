@@ -183,8 +183,11 @@ export function CdsDemoClient() {
         </Button>
       </div>
 
-      <div className="flex flex-col gap-6 lg:flex-row">
-        <div className="lg:w-[60%]">
+      <div
+        className="flex min-h-[560px] flex-col gap-4 lg:h-[min(720px,calc(100vh-14rem))] lg:flex-row lg:items-stretch lg:gap-0 lg:overflow-hidden lg:rounded-xl lg:border lg:border-arka-light lg:bg-slate-100/90 lg:shadow-sm"
+        aria-label="EHR workspace"
+      >
+        <div className="flex min-h-[420px] flex-1 flex-col lg:min-h-0 lg:border-r lg:border-arka-primary/10">
           <EpicSimChart
             scenario={scenario}
             onSignOrder={() => void handleSignOrder()}

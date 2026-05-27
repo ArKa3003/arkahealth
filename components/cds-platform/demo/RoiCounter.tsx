@@ -38,14 +38,14 @@ export function RoiCounter({ dollarsAvoided, ordersOptimized, className = '' }: 
 
   return (
     <motion.div
-      className={`rounded-xl border border-arka-cyan/30 bg-arka-cyan/10 p-4 backdrop-blur-md ${className}`}
+      className={`rounded-lg border border-arka-primary/15 bg-white p-4 text-center ${className}`}
       layout
       aria-live="polite"
       aria-label={`${display} dollars potentially avoided across ${ordersOptimized} orders reviewed`}
     >
-      <p className="text-xs font-medium uppercase tracking-wide text-arka-muted">Potentially avoided</p>
-      <p className="mt-1 text-2xl font-semibold text-arka-cyan tabular-nums">{formatted}</p>
-      <p className="mt-2 text-xs text-arka-muted">
+      <p className="text-xs uppercase text-arka-text-dark-muted">Potentially avoided</p>
+      <p className="mt-1 text-2xl font-semibold text-arka-teal tabular-nums">{formatted}</p>
+      <p className="mt-2 text-xs text-arka-text-dark-soft">
         {ordersOptimized > 0
           ? `${formatted} potentially avoided when clinician chose guideline-consistent alternative.`
           : 'Guideline-consistent alternatives update this counter when selected in the chart.'}

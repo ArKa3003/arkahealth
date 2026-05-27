@@ -48,7 +48,7 @@ export function Footer() {
               ))}
               <li>
                 <Link
-                  href="mailto:contact@arkahealth.com"
+                  href="mailto:arrihantk@getarka.health"
                   className="arka-link-underline text-sm text-arka-text-soft hover:text-arka-text dark:text-neutral-400 dark:hover:text-white"
                 >
                   Contact

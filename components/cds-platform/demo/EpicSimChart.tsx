@@ -5,16 +5,51 @@
  * @description Left-column EpicSim™ patient chart mock for the CDS Hooks live demo.
  */
 
+import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { DemoScenario } from './scenarios';
+
 export interface EpicSimChartProps {
   scenario: DemoScenario;
   onSignOrder: () => void;
   signing?: boolean;
   onScenarioSelect: (id: string) => void;
   scenarioIds: { id: string; label: string }[];
+}
+
+type ChartTab = 'summary' | 'results' | 'orders';
+
+/** Plausible demo vitals keyed loosely by scenario id prefix. */
+function vitalsForScenario(scenario: DemoScenario): { label: string; value: string }[] {
+  const base = [
+    { label: 'BP', value: '128/82' },
+    { label: 'HR', value: '72' },
+    { label: 'Temp', value: '98.4 °F' },
+    { label: 'RR', value: '16' },
+    { label: 'SpO₂', value: '98%' },
+  ];
+  if (scenario.id === 'ha-1') {
+    return [
+      { label: 'BP', value: '156/94' },
+      { label: 'HR', value: '88' },
+      { label: 'Temp', value: '98.8 °F' },
+      { label: 'RR', value: '18' },
+      { label: 'SpO₂', value: '99%' },
+    ];
+  }
+  if (scenario.id === 'belly') {
+    return [
+      { label: 'BP', value: '102/64' },
+      { label: 'HR', value: '110' },
+      { label: 'Temp', value: '101.2 °F' },
+      { label: 'RR', value: '22' },
+      { label: 'SpO₂', value: '97%' },
+    ];
+  }
+  return base;
 }
 
 /**
@@ -28,87 +63,286 @@ export function EpicSimChart({
   scenarioIds,
 }: EpicSimChartProps) {
   const sexLabel = scenario.sex === 'Male' ? 'M' : 'F';
+  const [chartTab, setChartTab] = useState<ChartTab>('summary');
+  const vitals = vitalsForScenario(scenario);
+  const durationLabel =
+    scenario.duration % 7 === 0
+      ? `${scenario.duration / 7} weeks`
+      : `${scenario.duration} days`;
 
   return (
     <section
-      className="flex flex-col gap-4 rounded-xl border border-arka-light bg-white p-4 shadow-sm"
+      className="flex h-full min-h-0 flex-col overflow-hidden bg-white lg:rounded-l-xl"
       aria-label="EpicSim patient chart"
     >
-      <header className="border-b border-arka-primary/10 pb-3">
-        <p className="text-xs font-semibold uppercase tracking-wider text-arka-muted">EpicSim™ — Patient Chart</p>
-        <h2 className="mt-2 text-lg font-semibold text-arka-text-dark">
-          {scenario.patientName} · {scenario.age}
-          {sexLabel} · MRN {scenario.mrn}
-        </h2>
-        <p className="mt-1 text-sm text-arka-text-dark-muted">
-          Allergies: {scenario.allergies} · eGFR: {scenario.eGFR}
+      <header className="shrink-0 border-b border-arka-primary/15 bg-gradient-to-r from-slate-800 to-slate-700 px-4 py-2.5 text-white">
+        <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-300">
+          EpicSim™ — Patient Chart
+        </p>
+        <div className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
+          <h2 className="text-base font-semibold">
+            {scenario.patientName}
+          </h2>
+          <span className="text-sm text-slate-200">
+            {scenario.age}
+            {sexLabel} · MRN {scenario.mrn} · PCP: Chen, A.
+          </span>
+        </div>
+        <p className="mt-0.5 text-xs text-slate-300">
+          Allergies: {scenario.allergies} · eGFR {scenario.eGFR} · BMI 27.1
         </p>
       </header>
 
-      <div>
-        <h3 className="text-sm font-medium text-arka-text-dark">Active problems</h3>
-        <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-arka-text-dark-muted" aria-label="Active problems">
-          {scenario.problems.map((p) => (
-            <li key={p.icd10}>
-              {p.display} ({p.icd10})
-            </li>
-          ))}
-        </ul>
-      </div>
+      <Tabs
+        value={chartTab}
+        onValueChange={(v) => setChartTab(v as ChartTab)}
+        className="flex min-h-0 flex-1 flex-col"
+      >
+        <TabsList className="h-auto w-full shrink-0 justify-start gap-0 rounded-none border-b border-arka-primary/10 bg-slate-50 px-2 py-0">
+          <TabsTrigger
+            value="summary"
+            className="rounded-none border-b-2 border-transparent px-3 py-2 text-xs data-[state=active]:border-arka-teal data-[state=active]:bg-white"
+          >
+            Chart Review
+          </TabsTrigger>
+          <TabsTrigger
+            value="results"
+            className="rounded-none border-b-2 border-transparent px-3 py-2 text-xs data-[state=active]:border-arka-teal data-[state=active]:bg-white"
+          >
+            Results
+          </TabsTrigger>
+          <TabsTrigger
+            value="orders"
+            className="rounded-none border-b-2 border-transparent px-3 py-2 text-xs data-[state=active]:border-arka-teal data-[state=active]:bg-white"
+          >
+            Orders
+          </TabsTrigger>
+        </TabsList>
 
-      <Card className="border-arka-teal/30 bg-arka-pale/20 dark:bg-arka-teal/5">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-arka-teal">Imaging order (draft)</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2 text-sm">
-          <p className="font-medium text-arka-text-dark">{scenario.orderDisplay}</p>
-          <p className="text-arka-text-dark-muted">CPT {scenario.cpt}</p>
-          <p className="text-arka-text-dark-muted">
-            Indication: {scenario.chiefComplaint} ({scenario.icd10})
-          </p>
-          <p className="text-arka-text-dark-muted">
-            Duration:{' '}
-            {scenario.duration % 7 === 0
-              ? `${scenario.duration / 7} weeks`
-              : `${scenario.duration} days`}
-          </p>
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          <TabsContent
+            value="summary"
+            className="mt-0 space-y-4 rounded-none border-0 bg-transparent p-4 shadow-none"
+          >
+            <div className="rounded-lg border border-arka-primary/10 bg-arka-bg-light/50 p-3">
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-arka-muted">
+                Today&apos;s visit
+              </h3>
+              <p className="mt-1 text-sm font-medium text-arka-text-dark">
+                {scenario.chiefComplaint}
+              </p>
+              <p className="mt-1 text-sm text-arka-text-dark-muted">
+                Symptom duration {durationLabel} · {scenario.urgency} · Outpatient
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-arka-muted">
+                Vitals (today)
+              </h3>
+              <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-5">
+                {vitals.map((v) => (
+                  <div
+                    key={v.label}
+                    className="rounded border border-arka-primary/10 bg-white px-2 py-1.5 text-center"
+                  >
+                    <p className="text-[10px] text-arka-muted">{v.label}</p>
+                    <p className="text-sm font-medium text-arka-text-dark">{v.value}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-arka-muted">
+                Active problems
+              </h3>
+              <ul
+                className="mt-2 divide-y divide-arka-primary/10 rounded border border-arka-primary/10 text-sm"
+                aria-label="Active problems"
+              >
+                {scenario.problems.map((p) => (
+                  <li key={p.icd10} className="px-3 py-2 text-arka-text-dark">
+                    {p.display}{' '}
+                    <span className="text-arka-text-dark-muted">({p.icd10})</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-arka-muted">
+                Red-flag screen
+              </h3>
+              <table className="mt-2 w-full text-left text-sm">
+                <thead>
+                  <tr className="border-b border-arka-primary/10 text-xs text-arka-muted">
+                    <th className="pb-1 font-medium">Finding</th>
+                    <th className="pb-1 font-medium">Present</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {scenario.redFlags.map((rf) => (
+                    <tr key={rf.flag} className="border-b border-arka-primary/5">
+                      <td className="py-1.5 text-arka-text-dark">{rf.flag}</td>
+                      <td className="py-1.5">
+                        <span
+                          className={
+                            rf.present
+                              ? 'font-medium text-red-600'
+                              : 'text-arka-text-dark-muted'
+                          }
+                        >
+                          {rf.present ? 'Yes' : 'No'}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div>
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-arka-muted">
+                Medications
+              </h3>
+              <ul className="mt-2 list-inside list-disc space-y-0.5 text-sm text-arka-text-dark-muted">
+                {scenario.id === 'lbp-1' && (
+                  <>
+                    <li>Lisinopril 10 mg daily</li>
+                    <li>Ibuprofen 400 mg PRN</li>
+                  </>
+                )}
+                {scenario.id === 'ha-1' && (
+                  <>
+                    <li>Sumatriptan 50 mg PRN</li>
+                    <li>Amlodipine 5 mg daily</li>
+                  </>
+                )}
+                {scenario.id === 'belly' && <li>Acetaminophen 15 mg/kg PRN fever</li>}
+                {scenario.id === 'knee' && (
+                  <>
+                    <li>Meloxicam 7.5 mg daily</li>
+                    <li>Glucosamine OTC</li>
+                  </>
+                )}
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-arka-muted">
+                Recent imaging
+              </h3>
+              <p className="mt-1 text-sm text-arka-text-dark-muted">
+                {scenario.id === 'knee'
+                  ? 'Knee radiographs — 14 months ago (outside facility)'
+                  : 'No relevant imaging in the last 90 days'}
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-arka-muted">
+                Assessment &amp; plan (excerpt)
+              </h3>
+              <p className="mt-1 text-sm leading-relaxed text-arka-text-dark-muted">
+                Continue conservative management for {scenario.chiefComplaint.toLowerCase()}.
+                Discuss imaging only if symptoms persist or red flags emerge. Draft imaging order
+                pending clinician review.
+              </p>
+            </div>
+          </TabsContent>
+
+          <TabsContent
+            value="results"
+            className="mt-0 space-y-3 rounded-none border-0 bg-transparent p-4 shadow-none"
+          >
+            <p className="text-sm text-arka-text-dark-muted">
+              Recent labs — no critical results. eGFR {scenario.eGFR} (stable). CBC within normal
+              limits.
+            </p>
+            <div className="rounded border border-arka-primary/10 text-sm">
+              <div className="grid grid-cols-3 gap-2 border-b border-arka-primary/10 bg-arka-bg-light/80 px-3 py-2 text-xs font-medium text-arka-muted">
+                <span>Test</span>
+                <span>Value</span>
+                <span>Ref</span>
+              </div>
+              <div className="grid grid-cols-3 gap-2 px-3 py-2">
+                <span>Creatinine</span>
+                <span>0.9 mg/dL</span>
+                <span className="text-arka-muted">0.7–1.2</span>
+              </div>
+              <div className="grid grid-cols-3 gap-2 border-t border-arka-primary/5 px-3 py-2">
+                <span>WBC</span>
+                <span>7.2 K/µL</span>
+                <span className="text-arka-muted">4.5–11</span>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent
+            value="orders"
+            className="mt-0 rounded-none border-0 bg-transparent p-4 shadow-none"
+          >
+            <Card className="border-arka-teal/30 bg-arka-pale/20 dark:bg-arka-teal/5">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-arka-teal">
+                  Imaging order (draft)
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 text-sm">
+                <p className="font-medium text-arka-text-dark">{scenario.orderDisplay}</p>
+                <p className="text-arka-text-dark-muted">CPT {scenario.cpt}</p>
+                <p className="text-arka-text-dark-muted">
+                  Indication: {scenario.chiefComplaint} ({scenario.icd10})
+                </p>
+                <p className="text-arka-text-dark-muted">Duration: {durationLabel}</p>
+                <p className="text-arka-text-dark-muted">
+                  Modality: {scenario.modality} · {scenario.bodyPart}
+                </p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </div>
+      </Tabs>
+
+      <footer className="shrink-0 border-t border-arka-primary/15 bg-slate-50 px-4 py-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Demo scenarios">
+            <span className="text-xs font-medium text-arka-muted">Scenarios:</span>
+            {scenarioIds.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => onScenarioSelect(s.id)}
+                className="focus:outline-none focus-visible:ring-2 focus-visible:ring-arka-cyan"
+                aria-pressed={scenario.id === s.id}
+                aria-label={`Load scenario ${s.label}`}
+              >
+                <Badge
+                  variant={scenario.id === s.id ? 'default' : 'outline'}
+                  className={
+                    scenario.id === s.id
+                      ? 'cursor-default border-arka-teal bg-arka-teal/15 text-arka-teal'
+                      : 'cursor-pointer hover:border-arka-teal/50'
+                  }
+                >
+                  {s.label}
+                </Badge>
+              </button>
+            ))}
+          </div>
           <Button
             type="button"
             variant="primary"
-            className="mt-2 w-full bg-arka-teal hover:bg-arka-teal-dark focus-visible:ring-2 focus-visible:ring-arka-cyan"
+            className="shrink-0 bg-arka-teal px-6 hover:bg-arka-teal-dark focus-visible:ring-2 focus-visible:ring-arka-cyan"
             onClick={onSignOrder}
             disabled={signing}
             aria-label="Sign imaging order"
           >
             {signing ? 'Signing…' : 'Sign Order'}
           </Button>
-        </CardContent>
-      </Card>
-
-      <div className="flex flex-wrap gap-2" role="group" aria-label="Demo scenarios">
-        <span className="w-full text-xs font-medium text-arka-muted">Scenarios:</span>
-        {scenarioIds.map((s) => (
-          <button
-            key={s.id}
-            type="button"
-            onClick={() => onScenarioSelect(s.id)}
-            className="focus:outline-none focus-visible:ring-2 focus-visible:ring-arka-cyan"
-            aria-pressed={scenario.id === s.id}
-            aria-label={`Load scenario ${s.label}`}
-          >
-            <Badge
-              variant={scenario.id === s.id ? 'default' : 'outline'}
-              className={
-                scenario.id === s.id
-                  ? 'border-arka-teal bg-arka-teal/15 text-arka-teal cursor-default'
-                  : 'cursor-pointer hover:border-arka-teal/50'
-              }
-            >
-              {s.label}
-            </Badge>
-          </button>
-        ))}
-      </div>
+        </div>
+      </footer>
     </section>
   );
 }
