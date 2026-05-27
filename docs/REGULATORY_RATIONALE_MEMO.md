@@ -105,6 +105,7 @@ The rules engine in `lib/cds-platform/alerting/rules.ts` and tiered alerting (`l
 - **`docs/PHI_REDACTION.md`** — Decision-log redaction contract (hashed identifiers, age buckets, no raw PHI).
 - **`docs/SCOPE_BOUNDARY.md`** — In-scope CDS paths vs out-of-scope DICOM viewer; import-lint enforcement.
 - **`docs/CDS_SANDBOX_REGISTRATION.md`** — HL7 sandbox discovery URL and five registered services.
+- Hosted ML service: https://arka-ml-service.onrender.com — /health returns model_loaded:true with sha256 alignment for MODEL_CARD.md and feature-catalog.json. Production SHAP screenshot at docs/regulatory-evidence/sandbox-screenshots/phase-12-real-shap-with-rationales-2026-05-26.png.
 - **`docs/regulatory-evidence/sandbox-screenshots/`** — Sandbox capture artefacts:
   - `ins-coverage-fallback-2026-05-24.png`
   - `ins-coverage-fallback2-2026-05-24.png`
