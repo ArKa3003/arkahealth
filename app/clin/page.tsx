@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { ChevronDown, ChevronRight, Stethoscope, GraduationCap, Shield } from "lucide-react";
 import { DemoLoadingSkeleton } from "@/components/demos/DemoLoadingSkeleton";
+import { DemoViewSwitcher } from "@/components/shared/demos/DemoViewSwitcher";
 import { routes } from "@/lib/constants";
 import { useState } from "react";
 
@@ -52,13 +53,18 @@ export default function ClinPage() {
           </ol>
         </nav>
 
+        <DemoViewSwitcher current="standalone" />
+
         {/* Header */}
         <header className="mb-6 sm:mb-8">
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-heading font-semibold text-arka-text-dark">
-            ARKA-CLIN: Clinical Decision Support
+            ARKA-CLIN — Standalone Clinical Decision Support (Web App View)
           </h1>
-          <p className="mt-2 text-arka-text-dark-muted font-sans text-base sm:text-lg max-w-2xl">
-            Evidence-based imaging appropriateness evaluation powered by the ARKA Imaging Intelligence Engine (AIIE).
+          <p className="mt-2 text-arka-text-dark-muted font-sans text-base sm:text-lg max-w-3xl">
+            The ARKA web application. An ordering clinician opens ARKA directly, enters or selects a clinical
+            scenario, and receives an evidence-based appropriateness score, SHAP-style factor breakdown,
+            alternatives, and peer-reviewed citations from the ARKA Imaging Intelligence Engine (AIIE). This is
+            what ARKA looks like when used as a standalone product.
           </p>
         </header>
 
@@ -112,6 +118,21 @@ export default function ClinPage() {
                   department workflow) and <strong className="text-slate-900">ARKA-INS</strong> (prior auth and payer alignment).
                   Together they support ordering, workflow, and reimbursement with one evidence base.
                 </p>
+              </div>
+              <div>
+                <h3 className="font-semibold text-slate-900 mb-1">Standalone vs. EHR-embedded</h3>
+                <p className="text-sm sm:text-base text-slate-800">
+                  ARKA-CLIN can be used two ways. (1) As the standalone web app you are using right now. (2) Embedded
+                  directly inside an EHR (Epic, Cerner, Athena) via the HL7 CDS Hooks open standard, with no workflow
+                  change for the clinician. To see ARKA running inside a simulated Epic chart, open the CDS Hooks Live
+                  Demo.
+                </p>
+                <Link
+                  href={routes.cdsHooksDemo}
+                  className="mt-3 inline-flex items-center gap-2 rounded-lg border border-arka-teal/40 bg-arka-teal/5 px-4 py-2.5 text-sm font-medium text-arka-teal hover:bg-arka-teal/10 hover:border-arka-teal/60 transition-colors"
+                >
+                  CDS Hooks Live Demo
+                </Link>
               </div>
             </div>
           </motion.div>

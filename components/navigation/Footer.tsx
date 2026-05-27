@@ -119,7 +119,7 @@ export function Footer() {
                 |
               </span>
               <Link href="/cds-hooks-demo" className="arka-link-underline font-medium text-arka-cyan hover:text-white">
-                CDS Hooks Live Demo — Guideline-anchored
+                CDS Hooks Live Demo (EHR-embedded view)
               </Link>
               <span className="hidden text-arka-deep/50 sm:inline" aria-hidden>
                 |

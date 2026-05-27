@@ -29,6 +29,7 @@ const iconMap = {
   GraduationCap,
   Shield,
   TreePine,
+  Network,
 } as const;
 
 /** Seven strategic pillars (excludes rural hub). */
@@ -44,12 +45,19 @@ const ruralPillarIconMap = {
   BarChart3,
 } as const;
 
-const DEMO_PATHS = [routes.clin, routes.ed, routes.ins, routes.rural] as const;
+const DEMO_PATHS = [
+  routes.clin,
+  routes.ed,
+  routes.ins,
+  routes.rural,
+  routes.cdsHooksDemo,
+] as const;
 const pathToLabel: Record<string, string> = {
   [routes.clin]: "ARKA-CLIN",
   [routes.ed]: "ARKA-ED",
   [routes.ins]: "ARKA-INS",
   [routes.rural]: "Rural Platform",
+  [routes.cdsHooksDemo]: "CDS Hooks Demo",
 };
 
 function NavLinkWithHoverUnderline({

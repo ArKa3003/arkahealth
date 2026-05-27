@@ -1,9 +1,11 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import * as Dialog from "@radix-ui/react-dialog";
 import { ArkaAnimatedLogo } from "@/components/ArkaAnimatedLogo";
+import { routes } from "@/lib/constants";
 import { Play, X } from "lucide-react";
 
 const PARTICLE_ROWS = 12;
@@ -252,26 +254,34 @@ export function Hero() {
         </motion.p>
 
         <motion.div
-          className="mt-6 sm:mt-8 flex w-full max-w-sm flex-col gap-3 sm:flex-row sm:justify-center sm:gap-4"
+          className="mt-6 sm:mt-8 flex w-full max-w-3xl flex-col gap-3 sm:items-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.5, ease: "easeOut" as const }}
         >
-          <button
-            type="button"
-            onClick={scrollToSolutions}
-            className="arka-button-primary inline-flex min-h-[44px] items-center justify-center px-6 py-3 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-arka-cyan focus:ring-offset-2 focus:ring-offset-arka-bg-dark touch-manipulation"
+          <div className="flex w-full flex-col gap-3 sm:flex-row sm:justify-center sm:gap-4">
+            <button
+              type="button"
+              onClick={scrollToSolutions}
+              className="arka-button-primary inline-flex min-h-[44px] items-center justify-center px-6 py-3 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-arka-cyan focus:ring-offset-2 focus:ring-offset-arka-bg-dark touch-manipulation"
+            >
+              Explore the Ecosystem
+            </button>
+            <button
+              type="button"
+              onClick={() => setDemoOpen(true)}
+              className="arka-button-secondary inline-flex min-h-[44px] items-center justify-center gap-2 px-6 py-3 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-arka-cyan focus:ring-offset-2 focus:ring-offset-arka-bg-dark touch-manipulation"
+            >
+              <Play className="h-4 w-4 shrink-0" aria-hidden />
+              Watch Demo
+            </button>
+          </div>
+          <Link
+            href={routes.cdsHooksDemo}
+            className="inline-flex min-h-[44px] w-full items-center justify-center rounded-lg border border-arka-cyan bg-transparent px-6 py-3 text-base font-semibold text-arka-cyan transition hover:bg-arka-cyan/10 focus:outline-none focus:ring-2 focus:ring-arka-cyan focus:ring-offset-2 focus:ring-offset-arka-bg-dark touch-manipulation sm:w-auto"
           >
-            Explore the Ecosystem
-          </button>
-          <button
-            type="button"
-            onClick={() => setDemoOpen(true)}
-            className="arka-button-secondary inline-flex min-h-[44px] items-center justify-center gap-2 px-6 py-3 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-arka-cyan focus:ring-offset-2 focus:ring-offset-arka-bg-dark touch-manipulation"
-          >
-            <Play className="h-4 w-4 shrink-0" aria-hidden />
-            Watch Demo
-          </button>
+            See ARKA Live Inside an EHR (CDS Hooks Demo)
+          </Link>
         </motion.div>
       </div>
 

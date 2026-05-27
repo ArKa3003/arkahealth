@@ -91,6 +91,7 @@ export const navLinks = [
   { href: routes.ed, label: "ARKA-ED" },
   { href: routes.ins, label: "ARKA-INS" },
   { href: routes.rural, label: "Rural Platform" },
+  { href: routes.cdsHooksDemo, label: "CDS Hooks Demo" },
 ] as const;
 
 export const demoNavLinks = [
@@ -98,6 +99,7 @@ export const demoNavLinks = [
   { href: routes.ed, label: "ARKA-ED", icon: "GraduationCap" },
   { href: routes.ins, label: "ARKA-INS", icon: "Shield" },
   { href: routes.rural, label: "Rural Platform", icon: "TreePine" },
+  { href: routes.cdsHooksDemo, label: "CDS Hooks Demo", icon: "Network" },
 ] as const;
 
 export const phaseCards = [
@@ -128,6 +130,14 @@ export const phaseCards = [
     description: "Rural imaging crisis hub — CDS, tele, training, and analytics.",
     href: routes.rural,
     icon: "TreePine",
+  },
+  {
+    id: "cds-hooks",
+    title: "CDS Hooks Live Demo",
+    description:
+      "Watch ARKA run inside a simulated Epic chart via the HL7 CDS Hooks open standard — the same way it integrates into a real hospital EHR.",
+    href: routes.cdsHooksDemo,
+    icon: "Network",
   },
 ] as const;
 

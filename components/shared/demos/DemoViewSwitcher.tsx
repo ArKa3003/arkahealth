@@ -1,0 +1,73 @@
+import Link from "next/link";
+
+import { routes } from "@/lib/constants";
+import { cn } from "@/lib/utils";
+
+export interface DemoViewSwitcherProps {
+  current: "standalone" | "embedded";
+}
+
+const VIEWS = [
+  {
+    id: "standalone" as const,
+    title: "Standalone Web App",
+    subtitle: "ARKA-CLIN",
+    description: "The ARKA product, used directly by a clinician in a browser.",
+    href: routes.clin,
+    cta: "Open ARKA-CLIN",
+  },
+  {
+    id: "embedded" as const,
+    title: "Embedded in EHR via CDS Hooks",
+    subtitle: "CDS Hooks Live Demo",
+    description:
+      "The same engine, surfaced inside a simulated Epic chart via the HL7 CDS Hooks open standard.",
+    href: routes.cdsHooksDemo,
+    cta: "Open CDS Hooks Demo",
+  },
+] as const;
+
+/**
+ * Side-by-side comparison strip linking the standalone CLIN demo and the CDS Hooks EHR demo.
+ */
+export function DemoViewSwitcher({ current }: DemoViewSwitcherProps) {
+  return (
+    <section aria-label="Two views, one engine" className="mb-6 sm:mb-8">
+      <p className="mb-3 text-sm font-medium uppercase tracking-wide text-arka-text-dark-muted">
+        Two views, one engine
+      </p>
+      <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2">
+        {VIEWS.map((view) => {
+          const isActive = view.id === current;
+
+          return (
+            <article
+              key={view.id}
+              className={cn(
+                "arka-card flex flex-col rounded-xl border border-arka-primary/20 p-4 sm:p-5",
+                isActive && "ring-2 ring-arka-cyan",
+              )}
+              aria-current={isActive ? "page" : undefined}
+            >
+              <h2 className="text-base font-semibold text-arka-text-dark sm:text-lg">{view.title}</h2>
+              <p className="mt-0.5 text-sm font-medium text-arka-teal">{view.subtitle}</p>
+              <p className="mt-2 flex-1 text-sm text-arka-text-dark-muted">{view.description}</p>
+              <Link
+                href={view.href}
+                className={cn(
+                  "mt-4 inline-flex w-fit items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors",
+                  isActive
+                    ? "border-arka-cyan/60 bg-arka-cyan/10 text-arka-cyan"
+                    : "border-arka-teal/40 bg-arka-teal/5 text-arka-teal hover:border-arka-teal/60 hover:bg-arka-teal/10",
+                )}
+                aria-current={isActive ? "page" : undefined}
+              >
+                {isActive ? "Current view" : view.cta}
+              </Link>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
