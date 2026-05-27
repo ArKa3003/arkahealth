@@ -160,7 +160,7 @@ export function CdsDemoSidebar({
                   ARKA risk: {score}/9
                 </p>
                 <p className="mt-1 text-xs text-arka-text-dark-muted">Top factors (SHAP)</p>
-                <ShapFactorsBlock rows={shapRows} compact />
+                <ShapFactorsBlock rows={shapRows} />
               </section>
 
               <div className="flex flex-col gap-2">

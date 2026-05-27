@@ -7,6 +7,8 @@ export const ARKA_FEATURE_CATALOG_BASE = 'https://www.getarka.health/docs/featur
 export const ARKA_IN_APP_HOSTS = new Set([
   'www.getarka.health',
   'getarka.health',
+  'arkahealth.com',
+  'www.arkahealth.com',
   'arkahealth.vercel.app',
   'localhost',
   '127.0.0.1',
