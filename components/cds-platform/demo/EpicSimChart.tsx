@@ -72,7 +72,7 @@ export function EpicSimChart({
 
   return (
     <section
-      className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden bg-white md:rounded-l-xl"
+      className="flex min-w-0 flex-col bg-white text-slate-900 md:rounded-l-xl"
       aria-label="EpicSim patient chart"
     >
       <header className="shrink-0 border-b border-arka-primary/15 bg-gradient-to-r from-slate-800 to-slate-700 px-4 py-2.5 text-white">
@@ -96,101 +96,101 @@ export function EpicSimChart({
       <Tabs
         value={chartTab}
         onValueChange={(v) => setChartTab(v as ChartTab)}
-        className="flex min-h-0 flex-1 flex-col"
+        className="flex flex-col"
       >
-        <TabsList className="h-auto w-full shrink-0 justify-start gap-0 rounded-none border-b border-arka-primary/10 bg-slate-50 px-2 py-0">
+        <TabsList className="h-auto w-full shrink-0 justify-start gap-0 rounded-none border-b border-slate-200 bg-slate-100 px-2 py-0 text-slate-700">
           <TabsTrigger
             value="summary"
-            className="rounded-none border-b-2 border-transparent px-3 py-2 text-xs data-[state=active]:border-arka-teal data-[state=active]:bg-white"
+            className="rounded-none border-b-2 border-transparent px-3 py-2 text-xs text-slate-600 data-[state=active]:border-teal-600 data-[state=active]:bg-white data-[state=active]:font-semibold data-[state=active]:text-slate-900 dark:data-[state=active]:bg-white dark:data-[state=active]:text-slate-900"
           >
             Chart Review
           </TabsTrigger>
           <TabsTrigger
             value="results"
-            className="rounded-none border-b-2 border-transparent px-3 py-2 text-xs data-[state=active]:border-arka-teal data-[state=active]:bg-white"
+            className="rounded-none border-b-2 border-transparent px-3 py-2 text-xs text-slate-600 data-[state=active]:border-teal-600 data-[state=active]:bg-white data-[state=active]:font-semibold data-[state=active]:text-slate-900 dark:data-[state=active]:bg-white dark:data-[state=active]:text-slate-900"
           >
             Results
           </TabsTrigger>
           <TabsTrigger
             value="orders"
-            className="rounded-none border-b-2 border-transparent px-3 py-2 text-xs data-[state=active]:border-arka-teal data-[state=active]:bg-white"
+            className="rounded-none border-b-2 border-transparent px-3 py-2 text-xs text-slate-600 data-[state=active]:border-teal-600 data-[state=active]:bg-white data-[state=active]:font-semibold data-[state=active]:text-slate-900 dark:data-[state=active]:bg-white dark:data-[state=active]:text-slate-900"
           >
             Orders
           </TabsTrigger>
         </TabsList>
 
-        <div className="min-h-0 flex-1 overflow-y-auto">
+        <div>
           <TabsContent
             value="summary"
-            className="mt-0 space-y-4 rounded-none border-0 bg-transparent p-4 shadow-none"
+            className="mt-0 space-y-4 rounded-none border-0 bg-white p-4 text-slate-900 shadow-none dark:bg-white dark:text-slate-900"
           >
-            <div className="rounded-lg border border-arka-primary/10 bg-arka-bg-light/50 p-3">
-              <h3 className="text-xs font-semibold uppercase tracking-wide text-arka-muted">
+            <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-600">
                 Today&apos;s visit
               </h3>
-              <p className="mt-1 text-sm font-medium text-arka-text-dark">
+              <p className="mt-1 text-sm font-semibold text-slate-900">
                 {scenario.chiefComplaint}
               </p>
-              <p className="mt-1 text-sm text-arka-text-dark-muted">
+              <p className="mt-1 text-sm text-slate-700">
                 Symptom duration {durationLabel} · {scenario.urgency} · Outpatient
               </p>
             </div>
 
             <div>
-              <h3 className="text-xs font-semibold uppercase tracking-wide text-arka-muted">
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-600">
                 Vitals (today)
               </h3>
               <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-5">
                 {vitals.map((v) => (
                   <div
                     key={v.label}
-                    className="rounded border border-arka-primary/10 bg-white px-2 py-1.5 text-center"
+                    className="rounded border border-slate-200 bg-white px-2 py-1.5 text-center"
                   >
-                    <p className="text-[10px] text-arka-muted">{v.label}</p>
-                    <p className="text-sm font-medium text-arka-text-dark">{v.value}</p>
+                    <p className="text-[10px] font-medium text-slate-600">{v.label}</p>
+                    <p className="text-sm font-semibold text-slate-900">{v.value}</p>
                   </div>
                 ))}
               </div>
             </div>
 
             <div>
-              <h3 className="text-xs font-semibold uppercase tracking-wide text-arka-muted">
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-600">
                 Active problems
               </h3>
               <ul
-                className="mt-2 divide-y divide-arka-primary/10 rounded border border-arka-primary/10 text-sm"
+                className="mt-2 divide-y divide-slate-200 rounded border border-slate-200 text-sm"
                 aria-label="Active problems"
               >
                 {scenario.problems.map((p) => (
-                  <li key={p.icd10} className="px-3 py-2 text-arka-text-dark">
+                  <li key={p.icd10} className="px-3 py-2 text-slate-900">
                     {p.display}{' '}
-                    <span className="text-arka-text-dark-muted">({p.icd10})</span>
+                    <span className="text-slate-600">({p.icd10})</span>
                   </li>
                 ))}
               </ul>
             </div>
 
             <div>
-              <h3 className="text-xs font-semibold uppercase tracking-wide text-arka-muted">
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-600">
                 Red-flag screen
               </h3>
               <table className="mt-2 w-full text-left text-sm">
                 <thead>
-                  <tr className="border-b border-arka-primary/10 text-xs text-arka-muted">
-                    <th className="pb-1 font-medium">Finding</th>
-                    <th className="pb-1 font-medium">Present</th>
+                  <tr className="border-b border-slate-200 text-xs text-slate-600">
+                    <th className="pb-1 font-semibold">Finding</th>
+                    <th className="pb-1 font-semibold">Present</th>
                   </tr>
                 </thead>
                 <tbody>
                   {scenario.redFlags.map((rf) => (
-                    <tr key={rf.flag} className="border-b border-arka-primary/5">
-                      <td className="py-1.5 text-arka-text-dark">{rf.flag}</td>
+                    <tr key={rf.flag} className="border-b border-slate-100">
+                      <td className="py-1.5 text-slate-900">{rf.flag}</td>
                       <td className="py-1.5">
                         <span
                           className={
                             rf.present
-                              ? 'font-medium text-red-600'
-                              : 'text-arka-text-dark-muted'
+                              ? 'font-semibold text-red-700'
+                              : 'text-slate-600'
                           }
                         >
                           {rf.present ? 'Yes' : 'No'}
@@ -203,10 +203,10 @@ export function EpicSimChart({
             </div>
 
             <div>
-              <h3 className="text-xs font-semibold uppercase tracking-wide text-arka-muted">
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-600">
                 Medications
               </h3>
-              <ul className="mt-2 list-inside list-disc space-y-0.5 text-sm text-arka-text-dark-muted">
+              <ul className="mt-2 list-inside list-disc space-y-0.5 text-sm text-slate-800">
                 {scenario.id === 'lbp-1' && (
                   <>
                     <li>Lisinopril 10 mg daily</li>
@@ -230,10 +230,10 @@ export function EpicSimChart({
             </div>
 
             <div>
-              <h3 className="text-xs font-semibold uppercase tracking-wide text-arka-muted">
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-600">
                 Recent imaging
               </h3>
-              <p className="mt-1 text-sm text-arka-text-dark-muted">
+              <p className="mt-1 text-sm text-slate-800">
                 {scenario.id === 'knee'
                   ? 'Knee radiographs — 14 months ago (outside facility)'
                   : 'No relevant imaging in the last 90 days'}
@@ -241,10 +241,10 @@ export function EpicSimChart({
             </div>
 
             <div>
-              <h3 className="text-xs font-semibold uppercase tracking-wide text-arka-muted">
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-600">
                 Assessment &amp; plan (excerpt)
               </h3>
-              <p className="mt-1 text-sm leading-relaxed text-arka-text-dark-muted">
+              <p className="mt-1 text-sm leading-relaxed text-slate-800">
                 Continue conservative management for {scenario.chiefComplaint.toLowerCase()}.
                 Discuss imaging only if symptoms persist or red flags emerge. Draft imaging order
                 pending clinician review.
@@ -254,14 +254,14 @@ export function EpicSimChart({
 
           <TabsContent
             value="results"
-            className="mt-0 space-y-3 rounded-none border-0 bg-transparent p-4 shadow-none"
+            className="mt-0 space-y-3 rounded-none border-0 bg-white p-4 text-slate-900 shadow-none dark:bg-white dark:text-slate-900"
           >
-            <p className="text-sm text-arka-text-dark-muted">
+            <p className="text-sm text-slate-800">
               Recent labs — no critical results. eGFR {scenario.eGFR} (stable). CBC within normal
               limits.
             </p>
-            <div className="rounded border border-arka-primary/10 text-sm">
-              <div className="grid grid-cols-3 gap-2 border-b border-arka-primary/10 bg-arka-bg-light/80 px-3 py-2 text-xs font-medium text-arka-muted">
+            <div className="rounded border border-slate-200 text-sm text-slate-900">
+              <div className="grid grid-cols-3 gap-2 border-b border-slate-200 bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-600">
                 <span>Test</span>
                 <span>Value</span>
                 <span>Ref</span>
@@ -269,34 +269,34 @@ export function EpicSimChart({
               <div className="grid grid-cols-3 gap-2 px-3 py-2">
                 <span>Creatinine</span>
                 <span>0.9 mg/dL</span>
-                <span className="text-arka-muted">0.7–1.2</span>
+                <span className="text-slate-600">0.7–1.2</span>
               </div>
-              <div className="grid grid-cols-3 gap-2 border-t border-arka-primary/5 px-3 py-2">
+              <div className="grid grid-cols-3 gap-2 border-t border-slate-100 px-3 py-2">
                 <span>WBC</span>
                 <span>7.2 K/µL</span>
-                <span className="text-arka-muted">4.5–11</span>
+                <span className="text-slate-600">4.5–11</span>
               </div>
             </div>
           </TabsContent>
 
           <TabsContent
             value="orders"
-            className="mt-0 rounded-none border-0 bg-transparent p-4 shadow-none"
+            className="mt-0 rounded-none border-0 bg-white p-4 text-slate-900 shadow-none dark:bg-white dark:text-slate-900"
           >
-            <Card className="border-arka-teal/30 bg-arka-pale/20 dark:bg-arka-teal/5">
+            <Card className="border-teal-300 bg-teal-50">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-arka-teal">
+                <CardTitle className="text-sm font-semibold text-teal-800">
                   Imaging order (draft)
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2 text-sm">
-                <p className="font-medium text-arka-text-dark">{scenario.orderDisplay}</p>
-                <p className="text-arka-text-dark-muted">CPT {scenario.cpt}</p>
-                <p className="text-arka-text-dark-muted">
+                <p className="font-semibold text-slate-900">{scenario.orderDisplay}</p>
+                <p className="text-slate-700">CPT {scenario.cpt}</p>
+                <p className="text-slate-700">
                   Indication: {scenario.chiefComplaint} ({scenario.icd10})
                 </p>
-                <p className="text-arka-text-dark-muted">Duration: {durationLabel}</p>
-                <p className="text-arka-text-dark-muted">
+                <p className="text-slate-700">Duration: {durationLabel}</p>
+                <p className="text-slate-700">
                   Modality: {scenario.modality} · {scenario.bodyPart}
                 </p>
               </CardContent>
@@ -305,10 +305,10 @@ export function EpicSimChart({
         </div>
       </Tabs>
 
-      <footer className="shrink-0 border-t border-arka-primary/15 bg-slate-50 px-4 py-3">
+      <footer className="shrink-0 border-t border-slate-200 bg-slate-100 px-4 py-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Demo scenarios">
-            <span className="text-xs font-medium text-arka-muted">Scenarios:</span>
+            <span className="text-xs font-semibold text-slate-600">Scenarios:</span>
             {scenarioIds.map((s) => (
               <button
                 key={s.id}

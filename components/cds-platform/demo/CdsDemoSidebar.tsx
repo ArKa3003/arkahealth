@@ -74,7 +74,7 @@ export function CdsDemoSidebar({
   const guidelineShort = medicalBasis.label.split('—')[0]?.trim() ?? medicalBasis.label;
 
   const asideClass =
-    'flex h-full max-h-[min(480px,55vh)] min-h-0 min-w-0 w-full flex-col overflow-hidden rounded-xl border border-arka-light bg-white shadow-sm md:max-h-none md:rounded-none md:rounded-r-xl md:border-0 md:shadow-none';
+    'flex min-w-0 w-full flex-col rounded-xl border border-slate-200 bg-white text-slate-900 shadow-sm md:rounded-none md:rounded-r-xl md:border-0 md:shadow-none';
 
   return (
     <AnimatePresence mode="wait">
@@ -90,8 +90,8 @@ export function CdsDemoSidebar({
           aria-busy="true"
           aria-label="ARKA CDS recommendations loading"
         >
-          <Loader2 className="h-8 w-8 animate-spin text-arka-muted" />
-          <p className="mt-2 text-sm text-arka-muted">Evaluating order…</p>
+          <Loader2 className="h-8 w-8 animate-spin text-slate-500" />
+          <p className="mt-2 text-sm text-slate-600">Evaluating order…</p>
         </motion.aside>
       ) : (
         <motion.aside
@@ -104,15 +104,15 @@ export function CdsDemoSidebar({
           aria-live="polite"
           aria-label="ARKA CDS recommendations"
         >
-      <header className="shrink-0 border-b border-arka-primary/10 bg-slate-50 px-4 py-2.5">
-        <p className="text-[10px] font-semibold uppercase tracking-wider text-arka-text-dark-muted">
+      <header className="shrink-0 border-b border-slate-200 bg-slate-100 px-4 py-2.5">
+        <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-600">
           ARKA Sidebar
         </p>
-        <p className="mt-0.5 text-xs text-arka-muted">CDS Hooks · order-select</p>
+        <p className="mt-0.5 text-xs text-slate-600">CDS Hooks · order-select</p>
       </header>
 
       {overrideDialogOpen ? (
-        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-3">
+        <div className="flex flex-col p-3">
           <OverrideDialog
             options={OVERRIDE_OPTIONS}
             onSubmit={(payload) => {
@@ -124,42 +124,42 @@ export function CdsDemoSidebar({
           />
         </div>
       ) : (
-        <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-3">
+        <div className="flex flex-col gap-3 p-3">
           {emptyCards ? (
-            <p className="rounded-lg border border-arka-primary/10 bg-arka-bg-light p-3 text-sm text-arka-muted">
+            <p className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
               No guideline-anchored concerns for this order
             </p>
           ) : (
             <>
               <section aria-labelledby="primary-basis-heading">
-                <h2 id="primary-basis-heading" className="text-xs font-bold uppercase tracking-wide text-arka-teal">
+                <h2 id="primary-basis-heading" className="text-xs font-bold uppercase tracking-wide text-teal-700">
                   Primary basis
                 </h2>
-                <p className="mt-2 text-sm font-medium text-arka-text-dark">{medicalBasis.label}</p>
-                <p className="mt-2 text-sm leading-snug text-arka-text-dark">
+                <p className="mt-2 text-sm font-semibold text-slate-900">{medicalBasis.label}</p>
+                <p className="mt-2 text-sm leading-relaxed text-slate-700">
                   {medicalBasis.rationale}
                 </p>
                 <a
                   href={medicalBasis.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-2 inline-flex items-center gap-1 text-sm text-arka-cyan underline-offset-2 hover:text-arka-teal"
+                  className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-teal-700 underline-offset-2 hover:text-teal-900 hover:underline"
                 >
                   View citation
                   <ExternalLink className="h-3.5 w-3.5" aria-hidden />
                 </a>
               </section>
 
-              <hr className="border-arka-primary/10" />
+              <hr className="border-slate-200" />
 
               <section aria-labelledby="refinement-heading">
-                <h2 id="refinement-heading" className="text-xs font-medium text-arka-text-dark-muted">
+                <h2 id="refinement-heading" className="text-xs font-semibold uppercase tracking-wide text-slate-600">
                   Patient-specific refinement
                 </h2>
-                <p className="mt-2 text-2xl font-semibold text-arka-text-dark">
+                <p className="mt-2 text-2xl font-bold text-slate-900">
                   ARKA risk: {score}/9
                 </p>
-                <p className="mt-1 text-xs text-arka-text-dark-muted">Top factors (SHAP)</p>
+                <p className="mt-1 text-xs font-medium text-slate-600">Top factors (SHAP)</p>
                 <ShapFactorsBlock rows={shapRows} />
               </section>
 
@@ -168,7 +168,7 @@ export function CdsDemoSidebar({
                   <Button
                     type="button"
                     variant="secondary"
-                    className="w-full text-left text-sm focus-visible:ring-2 focus-visible:ring-arka-cyan"
+                    className="w-full border-slate-300 bg-white text-left text-sm text-slate-800 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-teal-500"
                     onClick={onReviewAlternative}
                     aria-label={`Review alternative imaging consistent with ${guidelineShort}`}
                   >
@@ -187,7 +187,7 @@ export function CdsDemoSidebar({
                 <Button
                   type="button"
                   variant="secondary"
-                  className="w-full border border-arka-primary/20 bg-arka-bg-light text-left text-sm !text-arka-text-dark hover:bg-arka-cyan/10 hover:!text-arka-teal focus-visible:ring-2 focus-visible:ring-arka-cyan dark:border-arka-primary/20 dark:bg-arka-bg-light dark:!text-arka-text-dark dark:hover:bg-arka-cyan/10 dark:hover:!text-arka-teal"
+                  className="w-full border-slate-300 bg-slate-50 text-left text-sm text-slate-800 hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-teal-500"
                   onClick={onOverride}
                   aria-label="Document override with reason"
                 >
@@ -197,7 +197,7 @@ export function CdsDemoSidebar({
                   <Button
                     type="button"
                     variant="secondary"
-                    className="w-full text-sm focus-visible:ring-2 focus-visible:ring-arka-cyan"
+                    className="w-full border-slate-300 bg-white text-sm text-slate-800 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-teal-500"
                     onClick={onSignAnywayWithReason}
                     aria-label="Sign anyway with reason"
                   >
@@ -208,11 +208,11 @@ export function CdsDemoSidebar({
             </>
           )}
 
-          <section className="shrink-0 border-t border-arka-primary/10 pt-3" aria-labelledby="disclosure-heading">
-            <h2 id="disclosure-heading" className="text-xs font-medium text-arka-muted">
+          <section className="shrink-0 border-t border-slate-200 pt-3" aria-labelledby="disclosure-heading">
+            <h2 id="disclosure-heading" className="text-xs font-semibold uppercase tracking-wide text-slate-600">
               Disclosure
             </h2>
-            <p className="mt-2 text-xs text-arka-muted">
+            <p className="mt-2 text-xs leading-relaxed text-slate-600">
               Supports, not replaces clinical judgment. FDA Non-Device CDS under FD&amp;C Act §520(o)(1)(E).
             </p>
             <button
@@ -221,26 +221,26 @@ export function CdsDemoSidebar({
                 setAboutOpen((o) => !o);
                 onAboutRecommendation();
               }}
-              className="mt-2 text-xs text-arka-cyan underline-offset-2 hover:text-arka-teal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-cyan"
+              className="mt-2 text-xs font-medium text-teal-700 underline-offset-2 hover:text-teal-900 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500"
               aria-expanded={aboutOpen}
             >
               About this recommendation
             </button>
             {aboutOpen && (
-              <div className="mt-2 space-y-2 rounded border border-arka-primary/10 bg-arka-bg-light p-3 text-xs text-arka-muted">
+              <div className="mt-2 space-y-2 rounded border border-slate-200 bg-slate-50 p-3 text-xs text-slate-700">
                 <p>{medicalBasis.rationale}</p>
                 <p>
                   Citation:{' '}
-                  <a href={medicalBasis.url} className="text-arka-cyan hover:underline" target="_blank" rel="noopener noreferrer">
+                  <a href={medicalBasis.url} className="font-medium text-teal-700 hover:underline" target="_blank" rel="noopener noreferrer">
                     {medicalBasis.label}
                   </a>
                 </p>
                 <p>
-                  <a href="/docs/MODEL_CARD.md" className="text-arka-cyan hover:underline">
+                  <a href="/docs/MODEL_CARD.md" className="font-medium text-teal-700 hover:underline">
                     MODEL_CARD.md
                   </a>
                   {' · '}
-                  <a href="/docs/REGULATORY_RATIONALE_MEMO.md" className="text-arka-cyan hover:underline">
+                  <a href="/docs/REGULATORY_RATIONALE_MEMO.md" className="font-medium text-teal-700 hover:underline">
                     REGULATORY_RATIONALE_MEMO.md
                   </a>
                 </p>

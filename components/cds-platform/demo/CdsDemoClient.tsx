@@ -184,10 +184,10 @@ export function CdsDemoClient() {
       </div>
 
       <div
-        className="grid min-h-[560px] w-full min-w-0 grid-cols-1 gap-4 md:min-h-[640px] md:grid-cols-[minmax(0,1fr)_minmax(320px,380px)] md:gap-0 md:overflow-hidden md:rounded-xl md:border md:border-arka-light md:bg-slate-100/90 md:shadow-sm md:h-[min(720px,calc(100vh-14rem))]"
+        className="grid w-full min-w-0 grid-cols-1 gap-4 md:grid-cols-[minmax(0,1fr)_minmax(340px,420px)] md:items-start md:gap-0 md:rounded-xl md:border md:border-arka-light md:bg-slate-100/90 md:shadow-sm"
         aria-label="EHR workspace"
       >
-        <div className="flex min-h-[420px] min-w-0 flex-col overflow-hidden md:min-h-0 md:border-r md:border-arka-primary/10">
+        <div className="flex min-w-0 flex-col md:border-r md:border-arka-primary/10">
           <EpicSimChart
             scenario={scenario}
             onSignOrder={() => void handleSignOrder()}

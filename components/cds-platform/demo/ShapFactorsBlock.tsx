@@ -31,20 +31,20 @@ export function ShapFactorsBlock({ rows }: ShapFactorsBlockProps) {
         return (
           <li
             key={`${row.label}-${row.citationId}`}
-            className="rounded-md border border-arka-primary/10 bg-arka-bg-light/80 p-2 dark:bg-arka-bg-dark/20"
+            className="rounded-md border border-slate-200 bg-slate-50 p-2.5"
           >
             <div className="flex items-center justify-between gap-2">
-              <span className="text-xs font-medium text-arka-text-dark">{row.label}</span>
+              <span className="text-xs font-semibold text-slate-900">{row.label}</span>
               <span
-                className={`shrink-0 tabular-nums text-xs font-semibold ${
-                  isPositive ? 'text-amber-600' : 'text-emerald-600'
+                className={`shrink-0 tabular-nums text-xs font-bold ${
+                  isPositive ? 'text-amber-700' : 'text-emerald-700'
                 }`}
               >
                 {valueStr}
               </span>
             </div>
             <div
-              className="mt-1 h-1 w-full overflow-hidden rounded-full bg-arka-primary/10"
+              className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-slate-200"
               aria-hidden
             >
               <div
@@ -52,12 +52,12 @@ export function ShapFactorsBlock({ rows }: ShapFactorsBlockProps) {
                 style={{ width: `${barPct}%` }}
               />
             </div>
-            <p className="mt-1.5 line-clamp-2 text-[11px] leading-snug text-arka-text-dark-muted">
+            <p className="mt-2 text-xs leading-relaxed text-slate-700">
               {row.rationale}
             </p>
             <CitationLink
               href={row.citationUrl}
-              className="mt-1 inline-flex items-center gap-1 text-[11px] font-medium text-arka-cyan hover:underline"
+              className="mt-1.5 inline-flex items-center gap-1 text-xs font-semibold text-teal-700 hover:text-teal-900 hover:underline"
             >
               Why this factor
             </CitationLink>
