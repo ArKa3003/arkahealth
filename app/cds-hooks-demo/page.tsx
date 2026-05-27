@@ -6,7 +6,7 @@ import { CdsDemoClient } from '@/components/cds-platform/demo/CdsDemoClient';
  */
 export default function CdsHooksDemoPage() {
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto w-full max-w-[1600px] px-4 py-8 sm:px-6 lg:px-8">
       <header className="mb-8 max-w-3xl">
         <h1 className="text-3xl font-bold tracking-tight text-white">
           Live CDS Hooks Integration

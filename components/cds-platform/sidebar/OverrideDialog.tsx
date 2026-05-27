@@ -40,7 +40,7 @@ export function OverrideDialog({
 
   return (
     <div
-      className="flex flex-col gap-4 rounded-t-lg border border-b-0 border-[var(--arka-border,#e5e7eb)] bg-[var(--arka-bg-elevated,#fff)] p-4 shadow-lg dark:border-[var(--arka-border)] dark:bg-[var(--arka-bg-elevated)]"
+      className="flex min-w-0 flex-col gap-4 rounded-lg border border-[var(--arka-border,#e5e7eb)] bg-[var(--arka-bg-elevated,#fff)] p-4 shadow-sm dark:border-[var(--arka-border)] dark:bg-[var(--arka-bg-elevated)]"
       role="dialog"
       aria-labelledby="override-dialog-title"
       aria-describedby="override-dialog-desc"

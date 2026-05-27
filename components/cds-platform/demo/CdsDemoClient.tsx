@@ -158,7 +158,7 @@ export function CdsDemoClient() {
         );
 
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-arka-primary/15 bg-white px-4 py-3">
         <div className="flex items-center gap-2">
           <span className="text-sm font-semibold text-arka-text-dark">
@@ -184,10 +184,10 @@ export function CdsDemoClient() {
       </div>
 
       <div
-        className="flex min-h-[560px] flex-col gap-4 lg:h-[min(720px,calc(100vh-14rem))] lg:flex-row lg:items-stretch lg:gap-0 lg:overflow-hidden lg:rounded-xl lg:border lg:border-arka-light lg:bg-slate-100/90 lg:shadow-sm"
+        className="grid min-h-[560px] w-full min-w-0 grid-cols-1 gap-4 md:min-h-[640px] md:grid-cols-[minmax(0,1fr)_minmax(320px,380px)] md:gap-0 md:overflow-hidden md:rounded-xl md:border md:border-arka-light md:bg-slate-100/90 md:shadow-sm md:h-[min(720px,calc(100vh-14rem))]"
         aria-label="EHR workspace"
       >
-        <div className="flex min-h-[420px] flex-1 flex-col lg:min-h-0 lg:border-r lg:border-arka-primary/10">
+        <div className="flex min-h-[420px] min-w-0 flex-col overflow-hidden md:min-h-0 md:border-r md:border-arka-primary/10">
           <EpicSimChart
             scenario={scenario}
             onSignOrder={() => void handleSignOrder()}
@@ -221,7 +221,7 @@ export function CdsDemoClient() {
       </div>
 
       <section
-        className="rounded-lg border border-arka-primary/15 bg-arka-deep p-4"
+        className="min-w-0 rounded-lg border border-arka-primary/15 bg-arka-deep p-4"
         aria-labelledby="live-cds-json-heading"
       >
         <div className="flex flex-wrap items-center justify-between gap-2">

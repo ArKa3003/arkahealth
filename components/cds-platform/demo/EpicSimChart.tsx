@@ -72,7 +72,7 @@ export function EpicSimChart({
 
   return (
     <section
-      className="flex h-full min-h-0 flex-col overflow-hidden bg-white lg:rounded-l-xl"
+      className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden bg-white md:rounded-l-xl"
       aria-label="EpicSim patient chart"
     >
       <header className="shrink-0 border-b border-arka-primary/15 bg-gradient-to-r from-slate-800 to-slate-700 px-4 py-2.5 text-white">

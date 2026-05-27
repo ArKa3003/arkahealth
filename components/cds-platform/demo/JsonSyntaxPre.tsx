@@ -30,7 +30,7 @@ export function JsonSyntaxPre({
 
   return (
     <pre
-      className={`overflow-auto rounded bg-slate-900 p-3 font-mono text-xs text-slate-100 ${maxHeightClass} ${className}`.trim()}
+      className={`min-w-0 overflow-x-auto overflow-y-auto rounded bg-slate-900 p-3 font-mono text-xs text-slate-100 ${maxHeightClass} ${className}`.trim()}
     >
       <code>
         {lines.map((line, lineIndex) => (

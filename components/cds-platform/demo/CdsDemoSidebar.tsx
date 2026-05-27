@@ -74,7 +74,7 @@ export function CdsDemoSidebar({
   const guidelineShort = medicalBasis.label.split('—')[0]?.trim() ?? medicalBasis.label;
 
   const asideClass =
-    'flex h-full max-h-[min(480px,55vh)] min-h-0 w-full flex-col overflow-hidden rounded-xl border border-arka-light bg-white shadow-sm lg:max-h-none lg:w-[380px] lg:shrink-0 lg:rounded-none lg:rounded-r-xl lg:border-0 lg:shadow-none';
+    'flex h-full max-h-[min(480px,55vh)] min-h-0 min-w-0 w-full flex-col overflow-hidden rounded-xl border border-arka-light bg-white shadow-sm md:max-h-none md:rounded-none md:rounded-r-xl md:border-0 md:shadow-none';
 
   return (
     <AnimatePresence mode="wait">
@@ -111,133 +111,8 @@ export function CdsDemoSidebar({
         <p className="mt-0.5 text-xs text-arka-muted">CDS Hooks · order-select</p>
       </header>
 
-      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-3">
-        {emptyCards ? (
-          <p className="rounded-lg border border-arka-primary/10 bg-arka-bg-light p-3 text-sm text-arka-muted">
-            No guideline-anchored concerns for this order
-          </p>
-        ) : (
-          <>
-            <section aria-labelledby="primary-basis-heading">
-              <h2 id="primary-basis-heading" className="text-xs font-bold uppercase tracking-wide text-arka-teal">
-                Primary basis
-              </h2>
-              <p className="mt-2 text-sm font-medium text-arka-text-dark">{medicalBasis.label}</p>
-              <p className="mt-2 line-clamp-4 text-sm leading-snug text-arka-text-dark">
-                {medicalBasis.rationale}
-              </p>
-              <a
-                href={medicalBasis.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-2 inline-flex items-center gap-1 text-sm text-arka-cyan underline-offset-2 hover:text-arka-teal"
-              >
-                View citation
-                <ExternalLink className="h-3.5 w-3.5" aria-hidden />
-              </a>
-            </section>
-
-            <hr className="border-arka-primary/10" />
-
-            <section aria-labelledby="refinement-heading">
-              <h2 id="refinement-heading" className="text-xs font-medium text-arka-text-dark-muted">
-                Patient-specific refinement
-              </h2>
-              <p className="mt-2 text-2xl font-semibold text-arka-text-dark">
-                ARKA risk: {score}/9
-              </p>
-              <p className="mt-1 text-xs text-arka-text-dark-muted">Top factors (SHAP)</p>
-              <ShapFactorsBlock rows={shapRows} compact />
-            </section>
-
-            <div className="flex flex-col gap-2">
-              {alt && !showReviewPanel && (
-                <Button
-                  type="button"
-                  variant="secondary"
-                  className="w-full text-left text-sm focus-visible:ring-2 focus-visible:ring-arka-cyan"
-                  onClick={onReviewAlternative}
-                  aria-label={`Review alternative imaging consistent with ${guidelineShort}`}
-                >
-                  Review alternative imaging consistent with {guidelineShort}.
-                </Button>
-              )}
-              {showReviewPanel && alt && (
-                <ReviewAlternativePanel
-                  alternative={alt.alternative}
-                  basis={alt.basis}
-                  considerations={alt.considerations}
-                  onAcceptToChart={onOpenAlternativeInChart}
-                  onDismiss={onCloseReviewPanel}
-                />
-              )}
-              <Button
-                type="button"
-                variant="secondary"
-                className="w-full border border-arka-primary/20 bg-arka-bg-light text-left text-sm !text-arka-text-dark hover:bg-arka-cyan/10 hover:!text-arka-teal focus-visible:ring-2 focus-visible:ring-arka-cyan dark:border-arka-primary/20 dark:bg-arka-bg-light dark:!text-arka-text-dark dark:hover:bg-arka-cyan/10 dark:hover:!text-arka-teal"
-                onClick={onOverride}
-                aria-label="Document override with reason"
-              >
-                Document override with reason
-              </Button>
-              {signPending && onSignAnywayWithReason && (
-                <Button
-                  type="button"
-                  variant="secondary"
-                  className="w-full text-sm focus-visible:ring-2 focus-visible:ring-arka-cyan"
-                  onClick={onSignAnywayWithReason}
-                  aria-label="Sign anyway with reason"
-                >
-                  Sign anyway with reason
-                </Button>
-              )}
-            </div>
-          </>
-        )}
-
-        <section className="shrink-0 border-t border-arka-primary/10 pt-3" aria-labelledby="disclosure-heading">
-          <h2 id="disclosure-heading" className="text-xs font-medium text-arka-muted">
-            Disclosure
-          </h2>
-          <p className="mt-2 text-xs text-arka-muted">
-            Supports, not replaces clinical judgment. FDA Non-Device CDS under FD&amp;C Act §520(o)(1)(E).
-          </p>
-          <button
-            type="button"
-            onClick={() => {
-              setAboutOpen((o) => !o);
-              onAboutRecommendation();
-            }}
-            className="mt-2 text-xs text-arka-cyan underline-offset-2 hover:text-arka-teal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-cyan"
-            aria-expanded={aboutOpen}
-          >
-            About this recommendation
-          </button>
-          {aboutOpen && (
-            <div className="mt-2 space-y-2 rounded border border-arka-primary/10 bg-arka-bg-light p-3 text-xs text-arka-muted">
-              <p>{medicalBasis.rationale}</p>
-              <p>
-                Citation:{' '}
-                <a href={medicalBasis.url} className="text-arka-cyan hover:underline" target="_blank" rel="noopener noreferrer">
-                  {medicalBasis.label}
-                </a>
-              </p>
-              <p>
-                <a href="/docs/MODEL_CARD.md" className="text-arka-cyan hover:underline">
-                  MODEL_CARD.md
-                </a>
-                {' · '}
-                <a href="/docs/REGULATORY_RATIONALE_MEMO.md" className="text-arka-cyan hover:underline">
-                  REGULATORY_RATIONALE_MEMO.md
-                </a>
-              </p>
-            </div>
-          )}
-        </section>
-      </div>
-
-      {overrideDialogOpen && (
-        <div className="border-t border-arka-primary/10 p-2">
+      {overrideDialogOpen ? (
+        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-3">
           <OverrideDialog
             options={OVERRIDE_OPTIONS}
             onSubmit={(payload) => {
@@ -247,6 +122,131 @@ export function CdsDemoSidebar({
             onGoBack={onOverrideDialogClose}
             alertTitle="CDS recommendation"
           />
+        </div>
+      ) : (
+        <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-3">
+          {emptyCards ? (
+            <p className="rounded-lg border border-arka-primary/10 bg-arka-bg-light p-3 text-sm text-arka-muted">
+              No guideline-anchored concerns for this order
+            </p>
+          ) : (
+            <>
+              <section aria-labelledby="primary-basis-heading">
+                <h2 id="primary-basis-heading" className="text-xs font-bold uppercase tracking-wide text-arka-teal">
+                  Primary basis
+                </h2>
+                <p className="mt-2 text-sm font-medium text-arka-text-dark">{medicalBasis.label}</p>
+                <p className="mt-2 text-sm leading-snug text-arka-text-dark">
+                  {medicalBasis.rationale}
+                </p>
+                <a
+                  href={medicalBasis.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 inline-flex items-center gap-1 text-sm text-arka-cyan underline-offset-2 hover:text-arka-teal"
+                >
+                  View citation
+                  <ExternalLink className="h-3.5 w-3.5" aria-hidden />
+                </a>
+              </section>
+
+              <hr className="border-arka-primary/10" />
+
+              <section aria-labelledby="refinement-heading">
+                <h2 id="refinement-heading" className="text-xs font-medium text-arka-text-dark-muted">
+                  Patient-specific refinement
+                </h2>
+                <p className="mt-2 text-2xl font-semibold text-arka-text-dark">
+                  ARKA risk: {score}/9
+                </p>
+                <p className="mt-1 text-xs text-arka-text-dark-muted">Top factors (SHAP)</p>
+                <ShapFactorsBlock rows={shapRows} compact />
+              </section>
+
+              <div className="flex flex-col gap-2">
+                {alt && !showReviewPanel && (
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    className="w-full text-left text-sm focus-visible:ring-2 focus-visible:ring-arka-cyan"
+                    onClick={onReviewAlternative}
+                    aria-label={`Review alternative imaging consistent with ${guidelineShort}`}
+                  >
+                    Review alternative imaging consistent with {guidelineShort}.
+                  </Button>
+                )}
+                {showReviewPanel && alt && (
+                  <ReviewAlternativePanel
+                    alternative={alt.alternative}
+                    basis={alt.basis}
+                    considerations={alt.considerations}
+                    onAcceptToChart={onOpenAlternativeInChart}
+                    onDismiss={onCloseReviewPanel}
+                  />
+                )}
+                <Button
+                  type="button"
+                  variant="secondary"
+                  className="w-full border border-arka-primary/20 bg-arka-bg-light text-left text-sm !text-arka-text-dark hover:bg-arka-cyan/10 hover:!text-arka-teal focus-visible:ring-2 focus-visible:ring-arka-cyan dark:border-arka-primary/20 dark:bg-arka-bg-light dark:!text-arka-text-dark dark:hover:bg-arka-cyan/10 dark:hover:!text-arka-teal"
+                  onClick={onOverride}
+                  aria-label="Document override with reason"
+                >
+                  Document override with reason
+                </Button>
+                {signPending && onSignAnywayWithReason && (
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    className="w-full text-sm focus-visible:ring-2 focus-visible:ring-arka-cyan"
+                    onClick={onSignAnywayWithReason}
+                    aria-label="Sign anyway with reason"
+                  >
+                    Sign anyway with reason
+                  </Button>
+                )}
+              </div>
+            </>
+          )}
+
+          <section className="shrink-0 border-t border-arka-primary/10 pt-3" aria-labelledby="disclosure-heading">
+            <h2 id="disclosure-heading" className="text-xs font-medium text-arka-muted">
+              Disclosure
+            </h2>
+            <p className="mt-2 text-xs text-arka-muted">
+              Supports, not replaces clinical judgment. FDA Non-Device CDS under FD&amp;C Act §520(o)(1)(E).
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setAboutOpen((o) => !o);
+                onAboutRecommendation();
+              }}
+              className="mt-2 text-xs text-arka-cyan underline-offset-2 hover:text-arka-teal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-cyan"
+              aria-expanded={aboutOpen}
+            >
+              About this recommendation
+            </button>
+            {aboutOpen && (
+              <div className="mt-2 space-y-2 rounded border border-arka-primary/10 bg-arka-bg-light p-3 text-xs text-arka-muted">
+                <p>{medicalBasis.rationale}</p>
+                <p>
+                  Citation:{' '}
+                  <a href={medicalBasis.url} className="text-arka-cyan hover:underline" target="_blank" rel="noopener noreferrer">
+                    {medicalBasis.label}
+                  </a>
+                </p>
+                <p>
+                  <a href="/docs/MODEL_CARD.md" className="text-arka-cyan hover:underline">
+                    MODEL_CARD.md
+                  </a>
+                  {' · '}
+                  <a href="/docs/REGULATORY_RATIONALE_MEMO.md" className="text-arka-cyan hover:underline">
+                    REGULATORY_RATIONALE_MEMO.md
+                  </a>
+                </p>
+              </div>
+            )}
+          </section>
         </div>
       )}
         </motion.aside>
