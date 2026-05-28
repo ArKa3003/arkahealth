@@ -10,14 +10,14 @@ const ARKA_TEAL_GLOW = "rgba(20, 184, 166, 0.4)";
 const GLASS_FILL = "rgba(255, 255, 255, 0.9)";
 const GLASS_STROKE = "rgba(20, 184, 166, 0.35)";
 
-type NodeId = "arka" | "clin" | "ed" | "ins" | null;
+type NodeId = "arka" | "clin" | "ed" | "ins" | "rural" | null;
 
 const nodes = [
   {
     id: "clin" as const,
     label: "CLIN",
     fullName: "ARKA-CLIN",
-    href: routes.clin,
+    href: routes.clinSuite,
     tooltip:
       "Clinical decision support for imaging appropriateness. Evidence-based ordering guidance at the point of care.",
   },
@@ -37,35 +37,36 @@ const nodes = [
     tooltip:
       "Utilization management and prior authorization. Ensures appropriate imaging across the care continuum.",
   },
+  {
+    id: "rural" as const,
+    label: "RURAL",
+    fullName: "Rural Platform",
+    href: routes.rural,
+    tooltip:
+      "Rural imaging crisis hub — resource-aware CDS, teleradiology, training, reimbursement, network, AI, and population intelligence.",
+  },
 ] as const;
 
-/**
- * Desktop layout — true equilateral triangle around a centered ARKA.
- * CLIN is the apex (top), ED is the lower-right vertex, INS is the
- * lower-left vertex. This makes all three legs diagonal (visually
- * equivalent length and angle) and prevents the CLIN connection from
- * looking "missing" against the horizontal grid.
- */
-const DESKTOP_RADIUS = 150;
-const DESKTOP_CX = 360; // half of width
-const DESKTOP_CY = 220; // visually centered with room for label below
+/** Desktop layout — diamond: CLIN top, ED right, INS left, Rural bottom. */
+const DESKTOP_RADIUS = 160;
+const DESKTOP_CX = 360;
+const DESKTOP_CY = 220;
 const DESKTOP = {
   width: 720,
-  height: 440,
+  height: 460,
   center: { x: DESKTOP_CX, y: DESKTOP_CY },
-  clin: {
-    x: DESKTOP_CX,
-    y: DESKTOP_CY - DESKTOP_RADIUS,
-  },
-  ed: {
-    x: DESKTOP_CX + DESKTOP_RADIUS * (Math.sqrt(3) / 2),
-    y: DESKTOP_CY + DESKTOP_RADIUS * 0.5,
-  },
-  ins: {
-    x: DESKTOP_CX - DESKTOP_RADIUS * (Math.sqrt(3) / 2),
-    y: DESKTOP_CY + DESKTOP_RADIUS * 0.5,
-  },
+  clin: { x: DESKTOP_CX, y: DESKTOP_CY - DESKTOP_RADIUS },
+  ed: { x: DESKTOP_CX + DESKTOP_RADIUS, y: DESKTOP_CY },
+  ins: { x: DESKTOP_CX - DESKTOP_RADIUS, y: DESKTOP_CY },
+  rural: { x: DESKTOP_CX, y: DESKTOP_CY + DESKTOP_RADIUS },
 };
+
+const DESKTOP_NODE_POSITIONS = {
+  clin: DESKTOP.clin,
+  ed: DESKTOP.ed,
+  ins: DESKTOP.ins,
+  rural: DESKTOP.rural,
+} as const;
 
 /**
  * Endpoints on circle perimeters so lines are visible (not buried in nodes)
@@ -103,15 +104,26 @@ function connectionPath(
   return `M ${x1} ${y1} L ${x2} ${y2}`;
 }
 
-/* Mobile layout: vertical stack — ARKA center, CLIN above, ED/INS below */
+/** Mobile layout — scaled diamond; rural anchor at y = 380 per design spec. */
+const MOBILE_RADIUS = 100;
+const MOBILE_CX = 140;
+const MOBILE_CY = 280;
 const MOBILE = {
   width: 280,
-  height: 420,
-  center: { x: 140, y: 140 },
-  clin: { x: 140, y: 40 },
-  ed: { x: 140, y: 260 },
-  ins: { x: 140, y: 380 },
+  height: 500,
+  center: { x: MOBILE_CX, y: MOBILE_CY },
+  clin: { x: MOBILE_CX, y: MOBILE_CY - MOBILE_RADIUS },
+  ed: { x: MOBILE_CX + MOBILE_RADIUS, y: MOBILE_CY },
+  ins: { x: MOBILE_CX - MOBILE_RADIUS, y: MOBILE_CY },
+  rural: { x: MOBILE_CX, y: 380 },
 };
+
+const MOBILE_NODE_POSITIONS = {
+  clin: MOBILE.clin,
+  ed: MOBILE.ed,
+  ins: MOBILE.ins,
+  rural: MOBILE.rural,
+} as const;
 
 function TargetingGridPattern({ idPrefix }: { idPrefix: string }) {
   return (
@@ -212,9 +224,9 @@ function AnimatedDashedPath({
         stroke={ARKA_TEAL}
         strokeWidth={isHighlighted ? 5 : 3}
         strokeLinecap="round"
-        initial={{ strokeOpacity: 0.25 }}
+        initial={{ strokeOpacity: 0.45 }}
         animate={{
-          strokeOpacity: isHighlighted ? 0.45 : 0.3,
+          strokeOpacity: isHighlighted ? 0.6 : 0.55,
           strokeWidth: isHighlighted ? 5 : 3,
         }}
         transition={{ duration: 0.2 }}
@@ -347,7 +359,7 @@ export function EcosystemDiagram() {
   );
 
   const isPathHighlighted = useCallback(
-    (nodeId: "clin" | "ed" | "ins") => {
+    (nodeId: "clin" | "ed" | "ins" | "rural") => {
       if (!hoveredNode) return true;
       return hoveredNode === "arka" || hoveredNode === nodeId;
     },
@@ -368,7 +380,7 @@ export function EcosystemDiagram() {
           viewport={{ once: true }}
           className="text-center text-2xl font-bold text-arka-text-dark sm:text-3xl"
         >
-          One Ecosystem. Three Solutions.
+          One Ecosystem. Four Solutions.
         </motion.h2>
         <motion.p
           initial={{ opacity: 0, y: 8 }}
@@ -394,12 +406,12 @@ export function EcosystemDiagram() {
           <svg
             viewBox={`0 0 ${DESKTOP.width} ${DESKTOP.height}`}
             className="w-full"
-            style={{ minHeight: 440 }}
+            style={{ minHeight: 460 }}
             role="img"
             aria-labelledby={`${desktopId}-diagram-title`}
           >
             <title id={`${desktopId}-diagram-title`}>
-              ARKA ecosystem diagram: CLIN, ED, and INS solutions connected to shared knowledge base
+              ARKA ecosystem diagram: CLIN, ED, INS, and Rural Platform connected to a shared knowledge base
             </title>
             <TargetingGridPattern idPrefix={desktopId} />
             <rect
@@ -410,7 +422,6 @@ export function EcosystemDiagram() {
               opacity="0.15"
             />
 
-            {/* Connection paths — CLIN last so vertical leg paints above center fan */}
             <AnimatedDashedPath
               idPrefix={desktopId}
               d={connectionPath(DESKTOP.center, DESKTOP.ed, 44, 34)}
@@ -423,6 +434,11 @@ export function EcosystemDiagram() {
             />
             <AnimatedDashedPath
               idPrefix={desktopId}
+              d={connectionPath(DESKTOP.center, DESKTOP.rural, 44, 34)}
+              isHighlighted={isPathHighlighted("rural")}
+            />
+            <AnimatedDashedPath
+              idPrefix={desktopId}
               d={connectionPath(DESKTOP.center, DESKTOP.clin, 44, 34)}
               isHighlighted={isPathHighlighted("clin")}
             />
@@ -430,7 +446,7 @@ export function EcosystemDiagram() {
             {/* Shared knowledge base label */}
             <text
               x={DESKTOP.center.x}
-              y={DESKTOP.center.y + 64}
+              y={DESKTOP.center.y + 12}
               textAnchor="middle"
               className="fill-arka-teal/80 text-[10px] font-medium uppercase tracking-wider"
             >
@@ -454,20 +470,8 @@ export function EcosystemDiagram() {
             {nodes.map((node) => (
               <NodeCircle
                 key={node.id}
-                cx={
-                  node.id === "clin"
-                    ? DESKTOP.clin.x
-                    : node.id === "ed"
-                      ? DESKTOP.ed.x
-                      : DESKTOP.ins.x
-                }
-                cy={
-                  node.id === "clin"
-                    ? DESKTOP.clin.y
-                    : node.id === "ed"
-                      ? DESKTOP.ed.y
-                      : DESKTOP.ins.y
-                }
+                cx={DESKTOP_NODE_POSITIONS[node.id].x}
+                cy={DESKTOP_NODE_POSITIONS[node.id].y}
                 r={34}
                 label={node.label}
                 isHighlighted={hoveredNode === node.id || hoveredNode === null}
@@ -481,7 +485,7 @@ export function EcosystemDiagram() {
           </svg>
         </motion.div>
 
-        {/* Mobile diagram: vertical layout, scrollable if content overflows */}
+        {/* Mobile diagram: diamond layout, scrollable if content overflows */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -493,12 +497,12 @@ export function EcosystemDiagram() {
             <svg
               viewBox={`0 0 ${MOBILE.width} ${MOBILE.height}`}
               className="w-full"
-              style={{ minHeight: 420 }}
+              style={{ minHeight: 500 }}
               role="img"
               aria-labelledby={`${mobileId}-diagram-title`}
             >
             <title id={`${mobileId}-diagram-title`}>
-              ARKA ecosystem diagram: CLIN, ED, and INS solutions connected to shared knowledge base
+              ARKA ecosystem diagram: CLIN, ED, INS, and Rural Platform connected to a shared knowledge base
             </title>
             <TargetingGridPattern idPrefix={mobileId} />
             <rect
@@ -521,13 +525,18 @@ export function EcosystemDiagram() {
             />
             <AnimatedDashedPath
               idPrefix={mobileId}
+              d={connectionPath(MOBILE.center, MOBILE.rural, 32, 24)}
+              isHighlighted={isPathHighlighted("rural")}
+            />
+            <AnimatedDashedPath
+              idPrefix={mobileId}
               d={connectionPath(MOBILE.center, MOBILE.clin, 32, 24)}
               isHighlighted={isPathHighlighted("clin")}
             />
 
             <text
               x={MOBILE.center.x}
-              y={MOBILE.center.y + 44}
+              y={MOBILE.center.y + 12}
               textAnchor="middle"
               className="fill-arka-teal/80 text-[9px] font-medium uppercase tracking-wider"
             >
@@ -550,20 +559,8 @@ export function EcosystemDiagram() {
             {nodes.map((node) => (
               <NodeCircle
                 key={node.id}
-                cx={
-                  node.id === "clin"
-                    ? MOBILE.clin.x
-                    : node.id === "ed"
-                      ? MOBILE.ed.x
-                      : MOBILE.ins.x
-                }
-                cy={
-                  node.id === "clin"
-                    ? MOBILE.clin.y
-                    : node.id === "ed"
-                      ? MOBILE.ed.y
-                      : MOBILE.ins.y
-                }
+                cx={MOBILE_NODE_POSITIONS[node.id].x}
+                cy={MOBILE_NODE_POSITIONS[node.id].y}
                 r={24}
                 label={node.label}
                 isHighlighted={hoveredNode === node.id || hoveredNode === null}

@@ -43,6 +43,7 @@ export const fonts = {
 export const routes = {
   home: "/",
   clin: "/clin",
+  clinSuite: "/clin-suite",
   ed: "/ed",
   ins: "/ins",
   rural: "/rural",
@@ -50,7 +51,9 @@ export const routes = {
   ruralTele: "/rural/tele",
   cdsHooksDemo: "/cds-hooks-demo",
   cdsHooksDemoValidation: "/cds-hooks-demo/validation",
+  cdsHooksDiscovery: "/cds-hooks-discovery",
   regulatoryRationale: "/docs/regulatory-rationale",
+  featureCatalog: "/docs/feature-catalog",
 } as const;
 
 /** FDA §520(o)(1)(E) non-device CDS criteria — links anchor Phase 11 regulatory memo route. */
@@ -87,28 +90,29 @@ export const FDA_NON_DEVICE_CRITERIA = [
 
 export const navLinks = [
   { href: routes.home, label: "Home" },
-  { href: routes.clin, label: "ARKA-CLIN" },
+  { href: routes.clinSuite, label: "ARKA-CLIN Suite" },
   { href: routes.ed, label: "ARKA-ED" },
   { href: routes.ins, label: "ARKA-INS" },
   { href: routes.rural, label: "Rural Platform" },
-  { href: routes.cdsHooksDemo, label: "CDS Hooks Demo" },
 ] as const;
 
 export const demoNavLinks = [
-  { href: routes.clin, label: "ARKA-CLIN", icon: "Stethoscope" },
+  { href: routes.clinSuite, label: "ARKA-CLIN Suite", icon: "Stethoscope" },
   { href: routes.ed, label: "ARKA-ED", icon: "GraduationCap" },
   { href: routes.ins, label: "ARKA-INS", icon: "Shield" },
   { href: routes.rural, label: "Rural Platform", icon: "TreePine" },
-  { href: routes.cdsHooksDemo, label: "CDS Hooks Demo", icon: "Network" },
 ] as const;
 
 export const phaseCards = [
   {
-    id: "clin",
-    title: "ARKA-CLIN",
-    description: "Clinical decision support for imaging appropriateness.",
-    href: routes.clin,
+    id: "clin-suite",
+    title: "ARKA-CLIN Suite",
+    subtitle: "Standalone + EHR-Embedded (CDS Hooks)",
+    description:
+      "Two views, one engine. The standalone clinician web app and ARKA running inside a simulated Epic chart via HL7 CDS Hooks — on a single page.",
+    href: routes.clinSuite,
     icon: "Stethoscope",
+    liveDemo: true,
   },
   {
     id: "ed",
@@ -131,15 +135,33 @@ export const phaseCards = [
     href: routes.rural,
     icon: "TreePine",
   },
-  {
-    id: "cds-hooks",
-    title: "CDS Hooks Live Demo",
-    description:
-      "Watch ARKA run inside a simulated Epic chart via the HL7 CDS Hooks open standard — the same way it integrates into a real hospital EHR.",
-    href: routes.cdsHooksDemo,
-    icon: "Network",
-  },
 ] as const;
 
 /** Shown in site footer and compliance surfaces; bump when AIIE model or factor set changes materially. */
 export const AIIE_ENGINE_VERSION = "2.0.0" as const;
+
+/** Validation, regulatory, and CDS discovery surfaces — single source for nav, footer, and clin-suite. */
+export const complianceLinks = [
+  {
+    href: routes.cdsHooksDemoValidation,
+    label: "Validation Dashboard",
+    description: "CDS service validation, latency, and conformance metrics.",
+  },
+  {
+    href: routes.regulatoryRationale,
+    label: "Regulatory Rationale",
+    description: "FDA Non-Device CDS rationale memo (§520(o)(1)(E)).",
+  },
+  {
+    href: routes.featureCatalog,
+    label: "Feature Evidence Catalog",
+    footerLabel: "Feature Catalog",
+    description: "Per-feature evidence with last-verified citations.",
+  },
+  {
+    href: "/.well-known/cds-services",
+    label: "Discovery JSON",
+    description: "Raw HL7 CDS Hooks 2.0 discovery document.",
+    external: true,
+  },
+] as const;

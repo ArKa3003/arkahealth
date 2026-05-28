@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 const PAGE_TITLES: Record<string, string> = {
   "/": "Home",
   "/clin": "ARKA-CLIN Clinical Decision Support",
+  "/clin-suite": "ARKA-CLIN Suite",
   "/ed": "ARKA-ED Educational Platform",
   "/ins": "ARKA-INS Utilization Management",
   "/rural": "Rural Platform",

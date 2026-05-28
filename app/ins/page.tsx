@@ -14,7 +14,7 @@ import { ObservabilityCard } from "@/components/ins/ObservabilityCard";
 
 const InsDemoView = dynamic(
   () => import("@/components/demos/ins/InsDemoView").then((m) => m.InsDemoView),
-  { loading: () => <DemoLoadingSkeleton /> }
+  { loading: () => <DemoLoadingSkeleton />, ssr: true }
 );
 
 const CROSS_LINKS = [
@@ -26,12 +26,7 @@ export default function InsPage() {
   const [aboutOpen, setAboutOpen] = React.useState(false);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, ease: "easeOut" }}
-      className="min-h-screen bg-arka-bg-light"
-    >
+    <div className="min-h-screen bg-arka-bg-light">
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
         <nav aria-label="Breadcrumb" className="mb-4 sm:mb-6">
@@ -123,6 +118,6 @@ export default function InsPage() {
         {/* Demo content (lazy-loaded) */}
         <InsDemoView />
       </div>
-    </motion.div>
+    </div>
   );
 }

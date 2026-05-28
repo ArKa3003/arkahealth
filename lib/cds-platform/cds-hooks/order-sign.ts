@@ -26,7 +26,13 @@ import { STANDARD_OVERRIDE_REASONS } from '@/lib/cds-platform/alerting/override-
 import type { ClinicalScenario } from '@/lib/cds-platform/types';
 import type { FHIRServiceRequest } from '@/lib/cds-platform/fhir/resources';
 import { checkPregnancy, extractEGFR } from '@/lib/cds-platform/fhir/mappers';
+import pino from 'pino';
 import { v4 as uuidv4 } from 'uuid';
+
+const logger = pino({
+  name: 'cds-hooks-order-sign',
+  level: process.env.LOG_LEVEL ?? 'info',
+});
 
 const ORDER_SIGN_DISCRETION_LABEL =
   'This is a final-check recommendation. The clinician may proceed at their discretion; if proceeding, please document the reasoning.';
@@ -57,17 +63,42 @@ async function resolvePrefetch(request: CDSHooksRequest): Promise<PrefetchData |
     if (prefetch.priorServiceRequests) partial.priorServiceRequests = prefetch.priorServiceRequests as PrefetchData['priorServiceRequests'];
   }
 
-  if (fhirServer) {
-    const client = createFHIRClient({
-      baseUrl: fhirServer,
-      accessToken: auth?.access_token,
-      timeout: 15000,
-    });
-    const resolver = new PrefetchResolver(client);
-    if (partial.patient || Object.keys(partial).length > 0) {
-      return resolver.resolveMissing(partial as Partial<PrefetchData>, context as Parameters<PrefetchResolver['resolveMissing']>[1]);
+  const prefetchComplete = Boolean(
+    partial.patient &&
+      partial.activeConditions &&
+      partial.recentImaging &&
+      partial.relevantLabs &&
+      partial.activeMedications &&
+      partial.priorServiceRequests,
+  );
+
+  if (prefetchComplete) {
+    return {
+      patient: partial.patient as PrefetchData['patient'],
+      activeConditions: (partial.activeConditions as PrefetchData['activeConditions']) ?? emptyBundle(),
+      recentImaging: (partial.recentImaging as PrefetchData['recentImaging']) ?? emptyBundle(),
+      relevantLabs: (partial.relevantLabs as PrefetchData['relevantLabs']) ?? emptyBundle(),
+      activeMedications: (partial.activeMedications as PrefetchData['activeMedications']) ?? emptyBundle(),
+      priorServiceRequests: (partial.priorServiceRequests as PrefetchData['priorServiceRequests']) ?? emptyBundle(),
+    };
+  }
+
+  if (fhirServer && fhirServer.length > 0 && URL.canParse(fhirServer)) {
+    try {
+      const client = createFHIRClient({
+        baseUrl: fhirServer,
+        accessToken: auth?.access_token,
+        timeout: 15000,
+      });
+      const resolver = new PrefetchResolver(client);
+      if (partial.patient || Object.keys(partial).length > 0) {
+        return resolver.resolveMissing(partial as Partial<PrefetchData>, context as Parameters<PrefetchResolver['resolveMissing']>[1]);
+      }
+      return resolver.resolveTemplates(context as Parameters<PrefetchResolver['resolveTemplates']>[0]);
+    } catch (err) {
+      logger.warn({ err, fhirServer }, 'FHIR prefetch resolution failed; returning partial prefetch');
+      return prefetchComplete ? (partial as PrefetchData) : null;
     }
-    return resolver.resolveTemplates(context as Parameters<PrefetchResolver['resolveTemplates']>[0]);
   }
 
   if (!partial.patient || (partial.patient as { resourceType?: string })?.resourceType !== 'Patient') {

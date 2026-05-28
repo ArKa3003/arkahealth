@@ -6,7 +6,7 @@ import { DemoLoadingSkeleton } from "@/components/demos/DemoLoadingSkeleton";
 const RuralTrainingHub = dynamic(
   () =>
     import("@/components/demos/rural/training/RuralTrainingHub").then((m) => m.RuralTrainingHub),
-  { loading: () => <DemoLoadingSkeleton />, ssr: false }
+  { loading: () => <DemoLoadingSkeleton />, ssr: true }
 );
 
 export function RuralTrainingClient() {

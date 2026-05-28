@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { ArkaSpinner } from "@/components/ui/ArkaSpinner";
 
 /**
@@ -9,7 +10,10 @@ import { ArkaSpinner } from "@/components/ui/ArkaSpinner";
  */
 export function DemoLoadingSkeleton() {
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.2, ease: [0.22, 0.61, 0.36, 1] }}
       className="min-h-[420px] rounded-xl border border-arka-primary/20 bg-arka-bg-medium/50 p-6 sm:p-8 opacity-90"
       role="status"
       aria-live="polite"
@@ -49,6 +53,6 @@ export function DemoLoadingSkeleton() {
           </span>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

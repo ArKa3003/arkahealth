@@ -26,7 +26,7 @@ function inferProduct(pathname: string | null): ArkaProduct {
   if (pathname.startsWith("/ed")) {
     return "ED";
   }
-  if (pathname.startsWith("/clin")) {
+  if (pathname.startsWith("/clin-suite") || pathname.startsWith("/clin")) {
     return "CLIN";
   }
   return "CLIN";

@@ -8,23 +8,23 @@ import {
   GraduationCap,
   Shield,
   TreePine,
-  Network,
   ArrowRight,
 } from "lucide-react";
 import { routes } from "@/lib/constants";
 
 const cards = [
   {
-    id: "clin",
-    title: "ARKA-CLIN",
-    subtitle: "For Medical Professionals",
+    id: "clin-suite",
+    title: "ARKA-CLIN Suite",
+    subtitle: "Standalone + EHR-Embedded (CDS Hooks)",
     description:
-      "Cutting-Edge clinical decision support for radiologists and physicians. Optimize imaging protocols with precision.",
-    href: routes.clin,
+      "Two views, one engine. The standalone clinician web app and ARKA running inside a simulated Epic chart via HL7 CDS Hooks — on a single page.",
+    href: routes.clinSuite,
     icon: Stethoscope,
     accentColor: "#14B8A6",
     Decorative: ScanLinesPattern,
     patternId: "scan-lines",
+    liveDemo: true,
   },
   {
     id: "ed",
@@ -61,19 +61,6 @@ const cards = [
     accentColor: "#0d9488",
     Decorative: HillsPattern,
     patternId: "hills",
-  },
-  {
-    id: "cds-hooks",
-    title: "CDS Hooks Live Demo",
-    subtitle: "EHR-Embedded Integration",
-    description:
-      "Watch ARKA run inside a simulated Epic chart via the HL7 CDS Hooks open standard — the same way it integrates into a real hospital EHR.",
-    href: routes.cdsHooksDemo,
-    icon: Network,
-    accentColor: "#0891b2",
-    Decorative: NetworkPattern,
-    patternId: "network",
-    liveDemo: true,
   },
 ] as const;
 
@@ -171,34 +158,6 @@ function HillsPattern({ id: patternId }: { id: string }) {
   );
 }
 
-function NetworkPattern({ id: patternId }: { id: string }) {
-  return (
-    <div
-      className="pointer-events-none absolute inset-0 overflow-hidden rounded-xl opacity-[0.07]"
-      aria-hidden
-    >
-      <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <pattern
-            id={patternId}
-            width="48"
-            height="48"
-            patternUnits="userSpaceOnUse"
-          >
-            <circle cx="12" cy="12" r="2" fill="currentColor" />
-            <circle cx="36" cy="12" r="2" fill="currentColor" />
-            <circle cx="24" cy="36" r="2" fill="currentColor" />
-            <line x1="12" y1="12" x2="36" y2="12" stroke="currentColor" strokeWidth="0.6" />
-            <line x1="12" y1="12" x2="24" y2="36" stroke="currentColor" strokeWidth="0.6" />
-            <line x1="36" y1="12" x2="24" y2="36" stroke="currentColor" strokeWidth="0.6" />
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill={`url(#${patternId})`} />
-      </svg>
-    </div>
-  );
-}
-
 function DocumentPattern({ id: patternId }: { id: string }) {
   return (
     <div
@@ -272,7 +231,7 @@ export function PhaseCards() {
         <p className="mx-auto mt-2 max-w-2xl text-center text-arka-text-dark-muted">
           Platform demos and live EHR integration. Click to explore.
         </p>
-        <div className="mt-12 grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        <div className="mt-12 grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4">
           {cards.map((card, i) => {
             const Icon = card.icon;
             const Decorative = card.Decorative;
@@ -291,7 +250,7 @@ export function PhaseCards() {
                 <Link
                   href={card.href}
                   className={`group relative flex min-h-full w-full flex-col rounded-xl border bg-white p-6 shadow-card transition-all duration-300 hover:-translate-y-2 hover:shadow-card-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-arka-teal focus-visible:outline-offset-2 active:scale-[0.99] touch-manipulation ${
-                    card.id === "cds-hooks"
+                    card.id === "clin-suite"
                       ? "border-arka-cyan/50 hover:border-arka-cyan/70"
                       : "border-arka-light hover:border-arka-teal/40"
                   }`}

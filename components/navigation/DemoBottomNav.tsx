@@ -6,9 +6,9 @@ import { Stethoscope, GraduationCap, Shield } from "lucide-react";
 import { routes } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
-const DEMO_PATHS = [routes.clin, routes.ed, routes.ins] as const;
+const DEMO_PATHS = [routes.clinSuite, routes.clin, routes.ed, routes.ins] as const;
 const items = [
-  { href: routes.clin, label: "CLIN", icon: Stethoscope },
+  { href: routes.clinSuite, label: "CLIN", icon: Stethoscope },
   { href: routes.ed, label: "ED", icon: GraduationCap },
   { href: routes.ins, label: "INS", icon: Shield },
 ] as const;

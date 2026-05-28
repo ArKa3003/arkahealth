@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { Logo } from "@/components/shared/Logo";
-import { demoNavLinks, routes } from "@/lib/constants";
+import { ArkaAnimatedLogo } from "@/components/ArkaAnimatedLogo";
+import { complianceLinks, demoNavLinks, routes } from "@/lib/constants";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { RURAL_NAV_LINKS } from "@/lib/demos/rural/constants";
 import {
   Stethoscope,
@@ -20,6 +20,8 @@ import {
   X,
   ChevronDown,
   LayoutGrid,
+  ShieldCheck,
+  ExternalLink,
 } from "lucide-react";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -46,6 +48,7 @@ const ruralPillarIconMap = {
 } as const;
 
 const DEMO_PATHS = [
+  routes.clinSuite,
   routes.clin,
   routes.ed,
   routes.ins,
@@ -53,12 +56,32 @@ const DEMO_PATHS = [
   routes.cdsHooksDemo,
 ] as const;
 const pathToLabel: Record<string, string> = {
+  [routes.clinSuite]: "ARKA-CLIN Suite",
   [routes.clin]: "ARKA-CLIN",
   [routes.ed]: "ARKA-ED",
   [routes.ins]: "ARKA-INS",
   [routes.rural]: "Rural Platform",
   [routes.cdsHooksDemo]: "CDS Hooks Demo",
 };
+
+/** Stable logo instance — avoids re-mounting (and replaying entrance) on route changes. */
+const NavLogo = (
+  <Link
+    href={routes.home}
+    className="group flex shrink-0 items-center text-arka-text no-underline"
+    aria-label="ARKA Health — Home"
+  >
+    <span className="block h-10 w-10 sm:h-11 sm:w-11 [&_svg]:h-full [&_svg]:w-full">
+      <ArkaAnimatedLogo
+        width={120}
+        height={135}
+        animate={true}
+        idleAnimations={true}
+        className="h-full w-full cursor-pointer"
+      />
+    </span>
+  </Link>
+);
 
 function NavLinkWithHoverUnderline({
   href,
@@ -76,6 +99,7 @@ function NavLinkWithHoverUnderline({
   return (
     <Link
       href={href}
+      prefetch
       onClick={onClick}
       className="group relative flex items-center gap-2 py-1"
     >
@@ -154,20 +178,7 @@ export function Navbar() {
           <div className="flex min-w-0 flex-1 items-center gap-4 lg:flex-initial">
             {isDemoPage && currentDemo ? (
               <>
-                <Link
-                  href={routes.home}
-                  className="flex shrink-0 items-center gap-2 text-arka-text no-underline"
-                  aria-label="ARKA Home"
-                >
-                  <Image
-                    src="/arka-icon.svg"
-                    alt=""
-                    width={28}
-                    height={28}
-                    className="h-7 w-7 object-contain"
-                    unoptimized
-                  />
-                </Link>
+                {NavLogo}
                 <span className="truncate font-semibold text-arka-text">
                   {pathToLabel[currentDemo]}
                 </span>
@@ -197,9 +208,10 @@ export function Navbar() {
                         {otherDemos.map(({ href, label, icon }) => {
                           const Icon = iconMap[icon];
                           return (
-                            <li key={href}>
+                            <li key={href} onMouseEnter={() => router.prefetch(href)}>
                               <Link
                                 href={href}
+                                prefetch
                                 className="flex items-center gap-2 px-3 py-2 text-sm text-arka-text-muted transition hover:bg-white/5 hover:text-arka-cyan"
                               >
                                 <Icon className="h-4 w-4 shrink-0" />
@@ -226,9 +238,10 @@ export function Navbar() {
                                 ];
                               const active = pathname === href;
                               return (
-                                <li key={href}>
+                                <li key={href} onMouseEnter={() => router.prefetch(href)}>
                                   <Link
                                     href={href}
+                                    prefetch
                                     className={`flex items-center gap-2 px-3 py-1.5 text-sm transition hover:bg-white/5 hover:text-arka-cyan ${
                                       active
                                         ? "text-arka-cyan"
@@ -249,13 +262,7 @@ export function Navbar() {
                 </div>
               </>
             ) : (
-              <Link
-                href={routes.home}
-                className="flex items-center gap-2 font-semibold text-arka-text no-underline"
-                aria-label="ARKA Health – Home"
-              >
-                <Logo variant="full" size="md" />
-              </Link>
+              NavLogo
             )}
           </div>
 
@@ -281,6 +288,53 @@ export function Navbar() {
 
           {/* Right */}
           <div className="flex flex-1 items-center justify-end gap-2 lg:flex-initial">
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  className="hidden items-center gap-2 rounded-lg border border-arka-cyan/40 bg-arka-cyan/5 px-4 py-2 text-sm font-medium text-arka-cyan transition hover:border-arka-cyan/60 hover:bg-arka-cyan/10 sm:flex"
+                >
+                  <ShieldCheck className="h-4 w-4" aria-hidden />
+                  Compliance &amp; Validation
+                </button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-[min(100vw-2rem,22rem)] p-1">
+                <ul className="flex flex-col">
+                  {complianceLinks.map((link) => {
+                    const { href, label, description } = link;
+                    const external = "external" in link && link.external === true;
+                    return (
+                    <li key={href}>
+                      {external ? (
+                        <a
+                          href={href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex flex-col gap-0.5 rounded-md px-3 py-2.5 transition hover:bg-white/5"
+                        >
+                          <span className="inline-flex items-center gap-1.5 text-sm font-medium text-arka-cyan">
+                            {label}
+                            <ExternalLink className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                          </span>
+                          <span className="text-xs leading-snug text-arka-text-muted">{description}</span>
+                        </a>
+                      ) : (
+                        <Link
+                          href={href}
+                          prefetch
+                          onMouseEnter={() => router.prefetch(href)}
+                          className="flex flex-col gap-0.5 rounded-md px-3 py-2.5 transition hover:bg-white/5"
+                        >
+                          <span className="text-sm font-medium text-arka-cyan">{label}</span>
+                          <span className="text-xs leading-snug text-arka-text-muted">{description}</span>
+                        </Link>
+                      )}
+                    </li>
+                    );
+                  })}
+                </ul>
+              </PopoverContent>
+            </Popover>
             <button
               type="button"
               onClick={handleEcosystemClick}
@@ -342,6 +396,7 @@ export function Navbar() {
                       <li key={href} className="w-full max-w-[280px]">
                         <Link
                           href={href}
+                          prefetch
                           onClick={() => setMobileOpen(false)}
                           className={`flex min-h-[44px] w-full items-center justify-center gap-3 rounded-xl px-6 py-3 text-lg font-medium transition active:bg-white/5 touch-manipulation ${
                             isActive ? "text-arka-cyan" : "text-arka-text-muted hover:text-arka-cyan"
@@ -371,6 +426,7 @@ export function Navbar() {
                           <li key={href} className="w-full max-w-[280px]">
                             <Link
                               href={href}
+                              prefetch
                               onClick={() => setMobileOpen(false)}
                               className={`flex min-h-[40px] w-full items-center justify-center gap-2 rounded-xl px-5 py-2 text-base font-medium transition active:bg-white/5 touch-manipulation ${
                                 isActive
@@ -399,6 +455,49 @@ export function Navbar() {
                       Ecosystem Overview
                     </button>
                   </li>
+                  <li className="my-2 w-full max-w-[280px] border-t border-white/10 pt-4" role="presentation" />
+                  <li className="mb-1 w-full max-w-[280px] text-center">
+                    <span className="text-xs font-semibold uppercase tracking-wider text-arka-text-soft">
+                      Compliance &amp; Validation
+                    </span>
+                  </li>
+                  {complianceLinks.map((link) => {
+                    const { href, label } = link;
+                    const external = "external" in link && link.external === true;
+                    const isActive = !external && pathname === href;
+                    const linkClassName = `flex min-h-[40px] w-full items-center justify-center gap-2 rounded-xl px-5 py-2 text-base font-medium transition active:bg-white/5 touch-manipulation ${
+                      isActive ? "text-arka-cyan" : "text-arka-text-muted hover:text-arka-cyan"
+                    }`;
+                    return (
+                      <li key={href} className="w-full max-w-[280px]">
+                        {external ? (
+                          <a
+                            href={href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => setMobileOpen(false)}
+                            className={linkClassName}
+                          >
+                            <ShieldCheck className="h-4 w-4 shrink-0" aria-hidden />
+                            <span className="inline-flex items-center gap-1 text-center leading-snug">
+                              {label}
+                              <ExternalLink className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                            </span>
+                          </a>
+                        ) : (
+                          <Link
+                            href={href}
+                            prefetch
+                            onClick={() => setMobileOpen(false)}
+                            className={linkClassName}
+                          >
+                            <ShieldCheck className="h-4 w-4 shrink-0" aria-hidden />
+                            <span className="text-center leading-snug">{label}</span>
+                          </Link>
+                        )}
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             </motion.aside>

@@ -96,6 +96,11 @@ function labsBundle(scenario: DemoScenario): FHIRBundle<Record<string, unknown>>
 /**
  * Builds a CDS Hooks 2.0 request for the given scenario and hook.
  *
+ * The demo provides a complete prefetch bundle, so we intentionally omit `fhirServer`.
+ * Including a non-resolvable host (e.g. `.local`) causes Node's URL parser to throw
+ * `TypeError: The string did not match the expected pattern.` when the server-side
+ * handler tries to fetch missing resources.
+ *
  * @param scenario - Demo scenario chart + order context.
  * @param hook - `order-select` or `order-sign`.
  */
@@ -109,7 +114,6 @@ export function buildCdsRequest(
   return {
     hook,
     hookInstance: crypto.randomUUID(),
-    fhirServer: 'https://demo.epicsim.arkahealth.local/fhir',
     context: {
       patientId: scenario.patientId,
       userId: scenario.userId,

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { AIIE_ENGINE_VERSION, navLinks } from "@/lib/constants";
+import { AIIE_ENGINE_VERSION, complianceLinks, navLinks, routes } from "@/lib/constants";
 import { useEvidenceModal } from "@/components/shared/compliance/evidence-modal-context";
 
 const socialPlaceholders = [
@@ -71,6 +71,32 @@ export function Footer() {
           </div>
           {/* Compliance + copyright */}
           <div className="flex flex-col gap-4 border-t border-arka-deep/30 pt-6">
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {complianceLinks.map((link) => {
+                const buttonLabel =
+                  "footerLabel" in link && link.footerLabel ? link.footerLabel : link.label;
+                const buttonClassName =
+                  "rounded-lg border border-arka-cyan/40 bg-arka-cyan/5 px-3 py-1.5 text-xs font-medium text-arka-cyan transition hover:border-arka-cyan/60 hover:bg-arka-cyan/10 sm:text-sm";
+                if ("external" in link && link.external) {
+                  return (
+                    <a
+                      key={link.href}
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={buttonClassName}
+                    >
+                      {buttonLabel}
+                    </a>
+                  );
+                }
+                return (
+                  <Link key={link.href} href={link.href} prefetch className={buttonClassName}>
+                    {buttonLabel}
+                  </Link>
+                );
+              })}
+            </div>
             <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-center text-[11px] leading-relaxed text-arka-text-soft/95 sm:text-xs dark:text-neutral-400">
               <span>ARKA Health © 2026</span>
               <span className="hidden text-arka-deep/50 sm:inline" aria-hidden>
@@ -110,7 +136,7 @@ export function Footer() {
                 |
               </span>
               <Link
-                href="/cds-hooks-discovery"
+                href={routes.cdsHooksDiscovery}
                 className="arka-link-underline font-medium text-arka-cyan hover:text-white"
               >
                 CDS Hooks Discovery
@@ -118,8 +144,17 @@ export function Footer() {
               <span className="hidden text-arka-deep/50 sm:inline" aria-hidden>
                 |
               </span>
-              <Link href="/cds-hooks-demo" className="arka-link-underline font-medium text-arka-cyan hover:text-white">
-                CDS Hooks Live Demo (EHR-embedded view)
+              <Link
+                href={routes.cdsHooksDemoValidation}
+                className="arka-link-underline font-medium text-arka-cyan hover:text-white"
+              >
+                CDS Validation Dashboard
+              </Link>
+              <span className="hidden text-arka-deep/50 sm:inline" aria-hidden>
+                |
+              </span>
+              <Link href={routes.clinSuite} className="arka-link-underline font-medium text-arka-cyan hover:text-white">
+                ARKA-CLIN Suite (standalone + EHR)
               </Link>
               <span className="hidden text-arka-deep/50 sm:inline" aria-hidden>
                 |

@@ -4,7 +4,7 @@ import { routes } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
 export interface DemoViewSwitcherProps {
-  current: "standalone" | "embedded";
+  current: "standalone" | "embedded" | "combined";
 }
 
 const VIEWS = [
@@ -13,8 +13,8 @@ const VIEWS = [
     title: "Standalone Web App",
     subtitle: "ARKA-CLIN",
     description: "The ARKA product, used directly by a clinician in a browser.",
-    href: routes.clin,
-    cta: "Open ARKA-CLIN",
+    href: `${routes.clinSuite}?view=standalone`,
+    cta: "Open standalone view",
   },
   {
     id: "embedded" as const,
@@ -22,8 +22,16 @@ const VIEWS = [
     subtitle: "CDS Hooks Live Demo",
     description:
       "The same engine, surfaced inside a simulated Epic chart via the HL7 CDS Hooks open standard.",
-    href: routes.cdsHooksDemo,
-    cta: "Open CDS Hooks Demo",
+    href: `${routes.clinSuite}?view=embedded`,
+    cta: "Open EHR-embedded view",
+  },
+  {
+    id: "combined" as const,
+    title: "Both Views Side-by-Side",
+    subtitle: "ARKA-CLIN Suite",
+    description: "Standalone + EHR-embedded + CDS Hooks discovery on a single page.",
+    href: routes.clinSuite,
+    cta: "Open ARKA-CLIN Suite",
   },
 ] as const;
 
@@ -36,7 +44,7 @@ export function DemoViewSwitcher({ current }: DemoViewSwitcherProps) {
       <p className="mb-3 text-sm font-medium uppercase tracking-wide text-arka-text-dark-muted">
         Two views, one engine
       </p>
-      <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-3">
         {VIEWS.map((view) => {
           const isActive = view.id === current;
 

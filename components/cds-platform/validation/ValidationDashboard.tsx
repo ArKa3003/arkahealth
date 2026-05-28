@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import {
   LineChart,
   Line,
@@ -95,9 +95,20 @@ export default function ValidationDashboard() {
   const [nSamples, setNSamples] = useState(1000);
   const [includeSubgroups, setIncludeSubgroups] = useState(true);
   const [activeTab, setActiveTab] = useState('performance');
+  const abortRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    return () => {
+      abortRef.current?.abort();
+    };
+  }, []);
 
   const runValidation = useCallback(
     async (forceSubgroups?: boolean) => {
+      abortRef.current?.abort();
+      const controller = new AbortController();
+      abortRef.current = controller;
+
       setLoading(true);
       setError(null);
       const subgroups = forceSubgroups ?? includeSubgroups;
@@ -106,17 +117,30 @@ export default function ValidationDashboard() {
           n_samples: String(nSamples),
           include_subgroups: String(subgroups),
         });
-        const res = await fetch(`/api/validation/run?${params}`, { method: 'POST' });
+        const res = await fetch(`/api/validation/run?${params}`, {
+          method: 'POST',
+          cache: 'no-store',
+          signal: controller.signal,
+        });
         if (!res.ok) {
           const data = await res.json().catch(() => ({}));
           throw new Error(data?.error ?? `HTTP ${res.status}`);
         }
         const data = await res.json();
-        setReport(data as ValidationReportState);
+        if (!controller.signal.aborted) {
+          setReport(data as ValidationReportState);
+        }
       } catch (e) {
-        setError(e instanceof Error ? e.message : 'Validation failed');
+        if (e instanceof DOMException && e.name === 'AbortError') {
+          return;
+        }
+        if (!controller.signal.aborted) {
+          setError(e instanceof Error ? e.message : 'Validation failed');
+        }
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
       }
     },
     [nSamples, includeSubgroups],

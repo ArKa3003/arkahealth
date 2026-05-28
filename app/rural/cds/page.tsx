@@ -4,7 +4,7 @@ import { DemoLoadingSkeleton } from "@/components/demos/DemoLoadingSkeleton";
 
 const RuralCDSDemo = dynamic(
   () => import("@/components/demos/rural/cds/RuralCDSDemo").then((m) => m.RuralCDSDemo),
-  { loading: () => <DemoLoadingSkeleton /> }
+  { loading: () => <DemoLoadingSkeleton />, ssr: true }
 );
 
 export const metadata: Metadata = {

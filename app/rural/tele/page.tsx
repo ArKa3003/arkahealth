@@ -4,7 +4,7 @@ import { DemoLoadingSkeleton } from "@/components/demos/DemoLoadingSkeleton";
 
 const TeleDashboard = dynamic(
   () => import("@/components/demos/rural/tele/TeleDashboard").then((m) => m.TeleDashboard),
-  { loading: () => <DemoLoadingSkeleton /> }
+  { loading: () => <DemoLoadingSkeleton />, ssr: true }
 );
 
 export const metadata: Metadata = {

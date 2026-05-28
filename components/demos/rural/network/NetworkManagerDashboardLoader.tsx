@@ -5,7 +5,7 @@ import { DemoLoadingSkeleton } from "@/components/demos/DemoLoadingSkeleton";
 
 const NetworkManagerDashboard = dynamic(
   () => import("@/components/demos/rural/network/NetworkManagerDashboard").then((m) => m.NetworkManagerDashboard),
-  { loading: () => <DemoLoadingSkeleton />, ssr: false }
+  { loading: () => <DemoLoadingSkeleton />, ssr: true }
 );
 
 export function NetworkManagerDashboardLoader() {

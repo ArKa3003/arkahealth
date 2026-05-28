@@ -11,7 +11,7 @@ import { useState } from "react";
 
 const EdDemoContent = dynamic(
   () => import("@/components/demos/ed/EdDemoContent").then((m) => m.EdDemoContent),
-  { loading: () => <DemoLoadingSkeleton /> }
+  { loading: () => <DemoLoadingSkeleton />, ssr: true }
 );
 
 const QUICK_LINKS = [
@@ -23,12 +23,7 @@ export default function EdPage() {
   const [aboutOpen, setAboutOpen] = useState(false);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, ease: "easeOut" }}
-      className="min-h-screen bg-arka-bg-light"
-    >
+    <div className="min-h-screen bg-arka-bg-light">
       <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
         <nav aria-label="Breadcrumb" className="mb-4 sm:mb-6">
@@ -151,6 +146,6 @@ export default function EdPage() {
           </ul>
         </footer>
       </div>
-    </motion.div>
+    </div>
   );
 }

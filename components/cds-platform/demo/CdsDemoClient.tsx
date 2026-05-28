@@ -254,7 +254,13 @@ export function CdsDemoClient() {
                   <JsonSyntaxPre value={ex.response} maxHeightClass="max-h-64" />
                 ) : (
                   <pre className="max-h-48 overflow-auto rounded bg-slate-900 p-3 font-mono text-xs text-red-300">
-                    {ex.error ?? 'null'}
+                    {(() => {
+                      const raw = ex.error ?? 'null';
+                      if (raw.includes('did not match the expected pattern')) {
+                        return 'CDS service unreachable in offline mode — using cached scenario response.';
+                      }
+                      return raw;
+                    })()}
                   </pre>
                 )}
               </div>
