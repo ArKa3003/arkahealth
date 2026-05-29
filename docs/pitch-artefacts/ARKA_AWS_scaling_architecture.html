@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ARKA Health — Infrastructure Scaling Architecture</title>
+  <style>
+    :root {
+      --arka-cyan: #06B6D4;
+      --arka-deep: #0F172A;
+      --arka-muted: #475569;
+      --arka-bg: #FFFFFF;
+      --arka-card-bg: #F8FAFC;
+      --arka-border: #E2E8F0;
+      --arka-success: #10B981;
+      --arka-warning: #F59E0B;
+      --page-margin: 0.35in;
+    }
+
+    @page {
+      size: letter landscape;
+      margin: var(--page-margin);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      font-size: 13px;
+    }
+
+    body {
+      width: 11in;
+      height: 8.5in;
+      max-height: 8.5in;
+      margin: 0 auto;
+      padding: 0.28in 0.32in 0.22in;
+      background: var(--arka-bg);
+      color: var(--arka-deep);
+      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Inter", system-ui, sans-serif;
+      font-weight: 400;
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+      grid-template-columns: 1fr;
+      gap: 0.2rem 0;
+      line-height: 1.32;
+    }
+
+    @media print {
+      html, body {
+        width: 11in;
+        height: 8.5in;
+        max-height: 8.5in;
+        overflow: hidden;
+        margin: 0;
+        padding: 0.28in 0.32in 0.2in;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+      }
+
+      header, .flow-arrow, .stages, .unit-economics, footer {
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+    }
+
+    /* Header */
+    header.page-header {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 0.6rem;
+      min-height: 44px;
+      padding-bottom: 0.12rem;
+      border-bottom: 1px solid var(--arka-border);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .brand-logo {
+      width: 38px;
+      height: 38px;
+      flex-shrink: 0;
+    }
+
+    .brand-text .wordmark {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--arka-deep);
+      letter-spacing: 0.02em;
+      line-height: 1.1;
+    }
+
+    .brand-text .tagline {
+      font-size: 0.58rem;
+      font-style: italic;
+      color: var(--arka-muted);
+      margin-top: 0.1rem;
+    }
+
+    .title-block h1 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--arka-deep);
+      line-height: 1.15;
+    }
+
+    .title-block .subtitle {
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--arka-cyan);
+      margin-top: 0.12rem;
+    }
+
+    .meta {
+      text-align: right;
+      font-size: 0.58rem;
+      color: var(--arka-muted);
+      font-weight: 500;
+      white-space: nowrap;
+      line-height: 1.4;
+    }
+
+    /* Flow arrow */
+    .flow-arrow {
+      position: relative;
+      height: 26px;
+      margin: 0;
+    }
+
+    .flow-arrow svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .flow-label {
+      font-size: 0.55rem;
+      font-weight: 600;
+      fill: var(--arka-muted);
+      font-family: inherit;
+    }
+
+    .flow-cost {
+      font-size: 0.58rem;
+      font-weight: 700;
+      fill: var(--arka-cyan);
+      font-family: inherit;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Stages */
+    .stages {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      min-height: 0;
+      max-height: 100%;
+      align-items: stretch;
+    }
+
+    .stage {
+      background: var(--arka-card-bg);
+      border: 1px solid var(--arka-border);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .stage-bar {
+      height: 4px;
+      flex-shrink: 0;
+    }
+
+    .stage:nth-child(1) .stage-bar { background: rgba(6, 182, 212, 0.4); }
+    .stage:nth-child(2) .stage-bar { background: rgba(6, 182, 212, 0.7); }
+    .stage:nth-child(3) .stage-bar { background: var(--arka-cyan); }
+    .stage:nth-child(4) .stage-bar {
+      background: linear-gradient(90deg, var(--arka-cyan), var(--arka-deep));
+    }
+
+    .stage-body {
+      padding: 0.32rem 0.38rem 0.28rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .stage-name {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--arka-deep);
+      line-height: 1.2;
+      margin-bottom: 0.15rem;
+    }
+
+    .stage-customers {
+      font-size: 0.58rem;
+      color: var(--arka-muted);
+      font-weight: 500;
+      margin-bottom: 0.3rem;
+      line-height: 1.25;
+    }
+
+    .stage-stack {
+      list-style: none;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .stage-stack li {
+      font-size: 0.52rem;
+      color: var(--arka-deep);
+      font-weight: 400;
+      line-height: 1.38;
+      padding-left: 0.5rem;
+      position: relative;
+      margin-bottom: 0.02rem;
+    }
+
+    .stage-stack li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.42em;
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: var(--arka-cyan);
+      opacity: 0.65;
+    }
+
+    .stage-cost-wrap {
+      margin-top: auto;
+      padding-top: 0.25rem;
+      border-top: 1px solid var(--arka-border);
+    }
+
+    .stage-cost {
+      font-size: 1.2rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.1;
+    }
+
+    .stage:nth-child(1) .stage-cost,
+    .stage:nth-child(2) .stage-cost,
+    .stage:nth-child(3) .stage-cost {
+      color: var(--arka-success);
+    }
+
+    .stage:nth-child(4) .stage-cost {
+      color: var(--arka-warning);
+    }
+
+    .stage-capabilities {
+      font-size: 0.46rem;
+      font-style: italic;
+      color: var(--arka-muted);
+      margin-top: 0.1rem;
+      line-height: 1.25;
+    }
+
+    /* Unit economics */
+    .unit-economics {
+      background: rgba(6, 182, 212, 0.08);
+      border: 1px solid rgba(6, 182, 212, 0.25);
+      border-radius: 8px;
+      padding: 0.28rem 0.5rem 0.25rem;
+      margin-top: 0.08rem;
+    }
+
+    .unit-economics h2 {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--arka-deep);
+      margin-bottom: 0.35rem;
+    }
+
+    .unit-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      text-align: center;
+    }
+
+    .unit-number {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--arka-success);
+      font-variant-numeric: tabular-nums;
+      line-height: 1.05;
+    }
+
+    .unit-label {
+      font-size: 0.56rem;
+      color: var(--arka-muted);
+      font-weight: 500;
+      margin-top: 0.2rem;
+      line-height: 1.3;
+      max-width: 14em;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .unit-footnote {
+      font-size: 0.44rem;
+      font-style: italic;
+      color: var(--arka-muted);
+      margin-top: 0.22rem;
+      line-height: 1.28;
+      opacity: 0.85;
+    }
+
+    footer.page-footer {
+      font-size: 0.44rem;
+      color: var(--arka-muted);
+      text-align: center;
+      padding-top: 0.05rem;
+      opacity: 0.7;
+      line-height: 1.2;
+    }
+  </style>
+</head>
+<body>
+  <header class="page-header">
+    <div class="brand">
+      <img class="brand-logo" src="../../public/arka-icon.svg" alt="ARKA" width="44" height="44" />
+      <div class="brand-text">
+        <div class="wordmark">ARKA</div>
+        <div class="tagline">remARKAbly precise.</div>
+      </div>
+    </div>
+    <div class="title-block">
+      <h1>ARKA Health — Infrastructure Scaling Architecture</h1>
+      <p class="subtitle">From MVP to 100 Health Systems</p>
+    </div>
+    <p class="meta">v1.0 &nbsp;·&nbsp; May 2026 &nbsp;·&nbsp; ARKA Health, Inc. &nbsp;·&nbsp; getarka.health</p>
+  </header>
+
+  <section class="flow-arrow" aria-hidden="true">
+    <svg viewBox="0 0 1000 32" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="rgba(6, 182, 212, 0.4)" />
+        </marker>
+      </defs>
+      <line x1="40" y1="22" x2="960" y2="22" stroke="rgba(6, 182, 212, 0.4)" stroke-width="2" marker-end="url(#arrowhead)" />
+      <text class="flow-label" x="125" y="10" text-anchor="middle">Demo</text>
+      <text class="flow-cost" x="125" y="28" text-anchor="middle">$0</text>
+      <text class="flow-label" x="375" y="10" text-anchor="middle">Pilot</text>
+      <text class="flow-cost" x="375" y="28" text-anchor="middle">$80–150</text>
+      <text class="flow-label" x="625" y="10" text-anchor="middle">Scale</text>
+      <text class="flow-cost" x="625" y="28" text-anchor="middle">$400–800</text>
+      <text class="flow-label" x="875" y="10" text-anchor="middle">Enterprise</text>
+      <text class="flow-cost" x="875" y="28" text-anchor="middle">$2,500–5,000</text>
+    </svg>
+  </section>
+
+  <section class="stages">
+    <article class="stage">
+      <div class="stage-bar"></div>
+      <div class="stage-body">
+        <h3 class="stage-name">STAGE 1 — MVP TODAY</h3>
+        <p class="stage-customers">0 paying customers · live demo in production</p>
+        <ul class="stage-stack">
+          <li>Vercel Hobby (Next.js)</li>
+          <li>Render Free (FastAPI + XGBoost ML service)</li>
+          <li>GitHub Free (source + CI)</li>
+          <li>Sandbox.cds-hooks.org (HL7 reference EHR — live)</li>
+          <li>Synthetic ACR-aligned training data</li>
+        </ul>
+        <div class="stage-cost-wrap">
+          <div class="stage-cost">$0/month</div>
+          <p class="stage-capabilities">Demo-grade. Free tier. Cold starts on ML. No PHI. Investor-ready.</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="stage">
+      <div class="stage-bar"></div>
+      <div class="stage-body">
+        <h3 class="stage-name">STAGE 2 — FIRST PAID PILOT</h3>
+        <p class="stage-customers">1 health system or payer · BAA executed</p>
+        <ul class="stage-stack">
+          <li>Vercel Pro + BAA ($20)</li>
+          <li>AWS Lambda (Python ML inference, ~$10–30)</li>
+          <li>AWS S3 + KMS (encrypted PHI, ~$5–10)</li>
+          <li>AWS RDS Postgres t4g.micro (~$15–30)</li>
+          <li>Sentry + AWS CloudWatch (~$25)</li>
+          <li>AWS BAA signed (free)</li>
+        </ul>
+        <div class="stage-cost-wrap">
+          <div class="stage-cost">$80–150/month</div>
+          <p class="stage-capabilities">HIPAA-compliant. Sub-second SHAP inference. Encrypted at rest + in transit. Audit log for every decision.</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="stage">
+      <div class="stage-bar"></div>
+      <div class="stage-body">
+        <h3 class="stage-name">STAGE 3 — 10 PILOTS LIVE</h3>
+        <p class="stage-customers">10 health systems · ~50K imaging orders/month</p>
+        <ul class="stage-stack">
+          <li>Vercel Pro ($20)</li>
+          <li>AWS Lambda (multi-tenant inference, ~$80)</li>
+          <li>AWS RDS Postgres Multi-AZ (~$150)</li>
+          <li>AWS CloudFront (CDN for sandbox + assets, ~$60)</li>
+          <li>AWS WAF (DDoS + bot filtering, ~$30)</li>
+          <li>AWS S3 + KMS + lifecycle policies (~$30)</li>
+          <li>Datadog or AWS native monitoring (~$80)</li>
+        </ul>
+        <div class="stage-cost-wrap">
+          <div class="stage-cost">$400–800/month</div>
+          <p class="stage-capabilities">Multi-region failover. SLA-grade uptime. Compliance audit-ready. Per-tenant data isolation.</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="stage">
+      <div class="stage-bar"></div>
+      <div class="stage-body">
+        <h3 class="stage-name">STAGE 4 — 100 HEALTH SYSTEMS</h3>
+        <p class="stage-customers">100+ enterprise customers · 16M+ orders/month</p>
+        <ul class="stage-stack">
+          <li>Vercel Enterprise ($200)</li>
+          <li>AWS ECS Fargate (containerized ML, ~$500)</li>
+          <li>AWS RDS Aurora Postgres Global ($700)</li>
+          <li>AWS CloudFront global edge ($300)</li>
+          <li>AWS WAF + Shield Advanced ($150)</li>
+          <li>AWS SageMaker (model versioning + monitoring, $400)</li>
+          <li>AWS HealthLake (optional FHIR ingestion, $400)</li>
+          <li>Full observability stack ($350)</li>
+        </ul>
+        <div class="stage-cost-wrap">
+          <div class="stage-cost">$2,500–5,000/month</div>
+          <p class="stage-capabilities">Enterprise-grade. Multi-region active-active. Continuous ML retraining. Real-time fairness monitoring. FHIR R4 ingestion at scale.</p>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <section class="unit-economics">
+    <h2>Unit Economics at Scale</h2>
+    <div class="unit-grid">
+      <div>
+        <div class="unit-number">$0.0003</div>
+        <p class="unit-label">Infrastructure cost per imaging order at 100-system scale</p>
+      </div>
+      <div>
+        <div class="unit-number">$1,180</div>
+        <p class="unit-label">Value created per averted inappropriate imaging order</p>
+      </div>
+      <div>
+        <div class="unit-number">~4M×</div>
+        <p class="unit-label">Ratio of value created to infrastructure cost. Six orders of magnitude leverage.</p>
+      </div>
+    </div>
+    <p class="unit-footnote">Cost projections assume mid-sized health system orders (~50K imaging studies/month). Lambda + RDS Aurora pricing per AWS public pricing as of May 2026. Value per averted order is the ACR Appropriateness Criteria-derived savings demonstrated in the ARKA-CLIN production demo at getarka.health/cds-hooks-demo.</p>
+  </section>
+
+  <footer class="page-footer">ARKA Health, Inc. · Delaware C-Corp · Clinical decision support for medical imaging · HL7 CDS Hooks · FDA Non-Device CDS</footer>
+</body>
+</html>
