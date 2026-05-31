@@ -183,11 +183,6 @@ export function Hero() {
   const [logoKey, setLogoKey] = useState(0);
   const particles = useParticles();
 
-  const scrollToSolutions = useCallback(() => {
-    const el = document.getElementById("solutions");
-    el?.scrollIntoView({ behavior: "smooth" });
-  }, []);
-
   const handleLogoMouseEnter = useCallback(() => {
     setLogoKey((k) => k + 1);
   }, []);
@@ -222,66 +217,80 @@ export function Hero() {
 
         <motion.h1
           id="hero-heading"
-          className="sr-only"
+          className="mt-2 max-w-3xl font-bold text-arka-text"
+          style={{
+            fontSize: "clamp(1.75rem, 4vw + 0.75rem, 2.75rem)",
+            lineHeight: 1.15,
+          }}
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" as const }}
         >
-          remARKAbly precise
+          You did the scan. Now get paid for it.
         </motion.h1>
 
         <motion.p
-          className="mt-3 font-medium text-arka-cyan"
+          className="mt-3 font-medium text-arka-teal"
           style={{
             fontSize: "clamp(0.8125rem, 1.5vw + 0.6rem, 1rem)",
             letterSpacing: "0.06em",
           }}
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.25, ease: "easeOut" as const }}
+          transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" as const }}
         >
-          Advanced Radio-imaging Knowledge Architecture
+          REVENUE-FIRST IMAGING DECISION SUPPORT
         </motion.p>
 
         <motion.p
-          className="mt-2 max-w-2xl text-arka-text-soft"
+          className="mx-auto mt-4 max-w-2xl text-center text-arka-text-soft"
           style={{
             fontSize: "clamp(0.9375rem, 1.2vw + 0.7rem, 1.125rem)",
             lineHeight: 1.5,
           }}
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.35, ease: "easeOut" as const }}
+          transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" as const }}
         >
-          Cutting-Edge clinical decision support that never misses.
+          Imaging prior-auth denials run 20–40% — and ~86% of them were avoidable. ARKA is one engine
+          that runs on both sides of the prior-auth wall — the doctor&apos;s and the payer&apos;s —
+          documenting the clinical justification at the moment the order is placed, inside Epic,
+          Cerner, and Athena, in under 800ms, without adding a single click. Clean claims go out the
+          first time.
         </motion.p>
 
         <motion.div
           className="mt-6 sm:mt-8 flex w-full max-w-3xl flex-col gap-3 sm:items-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.5, ease: "easeOut" as const }}
         >
           <div className="flex w-full flex-col gap-3 sm:flex-row sm:justify-center sm:gap-4">
-            <button
-              type="button"
-              onClick={scrollToSolutions}
-              className="arka-button-primary inline-flex min-h-[44px] items-center justify-center px-6 py-3 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-arka-cyan focus:ring-offset-2 focus:ring-offset-arka-bg-dark touch-manipulation"
+            <Link
+              href="#revenue"
+              className="arka-button-primary inline-flex min-h-[44px] items-center justify-center px-6 py-3 text-base font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-arka-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-arka-bg-dark touch-manipulation"
             >
-              Explore the Ecosystem
-            </button>
+              See the revenue model
+            </Link>
             <button
               type="button"
               onClick={() => setDemoOpen(true)}
-              className="arka-button-secondary inline-flex min-h-[44px] items-center justify-center gap-2 px-6 py-3 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-arka-cyan focus:ring-offset-2 focus:ring-offset-arka-bg-dark touch-manipulation"
+              className="arka-button-secondary inline-flex min-h-[44px] items-center justify-center gap-2 px-6 py-3 text-base font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-arka-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-arka-bg-dark touch-manipulation"
             >
               <Play className="h-4 w-4 shrink-0" aria-hidden />
-              Watch Demo
+              Watch 90-sec demo
             </button>
           </div>
           <Link
             href={routes.cdsHooksDemo}
-            className="inline-flex min-h-[44px] w-full items-center justify-center rounded-lg border border-arka-cyan bg-transparent px-6 py-3 text-base font-semibold text-arka-cyan transition hover:bg-arka-cyan/10 focus:outline-none focus:ring-2 focus:ring-arka-cyan focus:ring-offset-2 focus:ring-offset-arka-bg-dark touch-manipulation sm:w-auto"
+            className="inline-flex min-h-[44px] w-full items-center justify-center rounded-lg border border-arka-cyan bg-transparent px-6 py-3 text-base font-semibold text-arka-cyan transition hover:bg-arka-cyan/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-arka-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-arka-bg-dark touch-manipulation sm:w-auto"
           >
-            See ARKA Live Inside an EHR (CDS Hooks Demo)
+            See ARKA live inside an EHR (CDS Hooks demo)
           </Link>
+          <p className="mt-2 max-w-2xl text-center text-xs text-arka-text-soft/70">
+            Non-Device CDS · No FDA 510(k) · CMS-0057-F ready · the ordering clinician keeps the final
+            call.
+          </p>
         </motion.div>
       </div>
 

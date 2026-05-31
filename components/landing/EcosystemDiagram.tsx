@@ -443,16 +443,6 @@ export function EcosystemDiagram() {
               isHighlighted={isPathHighlighted("clin")}
             />
 
-            {/* Shared knowledge base label */}
-            <text
-              x={DESKTOP.center.x}
-              y={DESKTOP.center.y + 12}
-              textAnchor="middle"
-              className="fill-arka-teal/80 text-[10px] font-medium uppercase tracking-wider"
-            >
-              Shared knowledge base
-            </text>
-
             {/* Nodes */}
             <NodeCircle
               cx={DESKTOP.center.x}
@@ -482,6 +472,16 @@ export function EcosystemDiagram() {
                 tooltip={node.tooltip}
               />
             ))}
+
+            {/* Shared knowledge base label — below center node so it is not covered */}
+            <text
+              x={DESKTOP.center.x}
+              y={DESKTOP.center.y + 44 + 18}
+              textAnchor="middle"
+              className="fill-arka-teal/80 text-[10px] font-medium uppercase tracking-wider"
+            >
+              Shared knowledge base
+            </text>
           </svg>
         </motion.div>
 
@@ -534,15 +534,6 @@ export function EcosystemDiagram() {
               isHighlighted={isPathHighlighted("clin")}
             />
 
-            <text
-              x={MOBILE.center.x}
-              y={MOBILE.center.y + 12}
-              textAnchor="middle"
-              className="fill-arka-teal/80 text-[9px] font-medium uppercase tracking-wider"
-            >
-              Shared knowledge base
-            </text>
-
             <NodeCircle
               cx={MOBILE.center.x}
               cy={MOBILE.center.y}
@@ -571,6 +562,15 @@ export function EcosystemDiagram() {
                 tooltip={node.tooltip}
               />
             ))}
+
+            <text
+              x={MOBILE.center.x}
+              y={MOBILE.center.y + 32 + 14}
+              textAnchor="middle"
+              className="fill-arka-teal/80 text-[9px] font-medium uppercase tracking-wider"
+            >
+              Shared knowledge base
+            </text>
             </svg>
           </div>
         </motion.div>

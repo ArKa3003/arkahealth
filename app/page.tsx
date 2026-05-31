@@ -1,44 +1,40 @@
 import type { Metadata } from "next";
 import { Hero } from "@/components/landing/Hero";
+import { ProblemSection } from "@/components/landing/ProblemSection";
+import { RevenueProof } from "@/components/landing/RevenueProof";
 import { WhyArka } from "@/components/landing/WhyArka";
+import { TrustBand } from "@/components/landing/TrustBand";
+import { PlatformBand } from "@/components/landing/PlatformBand";
 import { PhaseCards } from "@/components/landing/PhaseCards";
 import { EcosystemDiagram } from "@/components/landing/EcosystemDiagram";
 import { Testimonials } from "@/components/landing/Testimonials";
 import { CtaSection } from "@/components/landing/CtaSection";
 
+const HOME_DESCRIPTION =
+  "ARKA recovers imaging revenue lost to prior-auth denials — clean documentation at the point of order, inside Epic, Cerner, and Athena, with zero workflow change. Non-Device CDS, CMS-0057-F ready.";
+
 export const metadata: Metadata = {
   title: "Home",
-  description:
-    "ARKA Health — Cutting-Edge clinical decision support for imaging appropriateness. Explore ARKA-CLIN, ARKA-ED, and ARKA-INS.",
+  description: HOME_DESCRIPTION,
   openGraph: {
-    title: "ARKA Health | Imaging CDS",
-    description:
-      "Cutting-Edge clinical decision support for imaging appropriateness. Explore ARKA-CLIN, ARKA-ED, and ARKA-INS.",
+    title: "ARKA — Get paid for the imaging you already do",
+    description: HOME_DESCRIPTION,
   },
 };
 
 export default function Home() {
   return (
     <>
-      {/* 1. Hero — 100vh */}
       <Hero />
-
-      {/* 2. Why ARKA — value proposition, three benefits, Gungnir metaphor */}
+      <ProblemSection />
+      <RevenueProof />
       <WhyArka />
-
-      {/* 3. Phase Cards — id="solutions" */}
+      <TrustBand />
+      <PlatformBand />
       <PhaseCards />
-
-      {/* 4. Ecosystem Diagram — id="ecosystem" */}
       <EcosystemDiagram />
-
-      {/* 5. Testimonials / social proof placeholder */}
       <Testimonials />
-
-      {/* 6. CTA — "Ready to experience precision?" */}
       <CtaSection />
-
-      {/* 7. Footer is in app/layout.tsx — links, copyright, contact */}
     </>
   );
 }
