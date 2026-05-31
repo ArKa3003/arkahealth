@@ -210,16 +210,16 @@ export function AIIEEvidenceModal({ open, onOpenChange, mnai }: AIIEEvidenceModa
                 A consolidated compliance dossier (PDF) can be provided for regulatory or payer diligence reviews.
               </p>
               <a
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                }}
+                href="/ARKA-Compliance-Dossier.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                download
                 className="inline-flex text-base font-medium text-blue-700 underline underline-offset-2 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
               >
-                Download full compliance dossier (PDF) — placeholder
+                Download full compliance dossier (PDF)
               </a>
               <p className="mt-3 text-xs text-slate-600 dark:text-slate-400">
-                Link will resolve to a signed artifact in production; this demo prevents navigation.
+                Opens the current compliance dossier (PDF).
               </p>
             </TabsContent>
           </Tabs>
