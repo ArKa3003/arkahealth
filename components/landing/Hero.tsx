@@ -190,7 +190,7 @@ export function Hero() {
   return (
     <section
       className="relative flex min-h-[100dvh] flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-arka-navy via-arka-bg-medium/80 to-arka-navy px-4 py-16 sm:px-6 sm:py-20 lg:px-8"
-      aria-labelledby="hero-heading"
+      aria-label="ARKA hero"
     >
       <HeroGridPattern />
       <HeroRadarRings />
@@ -211,52 +211,21 @@ export function Hero() {
             height={900}
             animate={true}
             idleAnimations={true}
-            className="w-full max-w-[350px] sm:max-w-[380px] md:max-w-[min(400px,48vw)] lg:max-w-[min(400px,50vw)] h-auto cursor-pointer"
+            className="w-full max-w-[440px] sm:max-w-[520px] md:max-w-[min(620px,60vw)] lg:max-w-[min(720px,58vw)] h-auto cursor-pointer"
           />
         </motion.div>
 
-        <motion.h1
-          id="hero-heading"
-          className="mt-2 max-w-3xl font-bold text-arka-text"
-          style={{
-            fontSize: "clamp(1.75rem, 4vw + 0.75rem, 2.75rem)",
-            lineHeight: 1.15,
-          }}
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" as const }}
-        >
-          You did the scan. Now get paid for it.
-        </motion.h1>
-
         <motion.p
-          className="mt-3 font-medium text-arka-teal"
+          className="font-semibold text-arka-teal"
           style={{
-            fontSize: "clamp(0.8125rem, 1.5vw + 0.6rem, 1rem)",
-            letterSpacing: "0.06em",
+            fontSize: "clamp(0.9rem, 1.6vw + 0.7rem, 1.15rem)",
+            letterSpacing: "0.08em",
           }}
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" as const }}
+          transition={{ duration: 0.5, delay: 0.15, ease: "easeOut" as const }}
         >
-          REVENUE-FIRST IMAGING DECISION SUPPORT
-        </motion.p>
-
-        <motion.p
-          className="mx-auto mt-4 max-w-2xl text-center text-arka-text-soft"
-          style={{
-            fontSize: "clamp(0.9375rem, 1.2vw + 0.7rem, 1.125rem)",
-            lineHeight: 1.5,
-          }}
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" as const }}
-        >
-          Imaging prior-auth denials run 20–40% — and ~86% of them were avoidable. ARKA is one engine
-          that runs on both sides of the prior-auth wall — the doctor&apos;s and the payer&apos;s —
-          documenting the clinical justification at the moment the order is placed, inside Epic,
-          Cerner, and Athena, in under 800ms, without adding a single click. Clean claims go out the
-          first time.
+          CUTTING EDGE IMAGING DECISION SUPPORT
         </motion.p>
 
         <motion.div

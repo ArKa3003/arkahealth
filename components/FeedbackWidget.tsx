@@ -9,6 +9,7 @@ const PHASE_OPTIONS = [
   { id: "arka-clin", value: "ARKA-CLIN", label: "ARKA-CLIN" },
   { id: "arka-ed", value: "ARKA-ED", label: "ARKA-ED" },
   { id: "arka-ins", value: "ARKA-INS", label: "ARKA-INS" },
+  { id: "arka-rural", value: "ARKA-RURAL", label: "ARKA-RURAL" },
   { id: "general", value: "General/Overall", label: "General/Overall" },
 ] as const;
 
@@ -32,6 +33,7 @@ export function FeedbackWidget() {
     "ARKA-CLIN": false,
     "ARKA-ED": false,
     "ARKA-INS": false,
+    "ARKA-RURAL": false,
     "General/Overall": false,
   });
 
@@ -53,6 +55,7 @@ export function FeedbackWidget() {
           "ARKA-CLIN": false,
           "ARKA-ED": false,
           "ARKA-INS": false,
+          "ARKA-RURAL": false,
           "General/Overall": false,
         });
         setSubmitted(false);

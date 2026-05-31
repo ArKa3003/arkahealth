@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import { Hero } from "@/components/landing/Hero";
+import { GetPaidSection } from "@/components/landing/GetPaidSection";
 import { ProblemSection } from "@/components/landing/ProblemSection";
 import { RevenueProof } from "@/components/landing/RevenueProof";
 import { WhyArka } from "@/components/landing/WhyArka";
 import { TrustBand } from "@/components/landing/TrustBand";
-import { PlatformBand } from "@/components/landing/PlatformBand";
-import { PhaseCards } from "@/components/landing/PhaseCards";
-import { EcosystemDiagram } from "@/components/landing/EcosystemDiagram";
+import { PlatformEcosystem } from "@/components/landing/PlatformEcosystem";
 import { Testimonials } from "@/components/landing/Testimonials";
 import { CtaSection } from "@/components/landing/CtaSection";
 
@@ -26,13 +25,12 @@ export default function Home() {
   return (
     <>
       <Hero />
+      <GetPaidSection />
       <ProblemSection />
       <RevenueProof />
       <WhyArka />
       <TrustBand />
-      <PlatformBand />
-      <PhaseCards />
-      <EcosystemDiagram />
+      <PlatformEcosystem />
       <Testimonials />
       <CtaSection />
     </>

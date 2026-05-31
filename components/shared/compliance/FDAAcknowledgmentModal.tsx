@@ -21,7 +21,7 @@ import {
 } from "@/lib/compliance/fda-notice-copy";
 
 const REGULATORY_LINK_CLASS =
-  "font-medium text-blue-800 underline decoration-blue-600/80 underline-offset-2 hover:text-blue-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-cyan focus-visible:ring-offset-1";
+  "text-base font-semibold text-arka-cyan underline decoration-arka-cyan/70 underline-offset-2 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-cyan focus-visible:ring-offset-1 focus-visible:ring-offset-arka-bg-dark";
 
 /**
  * One-time FDA Non-Device CDS acknowledgment modal shown site-wide until dismissed.
@@ -49,12 +49,12 @@ export function FDAAcknowledgmentModal() {
     <Dialog open={open} onOpenChange={() => undefined}>
       <DialogContent
         aria-describedby="fda-acknowledgment-description"
-        className="max-w-lg border-blue-200 bg-[#EFF6FF] text-slate-800 sm:max-w-xl [&>button]:hidden"
+        className="max-w-xl border border-arka-teal/30 bg-arka-bg-dark text-arka-text-soft p-7 sm:p-9 sm:max-w-2xl [&>button]:hidden"
         onInteractOutside={(event) => event.preventDefault()}
         onEscapeKeyDown={(event) => event.preventDefault()}
       >
         <DialogHeader>
-          <DialogTitle className="text-base font-semibold text-slate-900 sm:text-lg">
+          <DialogTitle className="text-xl font-bold text-white sm:text-2xl">
             FDA Non-Device Clinical Decision Support Notice
           </DialogTitle>
           <DialogDescription id="fda-acknowledgment-description" className="sr-only">
@@ -62,9 +62,9 @@ export function FDAAcknowledgmentModal() {
           </DialogDescription>
         </DialogHeader>
 
-        <p className="text-left text-sm leading-relaxed text-slate-800">{noticeText}</p>
+        <p className="text-left text-base leading-relaxed text-arka-text-soft sm:text-lg">{noticeText}</p>
 
-        <div className="flex flex-wrap items-center gap-3 text-sm">
+        <div className="flex flex-wrap items-center gap-4 pt-1 text-base">
           <Link href="/docs/regulatory-rationale" className={REGULATORY_LINK_CLASS}>
             Read the regulatory rationale ↗
           </Link>
@@ -77,7 +77,7 @@ export function FDAAcknowledgmentModal() {
           <button
             type="button"
             onClick={handleAcknowledge}
-            className="w-full rounded-lg bg-arka-teal px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-arka-teal/90 focus:outline-none focus:ring-2 focus:ring-arka-teal focus:ring-offset-2 sm:w-auto"
+            className="w-full rounded-lg bg-arka-teal px-7 py-3 text-base font-semibold text-white transition-colors hover:bg-arka-teal/90 focus:outline-none focus:ring-2 focus:ring-arka-teal focus:ring-offset-2 focus:ring-offset-arka-bg-dark sm:w-auto"
           >
             I Acknowledge
           </button>

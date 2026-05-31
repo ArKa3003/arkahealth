@@ -3,6 +3,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import Link from "next/link";
+import { useEvidenceModal } from "@/components/shared/compliance/evidence-modal-context";
 
 const fadeIn = {
   initial: { opacity: 0, y: 24 },
@@ -12,6 +13,7 @@ const fadeIn = {
 export function CtaSection() {
   const ref = useRef<HTMLElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
+  const { setOpen } = useEvidenceModal();
 
   return (
     <section
@@ -46,17 +48,18 @@ export function CtaSection() {
           transition={{ ...fadeIn.transition, delay: 0.15 }}
           className="mt-10 flex flex-wrap items-center justify-center gap-4"
         >
-          <Link
-            href="#revenue"
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
             className="arka-button-primary inline-flex min-h-[44px] items-center justify-center px-8 py-3 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-arka-teal focus:ring-offset-2 focus:ring-offset-arka-bg-light touch-manipulation"
           >
-            See the revenue model
-          </Link>
+            Evidence & Compliance
+          </button>
           <Link
-            href="#solutions"
+            href="/action-plan"
             className="arka-button-secondary inline-flex min-h-[44px] items-center justify-center px-8 py-3 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-arka-teal focus:ring-offset-2 focus:ring-offset-arka-bg-light touch-manipulation"
           >
-            Explore the platform
+            Action Plan
           </Link>
         </motion.div>
         <motion.p

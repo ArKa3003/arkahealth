@@ -2,7 +2,17 @@
 
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import { BellOff, Clock, FileX, Repeat } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUp,
+  BellOff,
+  Clock,
+  FileX,
+  RefreshCw,
+  Repeat,
+} from "lucide-react";
 
 const painPoints = [
   {
@@ -31,6 +41,42 @@ const fadeIn = {
   initial: { opacity: 0, y: 24 },
   transition: { duration: 0.5, ease: "easeOut" as const },
 };
+
+type PainPoint = (typeof painPoints)[number];
+
+function PainPointCard({
+  point,
+  index,
+  isInView,
+}: {
+  point: PainPoint;
+  index: number;
+  isInView: boolean;
+}) {
+  const Icon = point.icon;
+  return (
+    <motion.div
+      initial={fadeIn.initial}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
+      transition={{
+        ...fadeIn.transition,
+        delay: 0.12 + index * 0.1,
+      }}
+      className="relative rounded-xl border border-arka-light bg-white px-6 py-8 shadow-card transition-all duration-300 hover:-translate-y-1"
+    >
+      <span className="absolute left-4 top-4 flex h-6 w-6 items-center justify-center rounded-full bg-arka-teal text-xs font-bold text-white">
+        {index + 1}
+      </span>
+      <span className="mt-2 flex h-12 w-12 items-center justify-center rounded-xl bg-arka-teal/15 text-arka-teal">
+        <Icon className="h-6 w-6" aria-hidden />
+      </span>
+      <h3 className="mt-4 text-lg font-bold text-arka-text-dark">{point.title}</h3>
+      <p className="mt-2 text-sm leading-relaxed text-arka-text-dark-muted">
+        {point.body}
+      </p>
+    </motion.div>
+  );
+}
 
 /**
  * Homepage "groan" section — names imaging revenue-cycle pain in clinicians' and rev-cycle teams' own words.
@@ -65,32 +111,69 @@ export function ProblemSection() {
           Every imaging team knows this loop. ARKA breaks it.
         </motion.p>
 
-        <div className="mt-16 grid gap-10 sm:grid-cols-2">
-          {painPoints.map((point, i) => {
-            const Icon = point.icon;
-            return (
-              <motion.div
-                key={point.title}
-                initial={fadeIn.initial}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{
-                  ...fadeIn.transition,
-                  delay: 0.12 + i * 0.1,
-                }}
-                className="rounded-xl border border-arka-light bg-white px-6 py-8 shadow-card transition-all duration-300 hover:-translate-y-1"
-              >
-                <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-arka-teal/15 text-arka-teal">
-                  <Icon className="h-6 w-6" aria-hidden />
-                </span>
-                <h3 className="mt-4 text-lg font-bold text-arka-text-dark">
-                  {point.title}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-arka-text-dark-muted">
-                  {point.body}
-                </p>
-              </motion.div>
-            );
-          })}
+        {/* Mobile: vertical stack with downward arrows */}
+        <div className="mt-16 flex flex-col gap-6 md:hidden">
+          {painPoints.map((point, i) => (
+            <div key={point.title}>
+              <PainPointCard point={point} index={i} isInView={isInView} />
+              {i < painPoints.length - 1 ? (
+                <div className="flex justify-center py-2">
+                  <ArrowDown className="h-7 w-7 text-arka-teal" aria-hidden />
+                </div>
+              ) : (
+                <div className="flex flex-col items-center gap-1 py-2">
+                  <ArrowUp className="h-7 w-7 text-arka-teal" aria-hidden />
+                  <p className="text-xs text-arka-text-dark-muted">
+                    loops back to the start
+                  </p>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop / tablet: 2×2 cards with clockwise arrow loop */}
+        <div className="mt-16 hidden gap-x-6 gap-y-6 md:grid md:grid-cols-[1fr_auto_1fr] md:grid-rows-[auto_auto_auto]">
+          <PainPointCard
+            point={painPoints[0]}
+            index={0}
+            isInView={isInView}
+          />
+          <div className="flex items-center justify-center self-center">
+            <ArrowRight className="h-7 w-7 text-arka-teal" aria-hidden />
+          </div>
+          <PainPointCard
+            point={painPoints[1]}
+            index={1}
+            isInView={isInView}
+          />
+
+          <div className="flex items-center justify-center self-center">
+            <ArrowUp className="h-7 w-7 text-arka-teal" aria-hidden />
+          </div>
+          <div className="flex flex-col items-center justify-center gap-1 px-2 py-4">
+            <RefreshCw className="h-6 w-6 text-arka-teal" aria-hidden />
+            <span className="text-center text-xs font-semibold uppercase tracking-wider text-arka-teal">
+              THE DENIAL LOOP
+            </span>
+          </div>
+          <div className="flex items-center justify-center self-center">
+            <ArrowDown className="h-7 w-7 text-arka-teal" aria-hidden />
+          </div>
+
+          <PainPointCard
+            point={painPoints[3]}
+            index={3}
+            isInView={isInView}
+          />
+          <div className="flex items-center justify-center self-center">
+            <ArrowLeft className="h-7 w-7 text-arka-teal" aria-hidden />
+          </div>
+          <PainPointCard
+            point={painPoints[2]}
+            index={2}
+            isInView={isInView}
+          />
         </div>
 
         <motion.p

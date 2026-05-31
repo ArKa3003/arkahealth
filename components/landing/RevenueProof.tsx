@@ -138,7 +138,7 @@ export function RevenueProof() {
           className="mt-8 flex justify-center"
         >
           <Link
-            href={routes.ins}
+            href={routes.roi}
             className="arka-button-primary inline-flex min-h-[44px] items-center justify-center px-8 py-3 text-base font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-arka-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-arka-bg-dark touch-manipulation"
           >
             See the full ROI breakdown

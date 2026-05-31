@@ -54,6 +54,7 @@ export const routes = {
   cdsHooksDiscovery: "/cds-hooks-discovery",
   regulatoryRationale: "/docs/regulatory-rationale",
   featureCatalog: "/docs/feature-catalog",
+  roi: "/roi",
 } as const;
 
 /** FDA §520(o)(1)(E) non-device CDS criteria — links anchor Phase 11 regulatory memo route. */
