@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/demos/rur
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/demos/rural/shared/ui/Tabs";
 import { DEMO_FACILITIES, getDemoFacilitiesByRole } from "@/lib/demos/rural/facility-profiles";
 import type { FacilityProfile } from "@/lib/demos/rural/types";
+import { useClientMounted } from "@/lib/hooks/use-client-mounted";
 
 function buildLayout(hub: FacilityProfile): NetworkLayoutNode[] {
   const cx = 210;
@@ -56,6 +57,7 @@ function facilityById(id: string | null): FacilityProfile | undefined {
 }
 
 export function NetworkManagerDashboard() {
+  const mounted = useClientMounted();
   const hub = getDemoFacilitiesByRole("hub")[0]!;
   const spokes = useMemo(
     () => getDemoFacilitiesByRole("spoke").filter((s) => s.hubFacilityId === hub.id),
@@ -111,17 +113,21 @@ export function NetworkManagerDashboard() {
             <p className="mt-1 text-sm text-arka-text-dark-muted">{selected.name}</p>
           </CardHeader>
           <CardContent className="pt-0">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={selected.id}
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -4 }}
-                transition={{ duration: 0.2 }}
-              >
-                <FacilityDetailTabs facility={selected} spokes={spokes} />
-              </motion.div>
-            </AnimatePresence>
+            {mounted ? (
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={selected.id}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <FacilityDetailTabs facility={selected} spokes={spokes} />
+                </motion.div>
+              </AnimatePresence>
+            ) : (
+              <FacilityDetailTabs facility={selected} spokes={spokes} />
+            )}
           </CardContent>
         </Card>
       </div>
@@ -160,7 +166,7 @@ function FacilityDetailTabs({ facility, spokes }: { facility: FacilityProfile; s
           facility.equipment.map((eq) => (
             <div
               key={eq.id}
-              className="flex flex-wrap items-start justify-between gap-2 rounded-lg border border-arka-primary/10 bg-arka-bg-medium/20 px-3 py-2"
+              className="flex flex-wrap items-start justify-between gap-2 rounded-lg border border-arka-primary/10 bg-arka-bg-alt px-3 py-2"
             >
               <div>
                 <p className="font-medium text-arka-text-dark">
@@ -180,7 +186,7 @@ function FacilityDetailTabs({ facility, spokes }: { facility: FacilityProfile; s
       </TabsContent>
 
       <TabsContent value="staffing" className="mt-3 space-y-3 text-sm">
-        <div className="rounded-lg border border-arka-primary/10 bg-arka-bg-medium/20 px-3 py-2">
+        <div className="rounded-lg border border-arka-primary/10 bg-arka-bg-alt px-3 py-2">
           <p className="text-xs font-medium uppercase tracking-wide text-arka-text-dark-muted">Radiologists</p>
           {facility.staffing.radiologists.length === 0 ? (
             <p className="mt-1 text-arka-text-dark-muted">None on-site (teleradiology may apply).</p>
@@ -197,7 +203,7 @@ function FacilityDetailTabs({ facility, spokes }: { facility: FacilityProfile; s
             </ul>
           )}
         </div>
-        <div className="rounded-lg border border-arka-primary/10 bg-arka-bg-medium/20 px-3 py-2">
+        <div className="rounded-lg border border-arka-primary/10 bg-arka-bg-alt px-3 py-2">
           <p className="text-xs font-medium uppercase tracking-wide text-arka-text-dark-muted">Technologists</p>
           {facility.staffing.technologists.length === 0 ? (
             <p className="mt-1 text-arka-text-dark-muted">None listed.</p>
@@ -230,7 +236,7 @@ function FacilityDetailTabs({ facility, spokes }: { facility: FacilityProfile; s
           <p className="text-arka-text-dark-muted">No mobile imaging visits scheduled for this site (demo).</p>
         ) : (
           facility.mobileUnits.map((m) => (
-            <div key={m.id} className="rounded-lg border border-arka-primary/10 px-3 py-2">
+            <div key={m.id} className="rounded-lg border border-arka-light bg-arka-bg-alt px-3 py-2">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="font-medium text-arka-text-dark">
                   {m.modality} · {m.provider}
@@ -247,7 +253,7 @@ function FacilityDetailTabs({ facility, spokes }: { facility: FacilityProfile; s
 
       <TabsContent value="transfer" className="mt-3 space-y-2 text-sm">
         {facility.networkRole === "hub" ? (
-          <div className="rounded-lg border border-arka-primary/10 bg-arka-bg-medium/20 px-3 py-2 text-arka-text-dark">
+          <div className="rounded-lg border border-arka-primary/10 bg-arka-bg-alt px-3 py-2 text-arka-text-dark">
             <p className="font-medium">Receiving hub</p>
             <p className="mt-1 text-arka-text-dark-muted">
               Contracted spokes ({spokes.length}): {spokes.map((s) => s.name).join(", ") || "—"}

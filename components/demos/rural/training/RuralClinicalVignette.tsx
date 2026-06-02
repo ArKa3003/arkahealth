@@ -129,7 +129,7 @@ export function RuralClinicalVignette({ caseData, className }: RuralClinicalVign
             {Object.entries(caseData.vitalSigns).map(([label, value]) => (
               <div
                 key={label}
-                className="flex flex-col items-center rounded-lg bg-arka-bg-medium/50 p-3"
+                className="flex flex-col items-center rounded-lg border border-arka-light bg-arka-bg-alt p-3"
               >
                 <span className="text-xs text-slate-500">{label}</span>
                 <span className="text-center font-semibold text-slate-900">{value}</span>

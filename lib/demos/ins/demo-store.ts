@@ -21,6 +21,7 @@ import {
   generatedJustifications,
   generatedAppeals,
 } from "@/lib/demos/ins/mock-data";
+import { buildGeneratedAppeal } from "@/lib/demos/ins/build-appeal";
 
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -211,12 +212,31 @@ export const useInsDemoStore = create<DemoStore>()(
       simulateAppealGeneration: async () => {
         const { currentOrderId } = get();
         if (!currentOrderId) return;
-        set({ processing: { isAnalyzing: false, isGenerating: true, processingMessage: "Generating appeal...", processingProgress: 0 } });
+        const order = getOrderById(currentOrderId);
+        const patient = order ? getPatientById(order.patientId) : null;
+        if (!order || !patient) return;
+
+        set({
+          processing: {
+            isAnalyzing: false,
+            isGenerating: true,
+            processingMessage: "Generating appeal letter…",
+            processingProgress: 0,
+          },
+        });
         await delay(400);
         set((s) => ({ processing: { ...s.processing, processingProgress: 50 } }));
         await delay(400);
-        const appeal = getAppealForOrder(currentOrderId);
-        set({ generatedAppeal: appeal, processing: initialProcessing, lastUpdatedAt: new Date().toISOString() });
+        set((s) => ({ processing: { ...s.processing, processingProgress: 100 } }));
+        await delay(300);
+
+        const appeal =
+          getAppealForOrder(currentOrderId) ?? buildGeneratedAppeal(order, patient);
+        set({
+          generatedAppeal: appeal,
+          processing: initialProcessing,
+          lastUpdatedAt: new Date().toISOString(),
+        });
       },
 
       initializeScenario: (scenarioIndex) => {

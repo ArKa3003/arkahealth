@@ -58,14 +58,17 @@ export function ClinDemoContent() {
         />
       ) : (
         <div className="space-y-6 animate-fade-in">
-          <section aria-labelledby="evaluation-title">
+          <section
+            aria-labelledby="evaluation-title"
+            className="rounded-xl bg-white px-1 py-2 sm:px-2 sm:py-3"
+          >
             <h2
               id="evaluation-title"
               className="text-xl sm:text-2xl font-heading font-semibold text-arka-text-dark mb-2"
             >
               Imaging Appropriateness Evaluation
             </h2>
-            <p className="text-arka-text-dark-muted text-base">
+            <p className="text-base text-arka-text-dark-muted">
               Choose a demo scenario or enter a clinical scenario below to receive evidence-based recommendations from the ARKA Imaging Intelligence Engine (AIIE).
             </p>
           </section>
@@ -84,7 +87,7 @@ export function ClinDemoContent() {
                       const scenario = getDemoScenario(key);
                       if (scenario) handleEvaluate(scenario);
                     }}
-                    className="arka-card text-left p-4 rounded-xl border border-arka-primary/20 bg-arka-bg-alt hover:border-arka-cyan/40 hover:bg-arka-pale transition-all min-h-[44px] w-full touch-manipulation"
+                    className="arka-card text-left p-4 rounded-xl border border-arka-light bg-arka-bg-alt hover:border-arka-cyan/40 hover:bg-arka-pale transition-all min-h-[44px] w-full touch-manipulation"
                   >
                     <h4 className="font-medium text-arka-text-dark mb-1 text-base">{title}</h4>
                     <p className="text-sm text-arka-text-dark-muted">{description}</p>

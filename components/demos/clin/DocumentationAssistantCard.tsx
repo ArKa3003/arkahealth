@@ -204,7 +204,7 @@ export function DocumentationAssistantCard({
   }, []);
 
   return (
-    <Card className="border-arka-primary/20 bg-arka-bg-alt/40">
+    <Card className="border-arka-light bg-white">
       <CardHeader>
         <div className="flex items-start gap-3">
           <FileText className="h-5 w-5 text-arka-teal flex-shrink-0 mt-0.5" aria-hidden />

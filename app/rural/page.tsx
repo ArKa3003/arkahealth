@@ -19,7 +19,7 @@ import { RURAL_CRISIS_STATS, RURAL_ROUTES } from "@/lib/demos/rural/constants";
 export const metadata: Metadata = {
   title: "Rural Imaging Solutions | ARKA Health",
   description:
-    "ARKA Health's comprehensive rural imaging platform: resource-aware CDS, teleradiology orchestration, and AI diagnostics for 60M+ rural Americans.",
+    "ARKA for rural sites: right-order imaging guidance, remote reads, clinician training, and tools to keep local imaging programs viable.",
 };
 
 const pillars = [
@@ -109,8 +109,8 @@ export default function RuralHubPage() {
           Rural Imaging Crisis Platform
         </h1>
         <p className="text-lg text-arka-text-dark-muted max-w-2xl mx-auto leading-relaxed">
-          Transforming medical imaging access for 60+ million rural Americans through resource-aware clinical decision
-          support, teleradiology orchestration, and AI-augmented diagnostics.
+          Extends ARKA to rural hospitals and clinics — right-order imaging guidance, remote reads,
+          clinician training, and tools to keep local imaging programs viable where access is scarce.
         </p>
       </section>
 

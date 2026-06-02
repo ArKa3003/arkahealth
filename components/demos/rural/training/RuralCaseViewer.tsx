@@ -149,8 +149,8 @@ export function RuralCaseViewer({ caseData, onBack, className }: RuralCaseViewer
 
   return (
     <div className={clsx("flex min-h-[60vh] flex-col bg-arka-bg-dark", className)}>
-      <header className="flex flex-shrink-0 items-center justify-between border-b border-arka-primary/20 px-4 py-3">
-        <div className="flex min-w-0 items-center gap-3">
+      <header className="flex flex-shrink-0 items-start justify-between border-b border-arka-primary/20 px-4 py-3 sm:items-center">
+        <div className="flex min-w-0 flex-1 items-start gap-3 sm:items-center">
           <Button
             variant="ghost"
             size="sm"
@@ -160,8 +160,8 @@ export function RuralCaseViewer({ caseData, onBack, className }: RuralCaseViewer
             <ArrowLeft className="mr-1 h-4 w-4 shrink-0" />
             <span className="hidden sm:inline">Back</span>
           </Button>
-          <div className="hidden h-6 w-px bg-arka-primary/20 sm:block" />
-          <h1 className="truncate text-sm font-semibold text-arka-text sm:text-base">
+          <div className="hidden h-6 w-px shrink-0 self-center bg-arka-primary/20 sm:block" />
+          <h1 className="min-w-0 flex-1 text-base font-semibold leading-snug text-arka-text sm:text-lg">
             {caseData.title}
           </h1>
         </div>

@@ -31,8 +31,11 @@ const VIEW_TABS: { value: SuiteView; label: string }[] = [
   { value: "discovery", label: "CDS Hooks Discovery" },
 ];
 
+const SUITE_INTRO_PANEL_CLASS =
+  "mb-6 rounded-xl border border-arka-light bg-arka-bg-alt p-4 sm:p-5 text-sm sm:text-base text-arka-text-dark";
+
 const discoveryQuickActionClassName =
-  "flex min-h-[44px] flex-col justify-center rounded-lg border border-arka-cyan/40 bg-arka-cyan/5 px-4 py-3 text-sm transition-colors hover:border-arka-cyan/60 hover:bg-arka-cyan/10";
+  "flex min-h-[44px] flex-col justify-center rounded-lg border border-arka-light bg-white px-4 py-3 text-sm text-arka-text-dark transition-colors hover:border-arka-teal/40 hover:bg-arka-bg-alt";
 
 function isSuiteView(value: string | null): value is SuiteView {
   return value === "standalone" || value === "embedded" || value === "discovery";
@@ -51,8 +54,8 @@ export default function ClinSuitePage() {
 
 function ClinSuitePageFallback() {
   return (
-    <div className="min-h-screen bg-arka-bg-light">
-      <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-white">
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 xl:px-12">
         <DemoLoadingSkeleton />
       </div>
     </div>
@@ -75,11 +78,11 @@ function ClinSuitePageContent() {
   );
 
   return (
-    <div className="min-h-screen bg-arka-bg-light">
+    <div className="min-h-screen bg-white dark:bg-white">
       <div
         className={cn(
-          "mx-auto px-4 py-6 sm:px-6 lg:px-8",
-          activeView === "embedded" ? "max-w-[1600px]" : "max-w-5xl",
+          "mx-auto px-4 py-6 sm:px-6 lg:px-8 xl:px-12",
+          activeView === "embedded" ? "max-w-[1600px]" : "max-w-7xl",
         )}
       >
         <nav aria-label="Breadcrumb" className="mb-4 sm:mb-6">
@@ -104,8 +107,9 @@ function ClinSuitePageContent() {
             ARKA-CLIN — Two Views, One Engine.
           </h1>
           <p className="mt-2 text-arka-text-dark-muted font-sans text-base sm:text-lg max-w-3xl">
-            Standalone web app, EHR-embedded CDS Hooks view, and the CDS Hooks discovery service — all
-            reachable from one place.
+            Guides clinicians to order the right imaging at the point of care — in a browser or inside
+            the EHR — with evidence-based appropriateness scores; supports, not replaces, clinical
+            judgment.
           </p>
         </header>
 
@@ -130,8 +134,11 @@ function ClinSuitePageContent() {
             ))}
           </TabsList>
 
-          <TabsContent value="standalone" className="mt-0 border-0 bg-transparent p-0 shadow-none">
-            <p className="mb-6 text-sm sm:text-base text-arka-text-dark-muted">
+          <TabsContent
+            value="standalone"
+            className="mt-0 border-0 bg-white p-0 shadow-none dark:bg-white dark:text-arka-text-dark"
+          >
+            <p className={SUITE_INTRO_PANEL_CLASS}>
               The ARKA web application, used directly by a clinician in a browser. Enter or pick a clinical
               scenario; receive an evidence-based appropriateness score, factor breakdown, alternatives, and
               citations.
@@ -140,8 +147,11 @@ function ClinSuitePageContent() {
             <HowArkaWorksSection />
           </TabsContent>
 
-          <TabsContent value="embedded" className="mt-0 border-0 bg-transparent p-0 shadow-none">
-            <p className="mb-6 text-sm sm:text-base text-arka-text-dark-muted">
+          <TabsContent
+            value="embedded"
+            className="mt-0 border-0 bg-white p-0 shadow-none dark:bg-white dark:text-arka-text-dark"
+          >
+            <p className={SUITE_INTRO_PANEL_CLASS}>
               The same ARKA engine, rendered inside a simulated Epic chart via the HL7 CDS Hooks open standard
               — the way a clinician sees ARKA in production. The live JSON panel shows real CDS Hooks 2.0
               traffic.
@@ -150,7 +160,10 @@ function ClinSuitePageContent() {
             <CdsDemoClient />
           </TabsContent>
 
-          <TabsContent value="discovery" className="mt-0 border-0 bg-transparent p-0 shadow-none">
+          <TabsContent
+            value="discovery"
+            className="mt-0 border-0 bg-white p-0 shadow-none dark:bg-white dark:text-arka-text-dark"
+          >
             <DiscoveryTabContent />
           </TabsContent>
         </Tabs>
@@ -199,7 +212,7 @@ function DiscoveryTabContent() {
 
   return (
     <div className="space-y-6">
-      <aside className="arka-card rounded-xl border border-arka-primary/20 p-4 sm:p-6">
+      <aside className="rounded-xl border border-arka-light bg-white p-4 sm:p-6 shadow-card">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {complianceLinks.map(({ href, label, description, ...rest }) => {
             const external = "external" in rest && rest.external === true;
@@ -236,12 +249,12 @@ function DiscoveryTabContent() {
         </div>
       </aside>
 
-      <p className="text-sm sm:text-base text-arka-text-dark-muted">
+      <p className={SUITE_INTRO_PANEL_CLASS}>
         HL7 CDS Hooks 2.0 service discovery — the endpoint EHR systems call to register ARKA-CLIN and ARKA-INS
         hook services.
       </p>
 
-      <div className="arka-card rounded-xl border border-arka-primary/20 p-4 sm:p-6">
+      <div className="rounded-xl border border-arka-light bg-white p-4 sm:p-6 shadow-card">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-base font-semibold text-arka-text-dark sm:text-lg">
             /.well-known/cds-services

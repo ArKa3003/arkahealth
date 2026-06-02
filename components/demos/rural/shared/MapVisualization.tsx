@@ -11,7 +11,7 @@ export function MapVisualization() {
       </CardHeader>
       <CardContent>
         <div
-          className="relative aspect-[16/9] w-full overflow-hidden rounded-lg border border-dashed border-arka-primary/25 bg-arka-bg-medium/40"
+          className="relative aspect-[16/9] w-full overflow-hidden rounded-lg border border-dashed border-arka-light bg-arka-bg-alt"
           role="img"
           aria-label="Abstract map of imaging access scores"
         >

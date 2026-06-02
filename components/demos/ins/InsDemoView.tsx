@@ -20,6 +20,7 @@ import { SubmitAppealStep } from "@/components/demos/ins/SubmitAppealStep";
 import { DemoErrorState } from "@/components/demos/ins/DemoErrorState";
 import { DemoEmptyState } from "@/components/demos/ins/DemoEmptyState";
 import { Button } from "@/components/demos/ins/ui/Button";
+import { useClientMounted } from "@/lib/hooks/use-client-mounted";
 import { cn } from "@/lib/utils";
 
 const DEMO_DATA_UNAVAILABLE =
@@ -98,6 +99,7 @@ function DemoModeSelector({
 }
 
 export function InsDemoView() {
+  const mounted = useClientMounted();
   const [scenarioMode, setScenarioMode] = React.useState<ScenarioMode>("standard");
 
   const {
@@ -215,7 +217,7 @@ export function InsDemoView() {
           <h2 className="sr-only">Utilization Management Demo Steps</h2>
           {showEmptyState ? (
             <DemoEmptyState onGoToStep1={() => goToStep(1)} />
-          ) : (
+          ) : mounted ? (
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentStep}
@@ -229,6 +231,8 @@ export function InsDemoView() {
                 </Suspense>
               </motion.div>
             </AnimatePresence>
+          ) : (
+            <Suspense fallback={<StepFallback />}>{renderStep()}</Suspense>
           )}
 
           <nav

@@ -13,7 +13,7 @@ export function Progress({
 }) {
   const pct = Math.min(100, Math.max(0, (value / max) * 100));
   return (
-    <div className={cn("relative h-2 w-full overflow-hidden rounded-full bg-arka-bg-medium", className)}>
+    <div className={cn("relative h-2 w-full overflow-hidden rounded-full bg-arka-bg-alt", className)}>
       <div
         className="h-full rounded-full bg-arka-teal transition-[width] duration-500 ease-out"
         style={{ width: `${pct}%` }}

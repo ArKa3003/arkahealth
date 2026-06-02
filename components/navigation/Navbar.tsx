@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ArkaAnimatedLogo } from "@/components/ArkaAnimatedLogo";
 import { complianceLinks, demoNavLinks, routes } from "@/lib/constants";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { RURAL_NAV_LINKS } from "@/lib/demos/rural/constants";
 import {
   Stethoscope,
@@ -173,7 +172,7 @@ export function Navbar() {
             : "border-b border-white/10 bg-arka-navy/90 backdrop-blur-xl"
         }`}
       >
-        <nav className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <nav className="relative mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
           {/* Left */}
           <div className="flex min-w-0 flex-1 items-center gap-4 lg:flex-initial">
             {isDemoPage && currentDemo ? (
@@ -268,7 +267,7 @@ export function Navbar() {
 
           {/* Center — desktop nav links (only on landing) */}
           {!isDemoPage && (
-            <ul className="hidden items-center gap-8 lg:flex">
+            <ul className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-10 lg:flex">
               {demoNavLinks.map(({ href, label, icon }) => {
                 const Icon = iconMap[icon];
                 const isActive = pathname === href;
@@ -286,63 +285,8 @@ export function Navbar() {
             </ul>
           )}
 
-          {/* Right */}
-          <div className="flex flex-1 items-center justify-end gap-2 lg:flex-initial">
-            <Popover>
-              <PopoverTrigger asChild>
-                <button
-                  type="button"
-                  className="hidden items-center gap-2 rounded-lg border border-arka-cyan/40 bg-arka-cyan/5 px-4 py-2 text-sm font-medium text-arka-cyan transition hover:border-arka-cyan/60 hover:bg-arka-cyan/10 sm:flex"
-                >
-                  <ShieldCheck className="h-4 w-4" aria-hidden />
-                  Compliance &amp; Validation
-                </button>
-              </PopoverTrigger>
-              <PopoverContent align="end" className="w-[min(100vw-2rem,22rem)] p-1">
-                <ul className="flex flex-col">
-                  {complianceLinks.map((link) => {
-                    const { href, label, description } = link;
-                    const external = "external" in link && link.external === true;
-                    return (
-                    <li key={href}>
-                      {external ? (
-                        <a
-                          href={href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex flex-col gap-0.5 rounded-md px-3 py-2.5 transition hover:bg-white/5"
-                        >
-                          <span className="inline-flex items-center gap-1.5 text-sm font-medium text-arka-cyan">
-                            {label}
-                            <ExternalLink className="h-3.5 w-3.5 shrink-0" aria-hidden />
-                          </span>
-                          <span className="text-xs leading-snug text-arka-text-muted">{description}</span>
-                        </a>
-                      ) : (
-                        <Link
-                          href={href}
-                          prefetch
-                          onMouseEnter={() => router.prefetch(href)}
-                          className="flex flex-col gap-0.5 rounded-md px-3 py-2.5 transition hover:bg-white/5"
-                        >
-                          <span className="text-sm font-medium text-arka-cyan">{label}</span>
-                          <span className="text-xs leading-snug text-arka-text-muted">{description}</span>
-                        </Link>
-                      )}
-                    </li>
-                    );
-                  })}
-                </ul>
-              </PopoverContent>
-            </Popover>
-            <button
-              type="button"
-              onClick={handleEcosystemClick}
-              className="hidden items-center gap-2 rounded-lg border border-arka-cyan/40 bg-arka-cyan/5 px-4 py-2 text-sm font-medium text-arka-cyan transition hover:border-arka-cyan/60 hover:bg-arka-cyan/10 sm:flex"
-            >
-              <LayoutGrid className="h-4 w-4" />
-              Ecosystem Overview
-            </button>
+          {/* Right — mobile menu trigger only */}
+          <div className="flex items-center justify-end lg:flex-initial">
             <button
               type="button"
               onClick={() => setMobileOpen(true)}

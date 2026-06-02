@@ -24,12 +24,21 @@ export function GetPaidSection() {
       aria-labelledby="get-paid-heading"
     >
       <div className="mx-auto max-w-3xl text-center">
+        <motion.p
+          initial={fadeIn.initial}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={fadeIn.transition}
+          className="mx-auto max-w-2xl text-base leading-relaxed text-arka-text-soft sm:text-lg"
+        >
+          When appropriateness is documented at the moment of order — on the clinician side and the
+          payer side — imaging teams stop losing revenue to avoidable denials.
+        </motion.p>
         <motion.h2
           id="get-paid-heading"
           initial={fadeIn.initial}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={fadeIn.transition}
-          className="text-3xl font-bold text-arka-text sm:text-4xl"
+          transition={{ ...fadeIn.transition, delay: 0.06 }}
+          className="mt-6 text-3xl font-bold text-arka-text sm:mt-8 sm:text-4xl"
         >
           You did the scan. Now get paid for it.
         </motion.h2>

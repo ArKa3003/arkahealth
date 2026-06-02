@@ -147,12 +147,6 @@ export const generatedJustifications: GeneratedJustification[] = [
   { orderId: "ORD-003", narrative: "PET-CT staging for suspected lung malignancy. 2.3cm spiculated RUL nodule, high-risk features. Staging to guide surgical vs systemic therapy. Prior CT chest completed. ECOG 1.", keyPoints: ["Staging for suspected malignancy", "High-risk nodule", "Surgical planning"], supportingEvidence: ["CT chest", "Risk assessment"], clinicalRationale: "PET-CT medically necessary for staging.", wordCount: 45, generatedAt: "2024-12-14T11:10:00Z", version: 1, tone: "clinical" },
 ];
 
-export const generatedAppeals: GeneratedAppeal[] = [
-  {
-    orderId: "ORD-002", appealType: "first-level",
-    letterContent: `[SAMPLE APPEAL] Date: December 18, 2024. Re: Appeal – Jennifer Martinez, AETNA-334521876. Denied: MRI Brain (CPT 70553). Denial: Insufficient conservative treatment.
+/** Optional pre-built appeals; store falls back to {@link buildGeneratedAppeal} when empty. */
+export const generatedAppeals: GeneratedAppeal[] = [];
 
-Dear Medical Director, I appeal the denial. Since submission: headache frequency increased to daily; new visual disturbances; trial acetaminophen 2 weeks, ibuprofen 2 weeks – no relief; headache diary shows progression. AHS guidelines recommend imaging for progressive pattern and new neurological symptoms. Request approval. Available for peer-to-peer. Dr. James Chen, MD, Neurology.`,
-    citedGuidelines: ["American Headache Society Neuroimaging Guidelines", "AIM Neuroimaging – Exceptions for Progression"], supportingLiterature: [{ title: "Diagnostic Testing for Headaches", authors: "Evans RW, et al.", journal: "Neurol Clin", year: 2019, relevance: "Imaging when progressive pattern" }], peerToPeerRequested: true, generatedAt: "2024-12-18T10:00:00Z", denialReason: "Insufficient conservative treatment trial", denialDate: "2024-12-17", originalAuthNumber: "PA-2024-789456",
-  },
-];

@@ -49,8 +49,8 @@ export default function InsPage() {
             ARKA-INS: Utilization Management
           </h1>
           <p className="mt-2 text-arka-text-dark-muted font-sans text-base sm:text-lg max-w-2xl">
-            Insurance prior authorization and imaging appropriateness. Run through the RBM workflow with patient selection,
-            order entry, pre-submission analysis, denial risk prediction, documentation assistance, and appeal generation.
+            The payer-side demo: run the same appropriateness math clinicians see, streamline prior
+            auth and appeals, and reduce denials — Non-Device CDS, CMS-0057-F ready.
           </p>
         </header>
 

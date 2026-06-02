@@ -10,7 +10,7 @@ export function AIPreliminaryRead() {
       <CardHeader>
         <CardTitle>AI preliminary read</CardTitle>
       </CardHeader>
-      <CardContent className="rounded-lg bg-arka-bg-medium/40 p-3 font-mono text-xs text-arka-text-dark-muted">
+      <CardContent className="rounded-lg border border-arka-light bg-arka-bg-alt p-3 font-mono text-xs text-arka-text-dark-muted">
         {text}
       </CardContent>
     </Card>

@@ -12,7 +12,7 @@ export function RuralSidebar() {
 
   return (
     <aside
-      className="hidden w-56 shrink-0 border-r border-arka-primary/15 bg-white/90 backdrop-blur md:flex md:flex-col dark:bg-arka-navy/95"
+      className="hidden w-56 shrink-0 border-r border-arka-primary/15 bg-white/90 backdrop-blur md:flex md:flex-col"
       aria-label="Rural platform navigation"
     >
       <div className="border-b border-arka-primary/10 px-3 py-4">

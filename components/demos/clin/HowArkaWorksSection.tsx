@@ -26,7 +26,7 @@ export function HowArkaWorksSection() {
     <section
       ref={ref}
       id="how-arka-works"
-      className="mt-12 sm:mt-16 pt-10 sm:pt-12 border-t border-arka-primary/20"
+      className="mt-12 sm:mt-16 rounded-xl border border-arka-light bg-white px-4 py-8 sm:px-6 sm:py-10 lg:px-8"
       aria-labelledby="how-arka-works-heading"
     >
       <motion.h2
@@ -86,7 +86,7 @@ export function HowArkaWorksSection() {
             key={col.title}
             variants={fadeInUp}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className="arka-card rounded-xl border border-arka-primary/20 p-5 sm:p-6 hover:border-arka-cyan/30 hover:shadow-glow-sm transition-all"
+            className="arka-card rounded-xl border border-arka-light p-5 sm:p-6 hover:border-arka-cyan/30 hover:shadow-glow-sm transition-all"
           >
             <div className="flex items-center gap-3 mb-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-arka-cyan/15 text-arka-cyan">
@@ -143,7 +143,7 @@ export function HowArkaWorksSection() {
             key={box.title}
             variants={fadeInUp}
             transition={{ duration: 0.35, ease: "easeOut" }}
-            className="arka-card rounded-xl border border-arka-primary/20 p-4 sm:p-5 flex gap-3"
+            className="arka-card rounded-xl border border-arka-light p-4 sm:p-5 flex gap-3"
           >
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-arka-teal/15 text-arka-teal">
               <box.icon className="h-4 w-4" aria-hidden />
@@ -212,7 +212,7 @@ export function HowArkaWorksSection() {
             key={step.title}
             variants={fadeInUp}
             transition={{ duration: 0.35, ease: "easeOut" }}
-            className="arka-card rounded-xl border border-arka-primary/20 p-4 sm:p-5 flex gap-4"
+            className="arka-card rounded-xl border border-arka-light p-4 sm:p-5 flex gap-4"
           >
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-arka-teal text-white font-bold text-sm">
               {i + 1}

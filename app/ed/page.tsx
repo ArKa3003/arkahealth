@@ -49,8 +49,8 @@ export default function EdPage() {
             ARKA-ED: Educational Platform
           </h1>
           <p className="mt-2 text-arka-text-dark-muted font-sans text-base sm:text-lg max-w-2xl">
-            Case-based learning for imaging appropriateness. Practice with clinical vignettes,
-            select imaging, and get evidence-based feedback aligned with ACR criteria.
+            Trains medical students and residents to choose the right imaging study — practice with
+            clinical vignettes and get instant, evidence-based feedback on every order.
           </p>
         </header>
 

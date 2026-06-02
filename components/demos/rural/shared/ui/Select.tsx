@@ -19,7 +19,7 @@ export function Select({
       <select
         id={id}
         className={cn(
-          "w-full min-h-[44px] rounded-lg border border-arka-primary/20 bg-white px-3 py-2 text-sm text-arka-text-dark shadow-sm focus:border-arka-teal focus:outline-none focus:ring-2 focus:ring-arka-teal/30 dark:bg-arka-bg-medium/80",
+          "w-full min-h-[44px] rounded-lg border border-arka-primary/20 bg-white px-3 py-2 text-sm text-arka-text-dark shadow-sm focus:border-arka-teal focus:outline-none focus:ring-2 focus:ring-arka-teal/30",
           className
         )}
         {...props}

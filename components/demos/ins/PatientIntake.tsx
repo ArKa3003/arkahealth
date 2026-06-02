@@ -70,20 +70,20 @@ function PatientCard({
             </motion.div>
           )}
         </AnimatePresence>
-        {isComplex && (
-          <div className="absolute top-3 right-3">
-            <Badge status="warning" variant="subtle" size="sm">
-              <AlertTriangle className="h-3 w-3 mr-1" /> Complex
-            </Badge>
-          </div>
-        )}
         <CardContent className="p-5">
+          {isComplex && (
+            <div className="mb-3 flex justify-start">
+              <Badge status="warning" variant="subtle" size="sm">
+                <AlertTriangle className="h-3 w-3 mr-1" /> Complex
+              </Badge>
+            </div>
+          )}
           <div className="flex items-start gap-4 mb-4">
             <div className={cn("h-14 w-14 rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0", color)}>
               {getInitials(patient.firstName, patient.lastName)}
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="font-heading text-lg font-semibold text-slate-900 truncate">
+              <h3 className="font-heading text-lg font-semibold text-slate-900 leading-snug">
                 {patient.firstName} {patient.lastName}
               </h3>
               <p className="text-sm text-slate-800">{age} years old • {patient.gender === "male" ? "Male" : "Female"}</p>

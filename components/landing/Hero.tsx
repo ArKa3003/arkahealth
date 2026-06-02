@@ -228,6 +228,29 @@ export function Hero() {
           CUTTING EDGE IMAGING DECISION SUPPORT
         </motion.p>
 
+        <motion.h1
+          className="mt-4 max-w-3xl font-bold leading-tight text-arka-text sm:mt-5"
+          style={{
+            fontSize: "clamp(1.75rem, 4vw + 0.75rem, 3rem)",
+          }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.28, ease: "easeOut" as const }}
+        >
+          Order the right imaging — the first time.
+        </motion.h1>
+
+        <motion.p
+          className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-arka-text-soft sm:mt-5 sm:text-lg"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.38, ease: "easeOut" as const }}
+        >
+          ARKA is an evidence-based decision-support engine that guides imaging orders at the point of
+          care, then runs the same appropriateness check on the payer side — fewer denials, less
+          administrative burden, and the ordering clinician always keeps the final call.
+        </motion.p>
+
         <motion.div
           className="mt-6 sm:mt-8 flex w-full max-w-3xl flex-col gap-3 sm:items-center"
           initial={{ opacity: 0, y: 24 }}

@@ -16,7 +16,7 @@ export function StoreAndForwardManager() {
       </CardHeader>
       <CardContent className="space-y-2">
         {rows.map((r) => (
-          <div key={r.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-arka-bg-medium/30 px-3 py-2 text-sm">
+          <div key={r.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-arka-light bg-arka-bg-alt px-3 py-2 text-sm text-arka-text-dark">
             <div>
               <p className="font-medium text-arka-text-dark">{r.study}</p>
               <p className="text-xs text-arka-text-dark-muted">{r.destination}</p>

@@ -17,7 +17,7 @@ export function PopulationHealthAnalytics() {
       </CardHeader>
       <CardContent className="space-y-2">
         {metrics.map((m) => (
-          <div key={m.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-arka-bg-medium/30 px-3 py-2 text-sm">
+          <div key={m.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-arka-light bg-arka-bg-alt px-3 py-2 text-sm text-arka-text-dark">
             <span className="text-arka-text-dark">{m.label}</span>
             <span className="font-medium text-arka-text-dark">
               {m.value}

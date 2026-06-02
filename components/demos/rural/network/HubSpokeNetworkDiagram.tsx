@@ -95,12 +95,12 @@ export function HubSpokeNetworkDiagram({ nodes, hubId, selectedId, onSelect }: H
                 cy={n.y}
                 r={r}
                 className={cn(
-                  "cursor-pointer stroke-2 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-arka-teal focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-arka-bg-medium",
+                  "cursor-pointer stroke-2 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-arka-teal focus-visible:ring-offset-2 focus-visible:ring-offset-white",
                   isHub
                     ? "fill-arka-teal/20 stroke-arka-teal"
                     : n.facility.networkRole === "spoke"
-                      ? "fill-white stroke-arka-teal/80 dark:fill-arka-bg-medium/80"
-                      : "fill-arka-bg-medium/60 stroke-arka-primary/40 dark:stroke-white/30"
+                      ? "fill-white stroke-arka-teal/80"
+                      : "fill-arka-pale stroke-arka-primary/40"
                 )}
                 onClick={() => onSelect(n.facility.id)}
                 onKeyDown={(ev) => {

@@ -64,7 +64,7 @@ function CaseCard({
           {DIFFICULTY_LABELS[caseData.difficulty]}
         </span>
       </div>
-      <h3 className="font-semibold text-slate-900 line-clamp-2 mb-2">{caseData.title}</h3>
+      <h3 className="font-semibold text-slate-900 leading-snug mb-2">{caseData.title}</h3>
       <p className="text-sm text-slate-800 line-clamp-2 italic">
         &ldquo;{caseData.chief_complaint}&rdquo;
       </p>

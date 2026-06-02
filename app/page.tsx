@@ -10,7 +10,7 @@ import { Testimonials } from "@/components/landing/Testimonials";
 import { CtaSection } from "@/components/landing/CtaSection";
 
 const HOME_DESCRIPTION =
-  "ARKA recovers imaging revenue lost to prior-auth denials — clean documentation at the point of order, inside Epic, Cerner, and Athena, with zero workflow change. Non-Device CDS, CMS-0057-F ready.";
+  "ARKA is an evidence-based imaging clinical decision support engine — guides the right order at the point of care and the same appropriateness check on the payer side. Non-Device CDS, CMS-0057-F ready.";
 
 export const metadata: Metadata = {
   title: "Home",

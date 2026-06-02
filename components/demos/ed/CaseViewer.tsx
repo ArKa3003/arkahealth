@@ -185,40 +185,42 @@ export function CaseViewer({
       <TimeUpModal isOpen={showTimeUpModal} onSubmit={handleSubmit} />
 
       <div className={clsx("flex flex-col min-h-[70vh] bg-arka-bg-dark", className)}>
-        <header className="border-b border-arka-primary/20 px-4 py-3 flex items-center justify-between flex-shrink-0">
-          <div className="flex items-center gap-3 min-w-0">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onBack ?? (() => router.push("/ed"))}
-              className="text-arka-text-muted shrink-0"
-            >
-              <ArrowLeft className="w-4 h-4 mr-1 shrink-0" />
-              <span className="hidden sm:inline">Back</span>
-            </Button>
-            <div className="h-6 w-px bg-arka-primary/20 hidden sm:block" />
-            <h1 className="font-semibold text-arka-text line-clamp-1 text-sm sm:text-base truncate">
-              {caseData.title}
-            </h1>
-          </div>
+        <header className="border-b border-arka-primary/20 px-4 sm:px-6 py-3 flex-shrink-0">
+          <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
+            <div className="flex items-start gap-3 min-w-0 flex-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onBack ?? (() => router.push("/ed"))}
+                className="text-arka-text-muted shrink-0"
+              >
+                <ArrowLeft className="w-4 h-4 mr-1 shrink-0" />
+                <span className="hidden sm:inline">Back</span>
+              </Button>
+              <div className="h-6 w-px bg-arka-primary/20 hidden sm:block shrink-0 mt-1" />
+              <h1 className="font-semibold text-arka-text text-base sm:text-lg leading-snug break-words">
+                {caseData.title}
+              </h1>
+            </div>
 
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            {mode === "quiz" && !isSubmitted && (
-              <TimerBadge remaining={quizTimeRemaining} />
-            )}
-            {mode === "learning" && !isSubmitted && hintsAvailable > 0 && (
-              <HintButton
-                hintsAvailable={hintsAvailable}
-                hintsUsed={hintsUsed}
-                onClick={() => setShowHintPanel(!showHintPanel)}
+            <div className="flex items-center gap-2 sm:gap-3 shrink-0 ml-auto">
+              {mode === "quiz" && !isSubmitted && (
+                <TimerBadge remaining={quizTimeRemaining} />
+              )}
+              {mode === "learning" && !isSubmitted && hintsAvailable > 0 && (
+                <HintButton
+                  hintsAvailable={hintsAvailable}
+                  hintsUsed={hintsUsed}
+                  onClick={() => setShowHintPanel(!showHintPanel)}
+                  disabled={isSubmitted}
+                />
+              )}
+              <LearningModeToggle
+                mode={mode}
+                onModeChange={setMode}
                 disabled={isSubmitted}
               />
-            )}
-            <LearningModeToggle
-              mode={mode}
-              onModeChange={setMode}
-              disabled={isSubmitted}
-            />
+            </div>
           </div>
         </header>
 

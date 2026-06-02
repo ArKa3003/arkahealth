@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { DemoBottomNav } from "./DemoBottomNav";
 import { NavigationProgress } from "./NavigationProgress";
+import { useClientMounted } from "@/lib/hooks/use-client-mounted";
 import { cn } from "@/lib/utils";
 
 const DEMO_PATHS = ["/clin-suite", "/clin", "/ed", "/ins"];
@@ -16,6 +17,7 @@ const pageVariants = {
 
 export function MainWithDemoNav({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const mounted = useClientMounted();
   const isDemoPage = DEMO_PATHS.some((p) => pathname.startsWith(p));
 
   return (
@@ -29,19 +31,23 @@ export function MainWithDemoNav({ children }: { children: React.ReactNode }) {
         )}
         tabIndex={-1}
       >
-        <AnimatePresence mode="popLayout">
-          <motion.div
-            key={pathname}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            variants={pageVariants}
-            transition={{ duration: 0.35, ease: [0.22, 0.61, 0.36, 1] }}
-            className="min-h-0 flex-1"
-          >
-            {children}
-          </motion.div>
-        </AnimatePresence>
+        {mounted ? (
+          <AnimatePresence mode="popLayout">
+            <motion.div
+              key={pathname}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              variants={pageVariants}
+              transition={{ duration: 0.35, ease: [0.22, 0.61, 0.36, 1] }}
+              className="min-h-0 flex-1"
+            >
+              {children}
+            </motion.div>
+          </AnimatePresence>
+        ) : (
+          <div className="min-h-0 flex-1">{children}</div>
+        )}
       </main>
       <DemoBottomNav />
     </>

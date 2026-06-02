@@ -18,7 +18,7 @@ export function Card({
     <div
       className={clsx(
         "arka-card rounded-xl p-4 sm:p-6 transition-all duration-200",
-        variant === "bordered" && "border border-arka-primary/20",
+        variant === "bordered" && "border border-arka-light",
         variant === "elevated" && "shadow-glow-sm",
         className
       )}
@@ -38,7 +38,7 @@ export function CardHeader({
   return (
     <div
       className={clsx(
-        "mb-4 sm:mb-6 border-b border-arka-primary/20 pb-4",
+        "mb-4 sm:mb-6 border-b border-arka-light pb-4",
         className
       )}
     >

@@ -20,7 +20,7 @@ export function Badge({
     <span
       className={clsx(
         "inline-flex items-center rounded-full font-medium",
-        variant === "default" && "bg-arka-bg-medium text-arka-text-soft",
+        variant === "default" && "bg-arka-bg-alt text-arka-text-dark-muted border border-arka-light",
         variant === "success" &&
           "bg-arka-cyan/20 text-arka-cyan border border-arka-cyan/40",
         variant === "warning" &&

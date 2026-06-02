@@ -73,13 +73,7 @@ const fadeIn = {
   transition: { duration: 0.5, ease: "easeOut" as const },
 };
 
-const HUB = { x: 300, y: 108 };
-const NODES = [
-  { label: "CLIN", x: 300, y: 28 },
-  { label: "ED", x: 548, y: 108 },
-  { label: "INS", x: 300, y: 188 },
-  { label: "RURAL", x: 52, y: 108 },
-] as const;
+const PHASE_CHIPS = ["CLIN", "ED", "INS", "RURAL"] as const;
 
 /**
  * Unified platform section — shared knowledge base hub and four phase demos.
@@ -121,80 +115,31 @@ export function PlatformEcosystem() {
           initial={fadeIn.initial}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ ...fadeIn.transition, delay: 0.14 }}
-          className="mx-auto mt-12 max-w-xl"
+          className="mx-auto mt-12 flex max-w-2xl flex-col items-center text-center"
+          role="group"
+          aria-label="ARKA shared knowledge base connects four phases: CLIN, ED, INS, and RURAL"
         >
-          <p className="sr-only">
-            ARKA shared knowledge base connects four phases: CLIN for clinicians,
-            ED for medical students and residents, INS for radiology benefit
-            managers, and RURAL for rural imaging access.
-          </p>
-          <svg
-            viewBox="0 0 600 240"
-            className="mx-auto h-auto w-full max-h-[260px] text-arka-teal"
-            aria-hidden
-          >
-            {NODES.map((node) => (
-              <line
-                key={node.label}
-                x1={HUB.x}
-                y1={HUB.y}
-                x2={node.x}
-                y2={node.y}
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeOpacity={0.45}
-              />
-            ))}
-            {NODES.map((node) => (
-              <g key={node.label}>
-                <circle
-                  cx={node.x}
-                  cy={node.y}
-                  r={28}
-                  fill="white"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                />
-                <text
-                  x={node.x}
-                  y={node.y}
-                  textAnchor="middle"
-                  dominantBaseline="central"
-                  className="fill-arka-text-dark text-[11px] font-semibold"
-                  style={{ fontSize: node.label === "RURAL" ? 9 : 11 }}
-                >
-                  {node.label}
-                </text>
-              </g>
-            ))}
-            <circle
-              cx={HUB.x}
-              cy={HUB.y}
-              r={36}
-              fill="white"
-              stroke="currentColor"
-              strokeWidth="2.5"
+          <div className="inline-flex items-center gap-2 rounded-full bg-arka-navy px-5 py-2.5 text-sm font-semibold text-arka-text">
+            <span
+              className="h-2 w-2 shrink-0 rounded-full bg-arka-teal"
+              aria-hidden
             />
-            <text
-              x={HUB.x}
-              y={HUB.y}
-              textAnchor="middle"
-              dominantBaseline="central"
-              className="fill-arka-text-dark text-sm font-bold"
-              style={{ fontSize: 14 }}
-            >
-              ARKA
-            </text>
-            <text
-              x={HUB.x}
-              y={HUB.y + 52}
-              textAnchor="middle"
-              className="fill-arka-teal text-[10px] font-semibold tracking-widest"
-              style={{ fontSize: 10, letterSpacing: "0.12em" }}
-            >
-              SHARED KNOWLEDGE BASE
-            </text>
-          </svg>
+            ARKA · Shared Knowledge Base
+          </div>
+          <div className="mt-4 flex flex-wrap justify-center gap-3">
+            {PHASE_CHIPS.map((label) => (
+              <span
+                key={label}
+                className="rounded-full border border-arka-light bg-white px-4 py-1.5 text-sm font-semibold text-arka-text-dark"
+              >
+                {label}
+              </span>
+            ))}
+          </div>
+          <p className="mt-4 max-w-md text-sm text-arka-text-dark-soft">
+            The same decision engine, four surfaces — clinician, learner, payer,
+            and rural site.
+          </p>
         </motion.div>
 
         <div className="mt-14 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2">

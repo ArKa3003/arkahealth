@@ -15,7 +15,7 @@ export function EquipmentRegistry() {
       </CardHeader>
       <CardContent className="space-y-2 text-sm">
         {equipment.map((e) => (
-          <div key={e.id} className="flex justify-between gap-2 rounded-lg bg-arka-bg-medium/30 px-3 py-2">
+          <div key={e.id} className="flex justify-between gap-2 rounded-lg border border-arka-light bg-arka-bg-alt px-3 py-2 text-arka-text-dark">
             <span className="text-arka-text-dark">{e.name}</span>
             <span className="text-arka-text-dark-muted">
               {e.site} · {e.status}
