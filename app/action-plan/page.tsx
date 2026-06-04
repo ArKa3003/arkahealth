@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { ActionPlanViewer } from "@/components/action-plan/ActionPlanViewer";
 
-const PDF_PATH = "/docs/ARKA_Action_Plan_ver7.pdf";
+const PDF_PATH = "/docs/ARKA_Action_Plan_ver8.pdf";
 
 export const metadata: Metadata = {
   title: "Action Plan",
