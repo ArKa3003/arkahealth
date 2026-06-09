@@ -5,11 +5,7 @@ import Image from "next/image";
 import { AIIE_ENGINE_VERSION, complianceLinks, navLinks, routes } from "@/lib/constants";
 import { useEvidenceModal } from "@/components/shared/compliance/evidence-modal-context";
 
-const socialPlaceholders = [
-  { label: "LinkedIn", href: "#", ariaLabel: "ARKA on LinkedIn" },
-  { label: "Twitter", href: "#", ariaLabel: "ARKA on Twitter" },
-  { label: "GitHub", href: "#", ariaLabel: "ARKA on GitHub" },
-] as const;
+const CONTACT_EMAIL = "arrihantk@getarka.health";
 
 export function Footer() {
   const { setOpen } = useEvidenceModal();
@@ -18,11 +14,11 @@ export function Footer() {
     <footer className="safe-area-bottom border-t border-arka-deep/50 bg-arka-navy dark:border-neutral-800 dark:bg-arka-navy">
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8 safe-area-left safe-area-right">
         <div className="flex flex-col gap-8 sm:gap-10">
-          {/* Top row: logo + nav + social */}
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+          {/* Top row: logo + nav + contact */}
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-[auto_1fr_auto] sm:items-center">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 text-arka-text no-underline"
+              className="inline-flex items-center gap-2 text-arka-text no-underline sm:justify-self-start"
               aria-label="ARKA Health – Home"
             >
               <Image
@@ -35,7 +31,7 @@ export function Footer() {
               />
               <span className="text-sm font-semibold">ARKA</span>
             </Link>
-            <ul className="flex flex-wrap items-center gap-6">
+            <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
               {navLinks.map(({ href, label }) => (
                 <li key={href}>
                   <Link
@@ -46,32 +42,18 @@ export function Footer() {
                   </Link>
                 </li>
               ))}
-              <li>
-                <Link
-                  href="mailto:arrihantk@getarka.health"
-                  className="arka-link-underline text-sm text-arka-text-soft hover:text-arka-text dark:text-neutral-400 dark:hover:text-white"
-                >
-                  Contact
-                </Link>
-              </li>
             </ul>
-            <ul className="flex flex-wrap items-center gap-4">
-              {socialPlaceholders.map(({ href, label, ariaLabel }) => (
-                <li key={label}>
-                  <a
-                    href={href}
-                    className="arka-link-underline text-sm text-arka-text-soft hover:text-arka-cyan"
-                    aria-label={ariaLabel}
-                  >
-                    {label}
-                  </a>
-                </li>
-              ))}
-            </ul>
+            <a
+              href={`mailto:${CONTACT_EMAIL}`}
+              className="justify-self-end text-sm font-bold text-arka-text-soft underline decoration-arka-cyan/70 underline-offset-4 transition-colors hover:text-arka-cyan"
+              aria-label="Contact ARKA Health"
+            >
+              Contact
+            </a>
           </div>
           {/* Compliance + copyright */}
           <div className="flex flex-col gap-4 border-t border-arka-deep/30 pt-6">
-            <div className="flex flex-wrap items-center justify-center gap-2">
+            <div className="flex flex-wrap items-center justify-center gap-3">
               {complianceLinks.map((link) => {
                 const buttonLabel =
                   "footerLabel" in link && link.footerLabel ? link.footerLabel : link.label;
