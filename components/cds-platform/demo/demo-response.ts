@@ -10,8 +10,9 @@ import type { MLPrediction, SHAPFeatureContribution } from '@/lib/cds-platform/m
 import type { TieredAlert } from '@/lib/cds-platform/alerting/types';
 import { AlertCategory, AlertTierEnum } from '@/lib/cds-platform/alerting/types';
 import type { ClinicalScenario } from '@/lib/cds-platform/types';
-import type { CDSCard } from '@/lib/types/cds-hooks';
-import type { DemoScenario } from './scenarios';
+import { FDA_NON_DEVICE_CDS_DISCLOSURE } from '@/lib/compliance/fda-disclosure';
+import type { CDSCard, CDSHookResponse } from '@/lib/types/cds-hooks';
+import type { DemoExpectedTier, DemoScenario } from './scenarios';
 
 /** SHAP row with clinician-facing rationale (Phase 6.3 wire format). */
 export interface ShapRowWithRationale {
@@ -226,4 +227,92 @@ export function resolveMedicalBasis(
   scenario: DemoScenario,
 ): MedicalBasis {
   return card?.medicalBasis ?? scenario.medicalBasis;
+}
+
+function tierToIndicator(tier: DemoExpectedTier): CDSCard['indicator'] {
+  if (tier === 'passive' || tier === 'active_info') return 'info';
+  if (tier === 'warning') return 'warning';
+  return 'critical';
+}
+
+function tierToScore(tier: DemoExpectedTier): number {
+  if (tier === 'passive' || tier === 'active_info') return 8;
+  if (tier === 'warning') return 3;
+  return 2;
+}
+
+function scoreCategory(score: number): string {
+  if (score >= 7) return 'Appropriate';
+  if (score >= 4) return 'May be appropriate';
+  return 'Not appropriate';
+}
+
+function scoreEmoji(score: number): string {
+  if (score >= 7) return '✅';
+  if (score >= 4) return '⚠️';
+  return '🔴';
+}
+
+/**
+ * Synthesizes a spec-valid CDS Hooks response when the live endpoint is unreachable.
+ *
+ * @param scenario - Active demo scenario.
+ * @param hook - CDS hook that triggered the request.
+ */
+export function buildLocalCdsResponse(
+  scenario: DemoScenario,
+  hook: 'order-select' | 'order-sign',
+): CDSHookResponse {
+  const score = tierToScore(scenario.expectedTier);
+  const indicator = tierToIndicator(scenario.expectedTier);
+  const modality = scenario.modality;
+  const indication = scenario.chiefComplaint;
+  const emoji = scoreEmoji(score);
+  const category = scoreCategory(score);
+  const basis = scenario.medicalBasis;
+
+  const summary =
+    score >= 7
+      ? `${modality} for ${indication}: Appropriate (score ${score}).`
+      : score >= 4
+        ? `${modality} may be appropriate (score ${score}). Consider alternatives.`
+        : `${modality} may not be appropriate (score ${score}). Consider alternatives or non-imaging workup.`;
+  const truncatedSummary = summary.length > 140 ? summary.slice(0, 137) + '...' : summary;
+
+  const shapWithRationales = resolveShapRows(undefined, scenario);
+  const shapBlock = shapWithRationales
+    .map((row) => {
+      const dir = row.contribution > 0 ? '+' : '';
+      return `- **${row.label}**: ${dir}${row.contribution.toFixed(2)}`;
+    })
+    .join('\n');
+
+  const detail = [
+    `**Guideline basis:** ${basis.label}`,
+    basis.rationale,
+    '',
+    `**Score:** ${score} ${emoji} — ${category}`,
+    '',
+    '**Top factors (SHAP):**',
+    shapBlock || 'No factor details available.',
+    '',
+    `**Rationale:** ${indication}. Cached scenario response (${hook}; CDS endpoint unreachable).`,
+    '',
+    FDA_NON_DEVICE_CDS_DISCLOSURE,
+  ].join('\n');
+
+  const card: DemoCdsCard = {
+    uuid: `demo-local-${scenario.id}-${hook}`,
+    summary: truncatedSummary,
+    detail,
+    indicator,
+    source: {
+      label: basis.label,
+      url: basis.url ?? 'https://arkahealth.com/clin',
+    },
+    medicalBasis: basis,
+    extension: { shapWithRationales },
+  };
+
+  return { cards: [card] };
 }

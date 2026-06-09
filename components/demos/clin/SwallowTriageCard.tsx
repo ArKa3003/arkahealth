@@ -12,6 +12,7 @@ import {
 import type { AIIEOrder } from "@/lib/types/aiie";
 import type { PatientRecordSnapshot } from "@/lib/types/record-snapshot";
 import { FDA_NON_DEVICE_CDS_DISCLOSURE } from "@/lib/compliance/fda-disclosure";
+import { safeFetchJson } from "@/lib/utils/safe-fetch-json";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/Card";
 import { Button } from "./ui/Button";
 import { Badge } from "./ui/Badge";
@@ -80,27 +81,25 @@ export function SwallowTriageCard({
     async (choice: SwallowModality, reason?: string) => {
       setLogStatus("saving");
       setLogError(null);
-      try {
-        const res = await fetch("/api/ins/swallow-overrides", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            patientHash,
-            proposed: assessment.proposed,
-            recommended: assessment.recommendation,
-            clinicianChoice: choice,
-            overrideReason: reason,
-          }),
-        });
-        if (!res.ok) {
-          const body = (await res.json()) as { error?: string };
-          throw new Error(body.error ?? "Failed to record override.");
-        }
-        setLogStatus("saved");
-      } catch (err) {
+      const result = await safeFetchJson<{ error?: string }>("/api/ins/swallow-overrides", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          patientHash,
+          proposed: assessment.proposed,
+          recommended: assessment.recommendation,
+          clinicianChoice: choice,
+          overrideReason: reason,
+        }),
+      });
+
+      if (!result.ok) {
         setLogStatus("error");
-        setLogError(err instanceof Error ? err.message : "Failed to record override.");
+        setLogError(result.error);
+        return;
       }
+
+      setLogStatus("saved");
     },
     [assessment, patientHash],
   );

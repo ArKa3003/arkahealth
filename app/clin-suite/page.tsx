@@ -12,6 +12,7 @@ import { FDANonDeviceBanner } from "@/components/shared/compliance/FDANonDeviceB
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { complianceLinks, routes } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+import { safeFetchJson } from "@/lib/utils/safe-fetch-json";
 
 const ClinDemoContent = dynamic(
   () => import("@/components/demos/clin/ClinDemoContent").then((m) => m.ClinDemoContent),
@@ -183,25 +184,26 @@ function DiscoveryTabContent() {
     async function loadDiscovery() {
       setLoading(true);
       setLoadError(null);
-      try {
-        const res = await fetch("/.well-known/cds-services", { cache: "no-store" });
-        if (!res.ok) {
-          throw new Error(`Discovery request failed (${res.status})`);
-        }
-        const data: unknown = await res.json();
-        if (!cancelled) {
-          setJson(JSON.stringify(data, null, 2));
-        }
-      } catch (err) {
-        if (!cancelled) {
-          setLoadError(err instanceof Error ? err.message : "Could not load discovery JSON.");
-          setJson(null);
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
+      const result = await safeFetchJson<unknown>("/.well-known/cds-services", {
+        cache: "no-store",
+      });
+
+      if (cancelled) {
+        return;
       }
+
+      if (!result.ok) {
+        const message =
+          result.status !== undefined
+            ? `Discovery request failed (${result.status})`
+            : result.error;
+        setLoadError(message);
+        setJson(null);
+      } else {
+        setJson(JSON.stringify(result.data, null, 2));
+      }
+
+      setLoading(false);
     }
 
     void loadDiscovery();

@@ -243,6 +243,7 @@ export function PatientExplainerClient() {
                     className="h-40 w-full"
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
+                    sandbox="allow-scripts allow-same-origin allow-popups"
                     src={`https://www.google.com/maps?q=${encodeURIComponent(`${s.name} ${s.address ?? ""}`)}&output=embed`}
                   />
                 </div>
@@ -258,6 +259,7 @@ export function PatientExplainerClient() {
               className="h-44 w-full"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
+              sandbox="allow-scripts allow-same-origin allow-popups"
               src={`https://www.openstreetmap.org/export/embed.html?bbox=${mapBbox}&layer=mapnik`}
             />
             <p className="px-4 py-2 text-center text-xs text-slate-500">Map shows the general ZIP area, not exact driving routes.</p>

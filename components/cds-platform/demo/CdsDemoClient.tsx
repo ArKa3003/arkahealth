@@ -20,6 +20,7 @@ import { CdsDemoSidebar } from './CdsDemoSidebar';
 import { RoiCounter } from './RoiCounter';
 import { JsonSyntaxPre } from './JsonSyntaxPre';
 import {
+  buildLocalCdsResponse,
   buildPredictionFromCard,
   resolveMedicalBasis,
   resolveShapRows,
@@ -28,12 +29,33 @@ import {
 
 const ORDER_SELECT_PATH = '/api/cds-services/arka-clin-appropriateness';
 const ORDER_SIGN_PATH = '/api/cds-services/arka-clin-appropriateness-sign';
+const FETCH_TIMEOUT_MS = 9_000;
 
 interface HookExchange {
   hook: 'order-select' | 'order-sign';
   request: CDSHookRequest;
   response: CDSHookResponse | null;
   error?: string;
+  offline?: boolean;
+}
+
+/**
+ * Parses a CDS Hooks response body; returns null when JSON is invalid or lacks a cards array.
+ */
+function parseCdsHookResponse(text: string): CDSHookResponse | null {
+  try {
+    const parsed = JSON.parse(text) as unknown;
+    if (
+      parsed !== null &&
+      typeof parsed === 'object' &&
+      Array.isArray((parsed as CDSHookResponse).cards)
+    ) {
+      return parsed as CDSHookResponse;
+    }
+    return null;
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -72,17 +94,44 @@ export function CdsDemoClient() {
   const invokeHook = useCallback(
     async (hook: 'order-select' | 'order-sign', path: string): Promise<HookExchange> => {
       const request = buildCdsRequest(scenario, hook);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+
       try {
         const res = await fetch(path, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(request),
+          signal: controller.signal,
         });
-        const response = (await res.json()) as CDSHookResponse;
+        const text = await res.text();
+        if (!res.ok) {
+          return {
+            hook,
+            request,
+            response: buildLocalCdsResponse(scenario, hook),
+            offline: true,
+          };
+        }
+        const response = parseCdsHookResponse(text);
+        if (!response) {
+          return {
+            hook,
+            request,
+            response: buildLocalCdsResponse(scenario, hook),
+            offline: true,
+          };
+        }
         return { hook, request, response };
-      } catch (err) {
-        const message = err instanceof Error ? err.message : 'Request failed';
-        return { hook, request, response: null, error: message };
+      } catch {
+        return {
+          hook,
+          request,
+          response: buildLocalCdsResponse(scenario, hook),
+          offline: true,
+        };
+      } finally {
+        clearTimeout(timeoutId);
       }
     },
     [scenario],
@@ -103,7 +152,7 @@ export function CdsDemoClient() {
     setScoresSeen((s) => [...s, score]);
     setOrdersReviewed((n) => n + 1);
     setLoading(false);
-    setLive(true);
+    setLive(!exchange.offline);
   }, [invokeHook, scenario]);
 
   useEffect(() => {
@@ -119,6 +168,7 @@ export function CdsDemoClient() {
     setOverrideDialogOpen(false);
     setShowReviewPanel(false);
     setSignPending(false);
+    setLive(false);
   };
 
   const handleSignOrder = async () => {
@@ -157,6 +207,18 @@ export function CdsDemoClient() {
           [...scoresSeen].sort((a, b) => a - b)[Math.floor(scoresSeen.length / 2)] ?? '—',
         );
 
+  const latestOrderSelect = exchanges.find((e) => e.hook === 'order-select');
+  const badgeLabel = !latestOrderSelect
+    ? '○ Idle'
+    : live
+      ? '● Live'
+      : '● Cached';
+  const badgeAria = !latestOrderSelect
+    ? 'Idle'
+    : live
+      ? 'Live connection'
+      : 'Cached scenario response';
+
   return (
     <div className="min-w-0 space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-arka-primary/15 bg-white px-4 py-3">
@@ -166,10 +228,16 @@ export function CdsDemoClient() {
           </span>
           <Badge
             variant="outline"
-            className={live ? 'border-emerald-500/50 text-emerald-600' : 'border-arka-muted text-arka-muted'}
-            aria-label={live ? 'Live connection' : 'Idle'}
+            className={
+              !latestOrderSelect
+                ? 'border-arka-muted text-arka-muted'
+                : live
+                  ? 'border-emerald-500/50 text-emerald-600'
+                  : 'border-amber-500/50 text-amber-600'
+            }
+            aria-label={badgeAria}
           >
-            {live ? '● Live' : '○ Idle'}
+            {badgeLabel}
           </Badge>
         </div>
         <Button
@@ -250,6 +318,11 @@ export function CdsDemoClient() {
                 </p>
                 <JsonSyntaxPre value={ex.request} />
                 <p className="text-xs font-semibold text-arka-cyan">Response ←</p>
+                {ex.offline && (
+                  <p className="font-mono text-xs text-arka-text-soft">
+                    // Served from cached scenario response (CDS endpoint unreachable)
+                  </p>
+                )}
                 {ex.response ? (
                   <JsonSyntaxPre value={ex.response} maxHeightClass="max-h-64" />
                 ) : (

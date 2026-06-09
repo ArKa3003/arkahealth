@@ -15,6 +15,7 @@ import {
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { RegulatoryTab } from '@/components/cds-platform/validation/RegulatoryTab';
+import { safeFetchJson } from '@/lib/utils/safe-fetch-json';
 
 const METHODOLOGY_TEXT =
   'ARKA AIIE predictions are validated against expert panel consensus labels. Expert labels are derived from the ARKA AIIE Clinical Evidence Base, a proprietary synthesis of peer-reviewed clinical literature, CMS guidelines, FDA safety guidance, and ARKA clinical advisory board protocols. ARKA does not use or license third-party proprietary appropriateness criteria.';
@@ -112,36 +113,32 @@ export default function ValidationDashboard() {
       setLoading(true);
       setError(null);
       const subgroups = forceSubgroups ?? includeSubgroups;
-      try {
-        const params = new URLSearchParams({
-          n_samples: String(nSamples),
-          include_subgroups: String(subgroups),
-        });
-        const res = await fetch(`/api/validation/run?${params}`, {
+      const params = new URLSearchParams({
+        n_samples: String(nSamples),
+        include_subgroups: String(subgroups),
+      });
+      const result = await safeFetchJson<ValidationReportState>(
+        `/api/validation/run?${params}`,
+        {
           method: 'POST',
           cache: 'no-store',
           signal: controller.signal,
-        });
-        if (!res.ok) {
-          const data = await res.json().catch(() => ({}));
-          throw new Error(data?.error ?? `HTTP ${res.status}`);
-        }
-        const data = await res.json();
-        if (!controller.signal.aborted) {
-          setReport(data as ValidationReportState);
-        }
-      } catch (e) {
-        if (e instanceof DOMException && e.name === 'AbortError') {
-          return;
-        }
-        if (!controller.signal.aborted) {
-          setError(e instanceof Error ? e.message : 'Validation failed');
-        }
-      } finally {
-        if (!controller.signal.aborted) {
-          setLoading(false);
-        }
+        },
+      );
+
+      if (controller.signal.aborted) {
+        return;
       }
+
+      if (!result.ok) {
+        if (result.error !== 'Request aborted') {
+          setError(result.error);
+        }
+      } else {
+        setReport(result.data);
+      }
+
+      setLoading(false);
     },
     [nSamples, includeSubgroups],
   );

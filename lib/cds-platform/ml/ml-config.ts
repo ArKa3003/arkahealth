@@ -5,7 +5,7 @@
 
 import { XGBoostClient, DEFAULT_ML_SERVICE_URL } from './xgboost-client';
 
-const DEFAULT_ML_TIMEOUT_MS = 5000;
+const DEFAULT_ML_TIMEOUT_MS = 2500;
 
 /**
  * Returns whether rule-based fallback is enabled when the ML service is unreachable.
@@ -37,5 +37,6 @@ export function createMlClient(): XGBoostClient {
         ? process.env?.ML_SERVICE_URL ?? DEFAULT_ML_SERVICE_URL
         : DEFAULT_ML_SERVICE_URL,
     timeout: getMlServiceTimeoutMs(),
+    retryCount: 1,
   });
 }

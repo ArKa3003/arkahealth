@@ -47,6 +47,25 @@ function jsonResponse(body: { cards: ClinCard[] }, status = 200): NextResponse {
   return NextResponse.json(body, { status, headers: CDS_HEADERS });
 }
 
+function withDeadline<T>(p: Promise<T>, ms: number, fallback: T): Promise<T> {
+  return new Promise<T>((resolve) => {
+    const t = setTimeout(() => resolve(fallback), ms);
+    p.then((v) => {
+      clearTimeout(t);
+      resolve(v);
+    }).catch(() => {
+      clearTimeout(t);
+      resolve(fallback);
+    });
+  });
+}
+
+function logDecisionSafe(entry: Parameters<typeof writeDecisionLog>[0]): void {
+  void writeDecisionLog(entry).catch((err) => {
+    console.warn("[arka-clin-appropriateness-sign] decision-log write failed", err);
+  });
+}
+
 /**
  * Maps the INS/shared CDS Hooks request shape to cds-platform snake_case auth fields.
  */
@@ -123,72 +142,94 @@ async function handleClinAppropriatenessSignPost(req: Request): Promise<NextResp
   const startedAt = Date.now();
   let hookInstance = "unknown";
 
-  let body: unknown;
   try {
-    body = await req.json();
-  } catch {
-    return jsonResponse({ cards: [] }, 400);
-  }
-
-  const parsed = safeParseCdsHookRequest(body);
-  if (!parsed.ok) {
-    return jsonResponse({ cards: [] }, 400);
-  }
-
-  hookInstance = parsed.data.hookInstance;
-
-  const platformRequest = toCdsPlatformRequest(parsed.data);
-  const raw = await handleOrderSign(platformRequest);
-
-  // FDA Non-Device CDS Criterion 2: empty cards when no guideline-anchored rule fired is intentional — not an error.
-  if (raw.cards.length === 0) {
-    await writeDecisionLog({
-      hookInstance,
-      hook: "order-sign",
-      hookTimestampISO: new Date().toISOString(),
-      scenario: redact({
-        patientId:
-          typeof platformRequest.context?.patientId === "string"
-            ? platformRequest.context.patientId
-            : "unknown",
-        redFlags: [],
-      }),
-      rulesFired: [],
-      mlInvoked: false,
-      cardsShipped: 0,
-      fdaDisclosureVersion: FDA_DISCLOSURE_VERSION,
-      cardSourceLabels: [],
-      durationMs: Date.now() - startedAt,
-    });
-    return jsonResponse({ cards: [] });
-  }
-
-  const enriched: ClinCard[] = [];
-  for (const card of raw.cards) {
-    const next = enrichClinCard(card as ClinCard);
-    if (next) {
-      enriched.push(next);
+    let body: unknown;
+    try {
+      body = await req.json();
+    } catch {
+      return jsonResponse({ cards: [] }, 400);
     }
-  }
 
-  const withMedicalBasis = enriched.filter((card) => {
-    if (!card.medicalBasis) {
-      console.error(
-        `[arka-clin-appropriateness-sign] ERROR: stripping card ${card.uuid ?? card.summary}: medicalBasis undefined`,
+    const parsed = safeParseCdsHookRequest(body);
+    if (!parsed.ok) {
+      return jsonResponse({ cards: [] }, 400);
+    }
+
+    hookInstance = parsed.data.hookInstance;
+
+    const platformRequest = toCdsPlatformRequest(parsed.data);
+    const raw = await withDeadline(handleOrderSign(platformRequest), 8000, { cards: [] });
+
+    // FDA Non-Device CDS Criterion 2: empty cards when no guideline-anchored rule fired is intentional — not an error.
+    if (raw.cards.length === 0) {
+      logDecisionSafe({
+        hookInstance,
+        hook: "order-sign",
+        hookTimestampISO: new Date().toISOString(),
+        scenario: redact({
+          patientId:
+            typeof platformRequest.context?.patientId === "string"
+              ? platformRequest.context.patientId
+              : "unknown",
+          redFlags: [],
+        }),
+        rulesFired: [],
+        mlInvoked: false,
+        cardsShipped: 0,
+        fdaDisclosureVersion: FDA_DISCLOSURE_VERSION,
+        cardSourceLabels: [],
+        durationMs: Date.now() - startedAt,
+      });
+      return jsonResponse({ cards: [] });
+    }
+
+    const enriched: ClinCard[] = [];
+    for (const card of raw.cards) {
+      const next = enrichClinCard(card as ClinCard);
+      if (next) {
+        enriched.push(next);
+      }
+    }
+
+    const withMedicalBasis = enriched.filter((card) => {
+      if (!card.medicalBasis) {
+        console.error(
+          `[arka-clin-appropriateness-sign] ERROR: stripping card ${card.uuid ?? card.summary}: medicalBasis undefined`,
+        );
+        return false;
+      }
+      return true;
+    });
+
+    const responseBody = { cards: withMedicalBasis };
+
+    const validation = cdsHookResponseSchema.safeParse(responseBody);
+    if (!validation.success) {
+      console.warn(
+        `[arka-clin-appropriateness-sign] Response schema validation failed: ${validation.error.message}`,
       );
-      return false;
+      logDecisionSafe({
+        hookInstance,
+        hook: "order-sign",
+        hookTimestampISO: new Date().toISOString(),
+        scenario: redact({
+          patientId:
+            typeof platformRequest.context?.patientId === "string"
+              ? platformRequest.context.patientId
+              : "unknown",
+          redFlags: [],
+        }),
+        rulesFired: [],
+        mlInvoked: raw.cards.some((c) => (c.detail ?? "").includes("SHAP")),
+        cardsShipped: 0,
+        fdaDisclosureVersion: FDA_DISCLOSURE_VERSION,
+        cardSourceLabels: [],
+        durationMs: Date.now() - startedAt,
+      });
+      return jsonResponse({ cards: [] });
     }
-    return true;
-  });
 
-  const responseBody = { cards: withMedicalBasis };
-
-  const validation = cdsHookResponseSchema.safeParse(responseBody);
-  if (!validation.success) {
-    console.warn(
-      `[arka-clin-appropriateness-sign] Response schema validation failed: ${validation.error.message}`,
-    );
-    await writeDecisionLog({
+    logDecisionSafe({
       hookInstance,
       hook: "order-sign",
       hookTimestampISO: new Date().toISOString(),
@@ -199,40 +240,23 @@ async function handleClinAppropriatenessSignPost(req: Request): Promise<NextResp
             : "unknown",
         redFlags: [],
       }),
-      rulesFired: [],
-      mlInvoked: raw.cards.some((c) => (c.detail ?? "").includes("SHAP")),
-      cardsShipped: 0,
+      rulesFired: withMedicalBasis.map((card) => ({
+        ruleId: card.medicalBasis!.citationId,
+        medicalBasisCitationId: card.medicalBasis!.citationId,
+        tier: card.medicalBasis!.authorityClass,
+      })),
+      mlInvoked: withMedicalBasis.some((c) => (c.detail ?? "").includes("SHAP")),
+      cardsShipped: withMedicalBasis.length,
       fdaDisclosureVersion: FDA_DISCLOSURE_VERSION,
-      cardSourceLabels: [],
+      cardSourceLabels: withMedicalBasis.map((c) => c.source.label),
       durationMs: Date.now() - startedAt,
     });
-    return jsonResponse({ cards: [] });
+
+    return jsonResponse(responseBody);
+  } catch (err) {
+    console.error("[arka-clin-appropriateness-sign] unhandled", err);
+    return jsonResponse({ cards: [] }, 200);
   }
-
-  await writeDecisionLog({
-    hookInstance,
-    hook: "order-sign",
-    hookTimestampISO: new Date().toISOString(),
-    scenario: redact({
-      patientId:
-        typeof platformRequest.context?.patientId === "string"
-          ? platformRequest.context.patientId
-          : "unknown",
-      redFlags: [],
-    }),
-    rulesFired: withMedicalBasis.map((card) => ({
-      ruleId: card.medicalBasis!.citationId,
-      medicalBasisCitationId: card.medicalBasis!.citationId,
-      tier: card.medicalBasis!.authorityClass,
-    })),
-    mlInvoked: withMedicalBasis.some((c) => (c.detail ?? "").includes("SHAP")),
-    cardsShipped: withMedicalBasis.length,
-    fdaDisclosureVersion: FDA_DISCLOSURE_VERSION,
-    cardSourceLabels: withMedicalBasis.map((c) => c.source.label),
-    durationMs: Date.now() - startedAt,
-  });
-
-  return jsonResponse(responseBody);
 }
 
 export const POST = withInsApiLogging(handleClinAppropriatenessSignPost);

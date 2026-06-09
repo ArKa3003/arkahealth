@@ -36,8 +36,8 @@ interface PythonHealthResponse {
   feature_count?: number;
 }
 
-const DEFAULT_TIMEOUT_MS = 15_000;
-const DEFAULT_RETRY_COUNT = 2;
+const DEFAULT_TIMEOUT_MS = 2_500;
+const DEFAULT_RETRY_COUNT = 1;
 
 function parsePythonPrediction(
   body: PythonPredictResponse,

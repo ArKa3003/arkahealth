@@ -13,6 +13,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { safeFetchJson } from "@/lib/utils/safe-fetch-json";
 
 export interface ReferenceEvidenceDrawerProps {
   cpt?: string;
@@ -100,27 +101,36 @@ export function ReferenceEvidenceDrawer({
     }
 
     void (async () => {
-      try {
-        const res = await fetch(`/api/ins/reference/lookup?${params.toString()}`, {
+      const result = await safeFetchJson<{ results?: ReferenceHit[] }>(
+        `/api/ins/reference/lookup?${params.toString()}`,
+        {
           signal: controller.signal,
           cache: "no-store",
-        });
-        if (!res.ok) {
-          setFetchError("Reference lookup unavailable.");
-          setHits([]);
+        },
+      );
+
+      if (controller.signal.aborted) {
+        return;
+      }
+
+      if (!result.ok) {
+        if (result.error === "Request aborted") {
           return;
         }
-        const json = (await res.json()) as { results?: ReferenceHit[] };
-        setHits(json.results ?? []);
-      } catch (err) {
-        if ((err as Error).name !== "AbortError") {
-          setFetchError("Reference lookup failed.");
-          setHits([]);
-        }
-      } finally {
-        setLoading(false);
-        setLoaded(true);
+        const isNetworkOrTimeout =
+          result.error === "Request timed out" ||
+          result.error === "Network request failed" ||
+          result.status === undefined;
+        setFetchError(
+          isNetworkOrTimeout ? "Reference lookup failed." : "Reference lookup unavailable.",
+        );
+        setHits([]);
+      } else {
+        setHits(result.data.results ?? []);
       }
+
+      setLoading(false);
+      setLoaded(true);
     })();
 
     return () => {
