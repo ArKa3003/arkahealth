@@ -1,0 +1,109 @@
+{
+  "resourceType": "Bundle",
+  "type": "searchset",
+  "total": 3,
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:arka-ehr-demo-sr-1",
+      "resource": {
+        "resourceType": "ServiceRequest",
+        "id": "arka-ehr-demo-sr-1",
+        "status": "draft",
+        "intent": "order",
+        "priority": "routine",
+        "category": [
+          {
+            "coding": [
+              { "system": "http://snomed.info/sct", "code": "363679005", "display": "Imaging" }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "72148",
+              "display": "MRI lumbar spine without contrast"
+            }
+          ],
+          "text": "MRI Lumbar Spine without contrast"
+        },
+        "subject": { "reference": "Patient/arka-ehr-demo-patient" },
+        "authoredOn": "2026-06-10T14:05:00Z",
+        "reasonCode": [
+          {
+            "text": "Low back pain for 6 weeks with progressive neurological deficit (left foot drop)"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:arka-ehr-demo-sr-2",
+      "resource": {
+        "resourceType": "ServiceRequest",
+        "id": "arka-ehr-demo-sr-2",
+        "status": "draft",
+        "intent": "order",
+        "priority": "routine",
+        "category": [
+          {
+            "coding": [
+              { "system": "http://snomed.info/sct", "code": "363679005", "display": "Imaging" }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "70450",
+              "display": "CT head without contrast"
+            }
+          ],
+          "text": "CT Head without contrast"
+        },
+        "subject": { "reference": "Patient/arka-ehr-demo-patient" },
+        "authoredOn": "2026-06-10T14:12:00Z",
+        "reasonCode": [
+          {
+            "text": "Chronic stable primary headache, normal neurological exam, no red flags"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:arka-ehr-demo-sr-3",
+      "resource": {
+        "resourceType": "ServiceRequest",
+        "id": "arka-ehr-demo-sr-3",
+        "status": "draft",
+        "intent": "order",
+        "priority": "stat",
+        "category": [
+          {
+            "coding": [
+              { "system": "http://snomed.info/sct", "code": "363679005", "display": "Imaging" }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "74177",
+              "display": "CT abdomen and pelvis with contrast"
+            }
+          ],
+          "text": "CT Abdomen/Pelvis with contrast"
+        },
+        "subject": { "reference": "Patient/arka-ehr-demo-patient" },
+        "authoredOn": "2026-06-10T14:20:00Z",
+        "reasonCode": [
+          {
+            "text": "Acute right lower quadrant abdominal pain with fever, suspected appendicitis"
+          }
+        ]
+      }
+    }
+  ]
+}

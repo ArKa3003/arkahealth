@@ -3,6 +3,7 @@ import { nanoid } from "nanoid";
 
 import { allowInsMiddlewareRequest, rateLimitClientKey } from "@/lib/middleware/ins-rate-limit";
 import { safeParseCdsHookRequest } from "@/lib/validation/cds-hooks-request";
+import { isCdsJwtRequired, verifyCdsHooksJwt } from "@/lib/cds-platform/cds-hooks/jwt-validator";
 
 const FHIR_JSON = "application/fhir+json";
 
@@ -68,6 +69,30 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   }
 
   if (isCdsHookServicePost(pathname, method)) {
+    // CDS Hooks security model: verify the EHR-signed JWT when CDS_JWT_REQUIRED=1
+    // (iss/aud allowlists from env, JWKS fetched via the header jku and cached).
+    if (isCdsJwtRequired()) {
+      const jwtResult = await verifyCdsHooksJwt(request.headers.get("authorization"));
+      if (jwtResult.error) {
+        return NextResponse.json(
+          {
+            resourceType: "OperationOutcome",
+            issue: [
+              {
+                severity: "error",
+                code: "security",
+                diagnostics: `CDS Hooks JWT validation failed: ${jwtResult.error.message}`,
+              },
+            ],
+          },
+          {
+            status: 401,
+            headers: { "Content-Type": FHIR_JSON, "X-Request-ID": requestId },
+          },
+        );
+      }
+    }
+
     const clone = request.clone();
     let body: unknown;
     try {

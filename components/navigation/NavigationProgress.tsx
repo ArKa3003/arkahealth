@@ -10,8 +10,10 @@ export function NavigationProgress() {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    setVisible(true);
-    setProgress(0);
+    const showTimer = window.setTimeout(() => {
+      setVisible(true);
+      setProgress(0);
+    }, 0);
 
     const t1 = setTimeout(() => setProgress(70), 50);
     const t2 = setTimeout(() => setProgress(100), 400);
@@ -21,6 +23,7 @@ export function NavigationProgress() {
     }, 500);
 
     return () => {
+      clearTimeout(showTimer);
       clearTimeout(t1);
       clearTimeout(t2);
       clearTimeout(t3);

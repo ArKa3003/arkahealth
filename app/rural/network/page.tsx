@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { NetworkManagerDashboardLoader } from "@/components/demos/rural/network/NetworkManagerDashboardLoader";
+import { RuralPhaseChrome } from "@/components/demos/rural/shared/RuralPhaseChrome";
 
 export const metadata: Metadata = {
   title: "Network Manager | Hub-and-Spoke",
@@ -9,8 +10,8 @@ export const metadata: Metadata = {
 
 export default function NetworkPage() {
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+    <RuralPhaseChrome areaId="network">
       <NetworkManagerDashboardLoader />
-    </div>
+    </RuralPhaseChrome>
   );
 }

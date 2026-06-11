@@ -1,5 +1,7 @@
-// src/lib/duration-parser.ts
-// Advanced duration parsing for clinical scenarios
+/**
+ * Advanced clinical duration parsing shared by the CLIN demo and the AIIE
+ * Clinical Knowledge Matrix normalizer. Deterministic, no network calls.
+ */
 
 export interface ParsedDuration {
   value: number; // Duration in weeks
@@ -34,7 +36,13 @@ export function parseDuration(duration: string): ParsedDuration {
     };
   }
 
-  const lower = duration.toLowerCase().trim();
+  // Normalize common clinical abbreviations ("3 wks", "2 mos") before matching.
+  const lower = duration
+    .toLowerCase()
+    .trim()
+    .replace(/\bwks?\b/g, "weeks")
+    .replace(/\bmos?\b/g, "months")
+    .replace(/\byrs?\b/g, "years");
   let weeks = 0;
   let pattern: ParsedDuration['pattern'] = 'constant';
   let confidence: ParsedDuration['confidence'] = 'high';

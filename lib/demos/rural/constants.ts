@@ -260,6 +260,132 @@ export const RURAL_NAV_ITEMS: RuralNavItem[] = RURAL_NAV_LINKS.map((link, i) => 
 }));
 
 // ---------------------------------------------------------------------------
+// HUB AREAS — metadata for hub cards and sub-area page chrome
+// ---------------------------------------------------------------------------
+
+export type RuralAreaId =
+  | "cds"
+  | "tele"
+  | "training"
+  | "reimbursement"
+  | "network"
+  | "ai"
+  | "intelligence";
+
+export type RuralPhaseStatus = "live" | "beta" | "preview";
+
+export type RuralHubArea = {
+  id: RuralAreaId;
+  href: (typeof RURAL_ROUTES)[keyof typeof RURAL_ROUTES];
+  title: string;
+  eyebrow: string;
+  description: string;
+  valueStatement: string;
+  phaseStatus: RuralPhaseStatus;
+  icon: LucideIcon;
+};
+
+/** Display labels and badge variants for hub phase-status chips. */
+export const RURAL_PHASE_STATUS_META: Record<
+  RuralPhaseStatus,
+  { label: string; badgeVariant: "success" | "info" | "warning" }
+> = {
+  live: { label: "Live Demo", badgeVariant: "success" },
+  beta: { label: "Beta", badgeVariant: "info" },
+  preview: { label: "Preview", badgeVariant: "warning" },
+};
+
+/** Seven strategic pillars surfaced on the rural hub (excludes hub root). */
+export const RURAL_HUB_AREAS: RuralHubArea[] = [
+  {
+    id: "cds",
+    href: RURAL_ROUTES.cds,
+    title: "ARKA-RURAL CDS",
+    eyebrow: "Resource-aware CDS",
+    description:
+      "Dual-score appropriateness (CAS + RAAS) with smart triage pathways tuned for modality-limited rural sites.",
+    valueStatement: "Right-order imaging when CT and MRI are miles away.",
+    phaseStatus: "live",
+    icon: Stethoscope,
+  },
+  {
+    id: "tele",
+    href: RURAL_ROUTES.tele,
+    title: "ARKA-TELE",
+    eyebrow: "Teleradiology orchestration",
+    description:
+      "Clinical context packaging, AI triage prioritization, and multi-provider routing between originating and distant sites.",
+    valueStatement: "Package context once; route reads to the right specialist.",
+    phaseStatus: "live",
+    icon: Radio,
+  },
+  {
+    id: "training",
+    href: RURAL_ROUTES.training,
+    title: "Rural Training",
+    eyebrow: "Clinician education",
+    description:
+      "Resource-constrained case library with CME tracking and certification tracks for rural providers.",
+    valueStatement: "Practice ordering decisions under real rural constraints.",
+    phaseStatus: "live",
+    icon: GraduationCap,
+  },
+  {
+    id: "reimbursement",
+    href: RURAL_ROUTES.reimbursement,
+    title: "Reimbursement Optimizer",
+    eyebrow: "Revenue integrity",
+    description:
+      "Rural exemption detection, batch authorization for mobile units, REH payment optimization, and grant navigation.",
+    valueStatement: "Protect rural imaging revenue with payer-aware tooling.",
+    phaseStatus: "beta",
+    icon: DollarSign,
+  },
+  {
+    id: "network",
+    href: RURAL_ROUTES.network,
+    title: "Network Manager",
+    eyebrow: "Hub-and-spoke",
+    description:
+      "Configure hub-and-spoke networks with equipment registry, mobile unit scheduling, and transfer automation.",
+    valueStatement: "Coordinate spokes, mobile units, and shared quality standards.",
+    phaseStatus: "beta",
+    icon: Network,
+  },
+  {
+    id: "ai",
+    href: RURAL_ROUTES.ai,
+    title: "AI Diagnostics",
+    eyebrow: "Point-of-care AI",
+    description:
+      "Curated AI marketplace, POCUS protocol library, and AI-assisted preliminary reads for rural workflows.",
+    valueStatement: "Prioritize algorithms that work with on-site modalities.",
+    phaseStatus: "preview",
+    icon: Brain,
+  },
+  {
+    id: "intelligence",
+    href: RURAL_ROUTES.intelligence,
+    title: "Rural Intelligence",
+    eyebrow: "Population analytics",
+    description:
+      "Imaging desert mapping, outcome correlation, predictive facility risk, and research-ready exports.",
+    valueStatement: "See access gaps and closure risk before they become crises.",
+    phaseStatus: "preview",
+    icon: BarChart3,
+  },
+];
+
+/** Lookup hub area metadata by route id. */
+export function getRuralAreaById(id: RuralAreaId): RuralHubArea {
+  const area = RURAL_HUB_AREAS.find((a) => a.id === id);
+  if (!area) {
+    throw new Error(`Unknown rural area id: ${id}`);
+  }
+  return area;
+}
+
+// ---------------------------------------------------------------------------
 // PAYER RURAL EXEMPTION TYPES
 // ---------------------------------------------------------------------------
 

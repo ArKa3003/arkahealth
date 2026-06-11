@@ -1,20 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ArrowRight, AlertTriangle, Building2, MapPin, Users } from "lucide-react";
 import {
-  Building2,
-  Stethoscope,
-  Radio,
-  GraduationCap,
-  DollarSign,
-  Network,
-  Brain,
-  BarChart3,
-  ArrowRight,
-  AlertTriangle,
-  MapPin,
-  Users,
-} from "lucide-react";
-import { RURAL_CRISIS_STATS, RURAL_ROUTES } from "@/lib/demos/rural/constants";
+  RURAL_CRISIS_STATS,
+  RURAL_HUB_AREAS,
+  RURAL_PHASE_STATUS_META,
+} from "@/lib/demos/rural/constants";
+import { RuralHubMapLazy } from "@/components/demos/rural/shared/RuralHubMapLazy";
+import { MetricCard } from "@/components/ins/MetricCard";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 export const metadata: Metadata = {
   title: "Rural Imaging Solutions | ARKA Health",
@@ -22,165 +17,120 @@ export const metadata: Metadata = {
     "ARKA for rural sites: right-order imaging guidance, remote reads, clinician training, and tools to keep local imaging programs viable.",
 };
 
-const pillars = [
-  {
-    href: RURAL_ROUTES.cds,
-    icon: Stethoscope,
-    title: "ARKA-RURAL CDS",
-    description:
-      "Resource-aware clinical decision support with dual-score appropriateness (CAS + RAAS) and smart triage pathways.",
-    tag: "Pillar 1",
-    color: "text-emerald-600",
-    bg: "bg-emerald-50",
-  },
-  {
-    href: RURAL_ROUTES.tele,
-    icon: Radio,
-    title: "ARKA-TELE",
-    description:
-      "Teleradiology orchestration with clinical context packaging, AI triage, and multi-provider routing.",
-    tag: "Pillar 2",
-    color: "text-blue-600",
-    bg: "bg-blue-50",
-  },
-  {
-    href: RURAL_ROUTES.training,
-    icon: GraduationCap,
-    title: "Rural Training",
-    description:
-      "Resource-constrained case library with CME credits and certification tracks for rural providers.",
-    tag: "Pillar 3",
-    color: "text-purple-600",
-    bg: "bg-purple-50",
-  },
-  {
-    href: RURAL_ROUTES.reimbursement,
-    icon: DollarSign,
-    title: "Reimbursement Optimizer",
-    description:
-      "Rural exemption detection, batch authorization for mobile units, and REH payment optimization.",
-    tag: "Pillar 4",
-    color: "text-amber-600",
-    bg: "bg-amber-50",
-  },
-  {
-    href: RURAL_ROUTES.network,
-    icon: Network,
-    title: "Network Manager",
-    description:
-      "Hub-and-spoke configuration with equipment registry, mobile unit scheduling, and transfer automation.",
-    tag: "Pillar 5",
-    color: "text-teal-600",
-    bg: "bg-teal-50",
-  },
-  {
-    href: RURAL_ROUTES.ai,
-    icon: Brain,
-    title: "AI Diagnostics",
-    description:
-      "Curated AI marketplace, POCUS protocol library, and AI-assisted preliminary reads.",
-    tag: "Pillar 6",
-    color: "text-rose-600",
-    bg: "bg-rose-50",
-  },
-  {
-    href: RURAL_ROUTES.intelligence,
-    icon: BarChart3,
-    title: "Rural Intelligence",
-    description:
-      "Imaging desert mapping, outcome correlation engine, and predictive facility risk scoring.",
-    tag: "Pillar 7",
-    color: "text-indigo-600",
-    bg: "bg-indigo-50",
-  },
-];
-
 export default function RuralHubPage() {
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
-      {/* Hero Section */}
-      <section className="text-center mb-16">
-        <div className="flex justify-center mb-6">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-arka-teal/10">
-            <Building2 className="h-8 w-8 text-arka-teal" />
-          </div>
+    <div className="space-y-10 sm:space-y-14">
+      {/* Hero */}
+      <section className="grid gap-8 lg:grid-cols-2 lg:items-center">
+        <div>
+          <p className="mb-3 font-mono text-xs font-medium uppercase tracking-[0.14em] text-arka-teal-600">
+            Access &amp; equity phase
+          </p>
+          <h1 className="font-heading text-3xl font-semibold text-arka-text-dark sm:text-4xl lg:text-display">
+            Rural Imaging Crisis Platform
+          </h1>
+          <p className="mt-4 max-w-xl text-base leading-relaxed text-arka-text-dark-muted sm:text-lg">
+            Extends ARKA to rural hospitals and clinics — right-order imaging guidance, remote reads,
+            clinician training, and tools to keep local imaging programs viable where access is scarce.
+          </p>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-heading-bold text-arka-text-dark mb-4">
-          Rural Imaging Crisis Platform
-        </h1>
-        <p className="text-lg text-arka-text-dark-muted max-w-2xl mx-auto leading-relaxed">
-          Extends ARKA to rural hospitals and clinics — right-order imaging guidance, remote reads,
-          clinician training, and tools to keep local imaging programs viable where access is scarce.
-        </p>
+        <RuralHubMapLazy />
       </section>
 
-      {/* Crisis Stats Banner */}
-      <section className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
-        {[
-          {
-            value: RURAL_CRISIS_STATS.hospitalsAtRisk.toLocaleString(),
-            label: "Rural Hospitals at Risk",
-            icon: AlertTriangle,
-            color: "text-red-600",
-          },
-          {
-            value: RURAL_CRISIS_STATS.currentREHs.toString(),
-            label: "Rural Emergency Hospitals",
-            icon: Building2,
-            color: "text-blue-600",
-          },
-          {
-            value: `${RURAL_CRISIS_STATS.ruralAmericansUnderserved / 1_000_000}M+`,
-            label: "Rural Americans Underserved",
-            icon: Users,
-            color: "text-amber-600",
-          },
-          {
-            value: `$${RURAL_CRISIS_STATS.teleradiologyMarket2030 / 1e9}B`,
-            label: "Teleradiology Market by 2030",
-            icon: MapPin,
-            color: "text-emerald-600",
-          },
-        ].map(({ value, label, icon: Icon, color }) => (
-          <div
-            key={label}
-            className="rounded-xl border border-slate-200 bg-white p-5 shadow-card text-center"
-          >
-            <Icon className={`h-5 w-5 mx-auto mb-2 ${color}`} />
-            <p className="text-2xl font-heading-bold text-arka-text-dark">{value}</p>
-            <p className="text-xs text-arka-text-dark-muted mt-1">{label}</p>
-          </div>
-        ))}
+      {/* Crisis stats */}
+      <section className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <MetricCard
+          label="Rural hospitals at risk"
+          value={RURAL_CRISIS_STATS.hospitalsAtRisk.toLocaleString()}
+          delta={{ value: "Closure risk", direction: "up", positiveIsGood: false }}
+        />
+        <MetricCard
+          label="Rural emergency hospitals"
+          value={String(RURAL_CRISIS_STATS.currentREHs)}
+          delta={{ value: "REH model", direction: "neutral" }}
+        />
+        <MetricCard
+          label="Rural Americans underserved"
+          value={`${RURAL_CRISIS_STATS.ruralAmericansUnderserved / 1_000_000}M+`}
+          delta={{ value: "Access gap", direction: "neutral" }}
+        />
+        <MetricCard
+          label="Teleradiology market by 2030"
+          value={`$${RURAL_CRISIS_STATS.teleradiologyMarket2030 / 1e9}B`}
+          delta={{
+            value: `${RURAL_CRISIS_STATS.teleradiologyCAGR}% CAGR`,
+            direction: "up",
+            positiveIsGood: true,
+          }}
+        />
       </section>
 
-      {/* Seven Pillars Grid */}
+      {/* Seven pillars */}
       <section>
-        <h2 className="text-2xl font-heading text-arka-text-dark mb-8 text-center">Seven Strategic Pillars</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {pillars.map((pillar) => {
-            const Icon = pillar.icon;
+        <div className="mb-6 text-center sm:mb-8">
+          <p className="mb-2 font-mono text-xs font-medium uppercase tracking-[0.14em] text-arka-teal-600">
+            Seven strategic pillars
+          </p>
+          <h2 className="font-heading text-2xl font-semibold text-arka-text-dark sm:text-3xl">
+            Unified rural imaging hub
+          </h2>
+          <p className="mx-auto mt-2 max-w-2xl text-sm text-arka-text-dark-muted sm:text-base">
+            Each pillar addresses a distinct barrier to rural imaging access — from CDS at order entry
+            through reimbursement and population intelligence.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {RURAL_HUB_AREAS.map((area) => {
+            const Icon = area.icon;
+            const status = RURAL_PHASE_STATUS_META[area.phaseStatus];
             return (
-              <Link
-                key={pillar.href}
-                href={pillar.href}
-                className="group rounded-xl border border-slate-200 bg-white p-6 shadow-card transition-all hover:shadow-card-hover hover:border-arka-teal/30"
-              >
-                <div className="flex items-center gap-3 mb-3">
-                  <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${pillar.bg}`}>
-                    <Icon className={`h-5 w-5 ${pillar.color}`} />
-                  </div>
-                  <span className="text-xs font-body-medium text-arka-text-dark-soft uppercase tracking-wide">
-                    {pillar.tag}
-                  </span>
-                </div>
-                <h3 className="text-lg font-heading text-arka-text-dark mb-2">{pillar.title}</h3>
-                <p className="text-sm text-arka-text-dark-muted leading-relaxed mb-4">{pillar.description}</p>
-                <span className="flex items-center gap-1 text-sm font-body-medium text-arka-teal group-hover:gap-2 transition-all">
-                  Explore <ArrowRight className="h-4 w-4" />
-                </span>
+              <Link key={area.id} href={area.href} className="group block h-full">
+                <Card variant="interactive" className="h-full">
+                  <CardHeader className="pb-2">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-radius-md bg-arka-teal-50">
+                        <Icon className="h-5 w-5 text-arka-teal-600" aria-hidden />
+                      </div>
+                      <Badge variant={status.badgeVariant} dot>
+                        {status.label}
+                      </Badge>
+                    </div>
+                    <CardTitle className="mt-3 text-lg">{area.title}</CardTitle>
+                    <CardDescription className="line-clamp-2">{area.valueStatement}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <span className="inline-flex items-center gap-1 text-sm font-medium text-arka-teal-600 transition-all group-hover:gap-2">
+                      Explore
+                      <ArrowRight className="h-4 w-4" aria-hidden />
+                    </span>
+                  </CardContent>
+                </Card>
               </Link>
             );
           })}
+        </div>
+      </section>
+
+      {/* Context strip */}
+      <section className="rounded-radius-lg border border-border-subtle bg-surface-sunken p-4 sm:p-6">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            { icon: AlertTriangle, label: "Hospitals in imminent danger", value: RURAL_CRISIS_STATS.hospitalsInImminentDanger },
+            { icon: Building2, label: "Critical access hospitals", value: RURAL_CRISIS_STATS.criticalAccessHospitals },
+            { icon: Users, label: "Radiologist shortage (est.)", value: RURAL_CRISIS_STATS.radiologistShortage },
+            { icon: MapPin, label: "FDA-approved AI devices (radiology)", value: RURAL_CRISIS_STATS.fdaApprovedAIDevicesRadiology },
+          ].map(({ icon: Icon, label, value }) => (
+            <div key={label} className="flex items-start gap-3">
+              <Icon className="mt-0.5 h-4 w-4 shrink-0 text-arka-teal-600" aria-hidden />
+              <div>
+                <p className="text-2xl font-semibold tabular-nums text-arka-slate-900">
+                  {value.toLocaleString()}
+                </p>
+                <p className="text-xs text-arka-slate-600">{label}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
     </div>

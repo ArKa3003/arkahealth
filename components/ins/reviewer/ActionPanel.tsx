@@ -43,17 +43,22 @@ export function ActionPanel({ caseRow, onSubmitted, className }: ActionPanelProp
   const caseStartRef = React.useRef<number | null>(null);
 
   React.useEffect(() => {
-    setNote("");
-    setOverrideReason(OVERRIDE_REASONS[0].value);
-    setError(null);
-    caseStartRef.current = Date.now();
-    setCaseSeconds(0);
+    const boot = window.setTimeout(() => {
+      setNote("");
+      setOverrideReason(OVERRIDE_REASONS[0].value);
+      setError(null);
+      caseStartRef.current = Date.now();
+      setCaseSeconds(0);
+    }, 0);
     const id = window.setInterval(() => {
       if (caseStartRef.current) {
         setCaseSeconds(Math.floor((Date.now() - caseStartRef.current) / 1000));
       }
     }, 1000);
-    return () => window.clearInterval(id);
+    return () => {
+      window.clearTimeout(boot);
+      window.clearInterval(id);
+    };
   }, [caseRow?.id]);
 
   const minutesOnCase = caseSeconds / 60;

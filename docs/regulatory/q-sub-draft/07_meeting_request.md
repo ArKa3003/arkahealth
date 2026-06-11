@@ -1,45 +1,44 @@
 # Meeting Request
 
-> **DRAFT.** FDA needs: meeting type, requested format, **3+ preferred dates/times**, a draft agenda with
-> minutes per item, and an attendee list (flag any non-U.S. citizens). Keep your side small.
+**ARKA Health, Inc. — Pre-Submission · Document 07 · Version 1.0 · June 9, 2026**
 
----
+## 1. Meeting details
 
-## Meeting details
-- **Type:** Pre-Submission feedback meeting
-- **Requested format:** Teleconference / video (no in-person needed)
+- **Meeting type:** Pre-Submission feedback meeting
+- **Requested format:** Teleconference / video conference
 - **Requested duration:** 60 minutes
-- **Written feedback requested:** Yes — in advance of the meeting
+- **Written feedback:** Requested in advance of the meeting
 
-## Preferred dates/times (provide three or more; space them ~70–90 days out)
-1. [FILL: date] — [FILL: time window, with time zone]
-2. [FILL: date] — [FILL: time window, with time zone]
-3. [FILL: date] — [FILL: time window, with time zone]
+## 2. Preferred dates and times
 
-## Draft agenda (≈60 min)
-| Min | Item |
+| Option | Date | Time window |
+|---|---|---|
+| 1 | Tuesday, August 18, 2026 | 1:00–3:00 p.m. ET |
+| 2 | Tuesday, August 25, 2026 | 1:00–3:00 p.m. ET |
+| 3 | Tuesday, September 1, 2026 | 1:00–3:00 p.m. ET |
+
+ARKA will accommodate alternative dates or times at the review team's convenience.
+
+## 3. Draft agenda (60 minutes)
+
+| Minutes | Item |
 |---|---|
-| 0–5 | Introductions; ARKA overview |
-| 5–10 | Function map (CLIN / INS / viewer) and what's under review |
-| 10–25 | Q1 — ARKA-CLIN Non-Device CDS: discuss FDA's written feedback |
-| 25–35 | Q2 — ARKA-INS administrative-support status |
-| 35–45 | Q3 — change-control expectations |
-| 45–55 | Q4 — sufficiency of synthetic/sandbox evidence |
-| 55–60 | Next steps; action items |
+| 0–5 | Introductions and ARKA platform overview |
+| 5–10 | Function map (ARKA-CLIN / ARKA-INS / reference viewer) and scope of review |
+| 10–25 | Question 1 — ARKA-CLIN Non-Device CDS status: discussion of FDA's written feedback |
+| 25–35 | Question 2 — ARKA-INS administrative-support status |
+| 35–45 | Question 3 — change-control expectations |
+| 45–55 | Question 4 — sufficiency of synthetic and sandbox evidence |
+| 55–60 | Next steps and action items |
 
-## Attendees (ARKA)
-| Name | Title / role | Affiliation | U.S. citizen? |
+## 4. Attendees (ARKA Health, Inc.)
+
+| Name | Title / role | Affiliation | U.S. citizen |
 |---|---|---|---|
-| Arri Kanna | Founder | ARKA Health, Inc. | [FILL] |
-| [FILL] | Clinical advisor (licensed clinician) | [FILL] | [FILL] |
-| [FILL: optional] | Regulatory advisor | [FILL] | [FILL] |
+| Arri Kanna | Founder | ARKA Health, Inc. | Yes |
 
-> **Note:** FDA needs citizenship/affiliation for logistics. Flag any non-U.S. citizens explicitly.
+ARKA may add its clinical advisor (a licensed clinician) to the attendee list and will provide the finalized list, with citizenship and affiliation for each attendee, when the meeting is confirmed. No non-U.S. citizens are currently expected to attend.
 
----
+## 5. Post-meeting record
 
-### Reviewer notes
-- Bring your clinical advisor — it strengthens credibility on Q1/Q4.
-- Don't relitigate the written feedback in the meeting; use it to clarify and confirm next steps.
-- After the meeting, submit your **meeting minutes** (and slides) via the CDRH Portal in eCopy format
-  (generally within ~15 days). These become part of your regulatory record.
+ARKA will prepare and submit meeting minutes (and any presentation slides) through the CDRH Portal in eCopy format within approximately 15 days of the meeting, for inclusion in the submission record.

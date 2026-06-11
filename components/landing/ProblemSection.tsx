@@ -14,6 +14,8 @@ import {
   Repeat,
 } from "lucide-react";
 
+import { LandingEyebrow } from "@/components/landing/LandingEyebrow";
+
 const painPoints = [
   {
     icon: FileX,
@@ -62,18 +64,16 @@ function PainPointCard({
         ...fadeIn.transition,
         delay: 0.12 + index * 0.1,
       }}
-      className="relative rounded-xl border border-arka-light bg-white px-6 py-8 shadow-card transition-all duration-300 hover:-translate-y-1"
+      className="relative rounded-radius-lg border border-border-subtle bg-surface px-6 py-8 shadow-elevation-2 transition-all duration-300 hover:-translate-y-1"
     >
       <span className="absolute left-4 top-4 flex h-6 w-6 items-center justify-center rounded-full bg-arka-teal text-xs font-bold text-white">
         {index + 1}
       </span>
-      <span className="mt-2 flex h-12 w-12 items-center justify-center rounded-xl bg-arka-teal/15 text-arka-teal">
+      <span className="mt-2 flex h-12 w-12 items-center justify-center rounded-radius-md bg-arka-teal/15 text-arka-teal">
         <Icon className="h-6 w-6" aria-hidden />
       </span>
-      <h3 className="mt-4 text-lg font-bold text-arka-text-dark">{point.title}</h3>
-      <p className="mt-2 text-sm leading-relaxed text-arka-text-dark-muted">
-        {point.body}
-      </p>
+      <h3 className="mt-4 text-h3 text-arka-slate-900">{point.title}</h3>
+      <p className="mt-2 text-sm leading-relaxed text-arka-slate-600">{point.body}</p>
     </motion.div>
   );
 }
@@ -89,16 +89,23 @@ export function ProblemSection() {
     <section
       ref={ref}
       id="the-problem"
-      className="scroll-mt-14 border-t border-arka-light bg-arka-bg-alt px-4 py-24 sm:px-6 lg:px-8"
+      className="scroll-mt-14 bg-surface-sunken px-4 py-24 md:py-32 sm:px-6 lg:px-8"
       aria-labelledby="the-problem-heading"
     >
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-7xl">
+        <motion.div
+          initial={fadeIn.initial}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={fadeIn.transition}
+        >
+          <LandingEyebrow>The denial loop</LandingEyebrow>
+        </motion.div>
         <motion.h2
           id="the-problem-heading"
           initial={fadeIn.initial}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={fadeIn.transition}
-          className="text-center text-2xl font-bold text-arka-text-dark sm:text-3xl"
+          className="text-center text-h2 font-semibold text-arka-slate-900"
         >
           The work got done. The money didn&apos;t show up.
         </motion.h2>
@@ -106,12 +113,11 @@ export function ProblemSection() {
           initial={fadeIn.initial}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ ...fadeIn.transition, delay: 0.08 }}
-          className="mx-auto mt-4 max-w-2xl text-center text-lg text-arka-text-dark-muted"
+          className="mx-auto mt-4 max-w-2xl text-center text-body-lg text-arka-slate-600"
         >
           Every imaging team knows this loop. ARKA breaks it.
         </motion.p>
 
-        {/* Mobile: vertical stack with downward arrows */}
         <div className="mt-16 flex flex-col gap-6 md:hidden">
           {painPoints.map((point, i) => (
             <div key={point.title}>
@@ -123,30 +129,19 @@ export function ProblemSection() {
               ) : (
                 <div className="flex flex-col items-center gap-1 py-2">
                   <ArrowUp className="h-7 w-7 text-arka-teal" aria-hidden />
-                  <p className="text-xs text-arka-text-dark-muted">
-                    loops back to the start
-                  </p>
+                  <p className="text-xs text-arka-slate-500">loops back to the start</p>
                 </div>
               )}
             </div>
           ))}
         </div>
 
-        {/* Desktop / tablet: 2×2 cards with clockwise arrow loop */}
         <div className="mt-16 hidden gap-x-6 gap-y-6 md:grid md:grid-cols-[1fr_auto_1fr] md:grid-rows-[auto_auto_auto]">
-          <PainPointCard
-            point={painPoints[0]}
-            index={0}
-            isInView={isInView}
-          />
+          <PainPointCard point={painPoints[0]} index={0} isInView={isInView} />
           <div className="flex items-center justify-center self-center">
             <ArrowRight className="h-7 w-7 text-arka-teal" aria-hidden />
           </div>
-          <PainPointCard
-            point={painPoints[1]}
-            index={1}
-            isInView={isInView}
-          />
+          <PainPointCard point={painPoints[1]} index={1} isInView={isInView} />
 
           <div className="flex items-center justify-center self-center">
             <ArrowUp className="h-7 w-7 text-arka-teal" aria-hidden />
@@ -161,26 +156,18 @@ export function ProblemSection() {
             <ArrowDown className="h-7 w-7 text-arka-teal" aria-hidden />
           </div>
 
-          <PainPointCard
-            point={painPoints[3]}
-            index={3}
-            isInView={isInView}
-          />
+          <PainPointCard point={painPoints[3]} index={3} isInView={isInView} />
           <div className="flex items-center justify-center self-center">
             <ArrowLeft className="h-7 w-7 text-arka-teal" aria-hidden />
           </div>
-          <PainPointCard
-            point={painPoints[2]}
-            index={2}
-            isInView={isInView}
-          />
+          <PainPointCard point={painPoints[2]} index={2} isInView={isInView} />
         </div>
 
         <motion.p
           initial={fadeIn.initial}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ ...fadeIn.transition, delay: 0.56 }}
-          className="mx-auto mt-12 max-w-3xl text-center font-medium text-arka-text-dark"
+          className="mx-auto mt-12 max-w-3xl text-center font-medium text-arka-slate-900"
         >
           ~86% of imaging denials are avoidable. The fix has to happen where the order is placed —
           not in the billing office six weeks later.

@@ -20,6 +20,8 @@ import { buildStatReclassCard } from "@/lib/cards/stat-reclass-card";
 import type { ShoppableSite } from "@/lib/cards/alternative-site-card";
 import type { InsPaHistorySimilarMetrics } from "@/lib/cards/coverage-card";
 import { buildCoverageUnavailableCard, buildCRDCards } from "@/lib/davinci/crd";
+import { invalidRequestResponse } from "@/lib/cds-platform/cds-hooks/request-validator";
+import { withCdsTiming } from "@/lib/cds-platform/cds-hooks/timing";
 import { emptyRecordSnapshot } from "@/lib/fhir/record-normalizer";
 import { hashPatientId } from "@/lib/fhir/record-scraper";
 import { logInsStatEvent } from "@/lib/ins/stat-events";
@@ -631,15 +633,16 @@ async function handleCoveragePost(req: Request): Promise<NextResponse> {
   try {
     hookBody = (await req.json()) as CDSHookRequest;
   } catch {
-    const cards = [buildCoverageUnavailableCard()];
-    await logValidationEvent("gold_card_check", {});
-    return jsonResponse({ cards });
+    // HTTP 200 + OperationOutcome extension: CDS services never 4xx/5xx into an EHR.
+    return jsonResponse(
+      invalidRequestResponse(["Request body must be valid JSON"]) as unknown as CDSHookResponse,
+    );
   }
 
   if (!hookBody || typeof hookBody !== "object") {
-    const cards = [buildCoverageUnavailableCard()];
-    await logValidationEvent("gold_card_check", {});
-    return jsonResponse({ cards });
+    return jsonResponse(
+      invalidRequestResponse(["Request body must be a JSON object"]) as unknown as CDSHookResponse,
+    );
   }
 
   const context = asRecord(hookBody.context);
@@ -944,7 +947,7 @@ async function handleCoveragePost(req: Request): Promise<NextResponse> {
   return jsonResponse({ cards });
 }
 
-export const POST = withInsApiLogging(handleCoveragePost);
+export const POST = withInsApiLogging(withCdsTiming("arka-ins-coverage", handleCoveragePost));
 
 function extractPractitionerIdFromResource(pr: Practitioner | undefined): string | undefined {
   if (!pr?.id) {

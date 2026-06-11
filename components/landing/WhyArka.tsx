@@ -4,6 +4,8 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { TrendingUp, ShieldCheck, MousePointerClick } from "lucide-react";
 
+import { LandingEyebrow } from "@/components/landing/LandingEyebrow";
+
 const benefits = [
   {
     icon: TrendingUp,
@@ -38,16 +40,23 @@ export function WhyArka() {
     <section
       ref={ref}
       id="why-arka"
-      className="scroll-mt-14 border-t border-arka-light bg-arka-bg-alt px-4 py-24 sm:px-6 lg:px-8"
+      className="scroll-mt-14 bg-surface px-4 py-24 md:py-32 sm:px-6 lg:px-8"
       aria-labelledby="why-arka-heading"
     >
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-7xl">
+        <motion.div
+          initial={fadeIn.initial}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={fadeIn.transition}
+        >
+          <LandingEyebrow>Value proposition</LandingEyebrow>
+        </motion.div>
         <motion.h2
           id="why-arka-heading"
           initial={fadeIn.initial}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={fadeIn.transition}
-          className="text-center text-2xl font-bold text-arka-text-dark sm:text-3xl"
+          className="text-center text-h2 font-semibold text-arka-slate-900"
         >
           How ARKA pays for itself
         </motion.h2>
@@ -55,7 +64,7 @@ export function WhyArka() {
           initial={fadeIn.initial}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ ...fadeIn.transition, delay: 0.08 }}
-          className="mx-auto mt-4 max-w-2xl text-center text-lg text-arka-text-dark-muted"
+          className="mx-auto mt-4 max-w-2xl text-center text-body-lg text-arka-slate-600"
         >
           Three reasons a CFO signs — and a physician never notices.
         </motion.p>
@@ -72,15 +81,13 @@ export function WhyArka() {
                   ...fadeIn.transition,
                   delay: 0.12 + i * 0.1,
                 }}
-                className="flex flex-col items-center rounded-xl border border-arka-light bg-white px-6 py-8 text-center shadow-card transition-all duration-300 hover:-translate-y-2 hover:border-arka-teal/40 hover:shadow-card-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-arka-teal focus-visible:outline-offset-2 active:scale-[0.99]"
+                className="flex flex-col items-center rounded-radius-lg border border-border-subtle bg-surface-raised px-6 py-8 text-center shadow-elevation-2 transition-all duration-300 hover:-translate-y-2 hover:border-arka-teal/40 hover:shadow-elevation-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-arka-teal focus-visible:outline-offset-2 active:scale-[0.99]"
               >
-                <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-arka-teal/15 text-arka-teal">
+                <span className="flex h-12 w-12 items-center justify-center rounded-radius-md bg-arka-teal/15 text-arka-teal">
                   <Icon className="h-6 w-6" aria-hidden />
                 </span>
-                <h3 className="mt-4 text-lg font-semibold text-arka-text-dark">
-                  {benefit.title}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-arka-text-dark-muted">
+                <h3 className="mt-4 text-h3 text-arka-slate-900">{benefit.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-arka-slate-600">
                   {benefit.description}
                 </p>
               </motion.div>
@@ -88,7 +95,7 @@ export function WhyArka() {
           })}
         </div>
 
-        <p className="mx-auto mt-10 max-w-3xl text-center text-xs text-arka-text-dark-soft">
+        <p className="mx-auto mt-10 max-w-3xl text-center text-xs text-arka-slate-500">
           *Modeled estimate; sourced ranges in ARKA&apos;s revenue model. ARKA is decision support
           — the ordering clinician retains the final decision.
         </p>

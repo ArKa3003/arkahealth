@@ -4,7 +4,6 @@ import * as React from "react";
 import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 
 import { DemoModeWatermark } from "@/components/ins/DemoModeWatermark";
-import { FDANonDeviceBanner } from "@/components/ins/FDANonDeviceBanner";
 import {
   Dialog,
   DialogContent,
@@ -279,7 +278,8 @@ export function OrderLifecycleTable() {
   }, [page, statusFilter, cptFilter, daysBack]);
 
   React.useEffect(() => {
-    void load();
+    const t = window.setTimeout(() => void load(), 0);
+    return () => window.clearTimeout(t);
   }, [load]);
 
   const rows = data?.rows ?? [];
@@ -324,7 +324,6 @@ export function OrderLifecycleTable() {
 
   return (
     <div className="min-h-[50vh] bg-slate-50">
-      <FDANonDeviceBanner product="INS" />
       <DemoModeWatermark />
       <div className="mx-auto max-w-6xl px-4 py-6">
         <header className="mb-4">

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { X } from "lucide-react";
 
 import {
@@ -143,6 +144,17 @@ export function AIIEEvidenceModal({ open, onOpenChange, mnai }: AIIEEvidenceModa
             </TabsContent>
 
             <TabsContent value="data" className="mt-3 flex min-h-0 flex-1 flex-col overflow-y-auto">
+              <p className="mb-4 rounded-md border border-teal-200 bg-teal-50/80 p-3 text-sm text-slate-800 dark:border-teal-900/60 dark:bg-teal-950/40 dark:text-slate-200">
+                <span className="font-semibold">AIIE evidence library.</span> Every scenario-level
+                recommendation links to a first-party evidence page with the underlying citations —{" "}
+                <Link
+                  href="/evidence"
+                  className="font-medium text-teal-700 underline underline-offset-2 hover:text-teal-900 dark:text-teal-400 dark:hover:text-teal-300"
+                >
+                  browse the full registry at /evidence
+                </Link>
+                .
+              </p>
               <ul className="list-disc space-y-2 pl-5 text-slate-800 dark:text-slate-200">
                 <li>Peer-reviewed guidelines and appropriateness literature (e.g., ACR Appropriateness Criteria).</li>
                 <li>Payer medical policies and coverage criteria (summarized, versioned references in implementation).</li>

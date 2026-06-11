@@ -24,6 +24,7 @@ import type { PrefetchData } from '@/lib/cds-platform/fhir/prefetch';
 import { createFHIRClient } from '@/lib/cds-platform/fhir/client';
 import { PrefetchResolver } from '@/lib/cds-platform/fhir/prefetch';
 import { createMlClient } from '@/lib/cds-platform/ml/ml-config';
+import { scoreScenario } from '@/lib/cds-platform/scoring-fallback';
 import { runTieredEngine } from '@/lib/cds-platform/alerting/tiered-engine';
 import type { ClinicalScenario } from '@/lib/cds-platform/types';
 import type { FHIRServiceRequest } from '@/lib/cds-platform/fhir/resources';
@@ -36,6 +37,37 @@ const logger = pino({
   name: 'cds-hooks-order-select',
   level: process.env.LOG_LEVEL ?? 'info',
 });
+
+/**
+ * Per-order ML budget: keeps the cold path inside the 800ms p95 contract. When the
+ * ML service does not answer in time, the synchronous in-memory rule-based scorer
+ * is used instead (network never blocks card emission).
+ */
+const ML_BUDGET_MS = 500;
+
+/**
+ * Runs ML prediction with a hard time budget; falls back to the in-memory
+ * rule-based scorer on timeout or error so every draft order still gets a card.
+ *
+ * @param mlClient - Configured XGBoost client.
+ * @param scenario - Mapped scenario for one draft order.
+ */
+async function predictWithBudget(
+  mlClient: ReturnType<typeof createMlClient>,
+  scenario: ClinicalScenario,
+): Promise<MLPrediction> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const budget = new Promise<MLPrediction>((resolve) => {
+    timer = setTimeout(() => resolve(scoreScenario(scenario)), ML_BUDGET_MS);
+  });
+  try {
+    return await Promise.race([mlClient.predict(scenario), budget]);
+  } catch {
+    return scoreScenario(scenario);
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 /** SHAP row with FDA Criterion 4 catalogue rationale (Phase 6.3 wire format). */
 export interface ShapWithRationale {
@@ -224,12 +256,7 @@ export async function handleOrderSelect(request: CDSHooksRequest): Promise<CDSHo
 
   for (const draftOrder of imagingOrders) {
     const scenario = mapPrefetchToClinicalScenario(prefetch, draftOrder);
-    let prediction: Awaited<ReturnType<ReturnType<typeof createMlClient>['predict']>>;
-    try {
-      prediction = await mlClient.predict(scenario as ClinicalScenario);
-    } catch {
-      continue;
-    }
+    const prediction = await predictWithBudget(mlClient, scenario as ClinicalScenario);
     runTieredEngine({ score: prediction.score, scenarioSummary: { modality: scenario.proposedImaging?.modality } });
     const card = buildAppropriatenessCard(prediction, scenario as ClinicalScenario, 'order-select');
     const shapWithRationales = buildShapWithRationales(prediction);

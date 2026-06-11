@@ -15,6 +15,12 @@ import type {
 import type { PatientRecordSnapshot } from "@/lib/types/record-snapshot";
 
 import { invertToDenialRisk } from "@/lib/aiie/denial-risk";
+import {
+  MATRIX_VERSION,
+  normalizeOrderContext,
+  resolveRating,
+} from "@/lib/aiie/knowledge-matrix";
+import type { MatchTier, ResolvedRating } from "@/lib/aiie/knowledge-matrix";
 import { isSwallowStudyOrder, triageSwallow } from "@/lib/aiie/swallow-triage";
 import { traumaGate } from "@/lib/aiie/trauma-gate";
 import { computeMNAI } from "@/lib/coding/mnai";
@@ -42,15 +48,19 @@ export async function scoreOrder(input: AIIEInput): Promise<AIIEScore> {
   const clinical = input.clinicalFactors;
   const red = clinical.redFlags;
 
+  // Deterministic knowledge-matrix resolution drives indication and guideline factors.
+  const orderContext = normalizeOrderContext(input);
+  const resolved = resolveRating(orderContext).data;
+
   const snapshotAdjust = computeSnapshotSignal(input.recordSnapshot);
   const indicationSignal = clampSignal(
-    computeIndicationSignal(input, clinical.symptoms) + snapshotAdjust.indicationDelta,
+    computeIndicationSignal(resolved) + snapshotAdjust.indicationDelta,
   );
   const priorSignal = clampSignal(
     computePriorRedundancySignal(clinical) + snapshotAdjust.priorRedundancyDelta,
   );
   const redFlagSignal = computeRedFlagSignal(red);
-  const guidelineSignal = computeGuidelineSignal(clinical);
+  const guidelineSignal = computeGuidelineSignal(resolved);
   const riskSignal = computePatientRiskSignal(input.patient, red);
   const radiationSignal = computeRadiationSignal(input.order.modality);
 
@@ -85,7 +95,7 @@ export async function scoreOrder(input: AIIEInput): Promise<AIIEScore> {
       W_GUIDELINE,
       guidelineSignal,
       guidelineSignal > 0.2,
-      "GRADE evidence-to-decision tables favoring conservative care before advanced imaging when appropriate.",
+      `AIIE Clinical Knowledge Matrix v${MATRIX_VERSION}: ${resolved.rating.rationale}`,
     ),
     buildFactor(
       "patient_risk_factors",
@@ -143,6 +153,13 @@ export async function scoreOrder(input: AIIEInput): Promise<AIIEScore> {
     confidence,
     factors,
     narrativeRationale,
+    matrixMatch: {
+      tier: resolved.matchTier,
+      scenarioId: resolved.scenario.id,
+      variantId: resolved.variant?.id ?? null,
+      evidenceSlug: resolved.rating.evidenceSlug,
+      matrixVersion: MATRIX_VERSION,
+    },
   };
 
   if (input.recordSnapshot && input.order.cpt) {
@@ -282,27 +299,13 @@ export function computeSnapshotSignal(snapshot?: PatientRecordSnapshot): {
   return { indicationDelta, priorRedundancyDelta };
 }
 
-function computeIndicationSignal(
-  input: AIIEInput,
-  symptoms: string[],
-): number {
-  const complaint =
-    `${input.chiefComplaint} ${input.clinicalFactors.chiefComplaint}`.toLowerCase();
-  const symptomScore = Math.min(1, symptoms.length / 6 + 0.15);
-  const complaintDepth = Math.min(1, complaint.length / 120);
-  let modalityFit = 0.35;
-  const modality = `${input.order.modality} ${input.requestedModality}`.toLowerCase();
-  if (modality.includes("mri") && /neuro|spine|cord|ms\b/i.test(complaint)) {
-    modalityFit = 0.85;
-  }
-  if (modality.includes("ct") && /trauma|hemorrhage|stroke|sah/i.test(complaint)) {
-    modalityFit = 0.9;
-  }
-  if (modality.includes("us") || modality.includes("ultrasound")) {
-    modalityFit = Math.max(modalityFit, 0.55);
-  }
-  const blended = (symptomScore + complaintDepth + modalityFit) / 3;
-  return clampSignal((blended - 0.45) * 2.1);
+/**
+ * Indication strength derived from the AIIE Clinical Knowledge Matrix rating:
+ * the resolved 1–9 appropriateness maps linearly onto [-1, 1] around the
+ * neutral baseline of 5. Snapshot deltas are added by the caller.
+ */
+function computeIndicationSignal(resolved: ResolvedRating): number {
+  return clampSignal((resolved.rating.rating - 5) / 4);
 }
 
 function computePriorRedundancySignal(
@@ -340,19 +343,24 @@ function computeRedFlagSignal(red: AIIERedFlags): number {
   return clampSignal((signal - 0.35) * 1.8);
 }
 
-function computeGuidelineSignal(
-  clinical: AIIEInput["clinicalFactors"],
-): number {
-  if (clinical.conservativeManagementTried) {
-    const dur = (clinical.conservativeManagementDuration ?? "").toLowerCase();
-    const adequate =
-      /\b(4|6|8)\s*weeks?\b/.test(dur) ||
-      dur.includes("month") ||
-      dur.includes("physical therapy") ||
-      dur.includes("pt");
-    return adequate ? 0.75 : 0.45;
-  }
-  return -0.15;
+/**
+ * Match-tier confidence attenuation for the guideline factor: exact variant
+ * matches carry full matrix weight; defaults carry progressively less.
+ */
+const TIER_CONFIDENCE: Record<MatchTier, number> = {
+  exact_variant: 1,
+  scenario_default: 0.85,
+  region_default: 0.6,
+  conservative_default: 0.35,
+};
+
+/**
+ * Guideline alignment derived from the AIIE Clinical Knowledge Matrix rating,
+ * attenuated by how specifically the matrix matched the order.
+ */
+function computeGuidelineSignal(resolved: ResolvedRating): number {
+  const matrixSignal = (resolved.rating.rating - 5) / 4;
+  return clampSignal(matrixSignal * TIER_CONFIDENCE[resolved.matchTier]);
 }
 
 function computePatientRiskSignal(

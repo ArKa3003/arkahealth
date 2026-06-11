@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ExternalLink } from 'lucide-react';
 
+import { DocsPageLayout } from '@/components/docs/DocsPageLayout';
+
 import {
   FEATURE_CATALOG,
   type FeatureCatalogEntry,
@@ -54,61 +56,33 @@ function weightDirectionLabel(direction: WeightDirection): string {
 /**
  * Renders the FDA Criterion 4 Feature Rationale Catalogue at `/docs/feature-catalog`.
  */
+const CATALOG_TOC = FEATURE_ENTRIES.map(([featureName, entry]) => ({
+  id: featureName,
+  label: entry.label,
+  level: 2,
+}));
+
 export default function FeatureCatalogPage() {
   return (
-    <div className="relative min-h-screen scroll-smooth bg-white">
-      <article
-        className="mx-auto max-w-3xl px-4 py-10 pb-20 pt-12"
-        aria-label="ARKA Feature Rationale Catalogue"
-      >
-        <header className="border-b border-arka-primary/15 pb-8">
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-            ARKA Feature Rationale Catalogue
-          </h1>
-          <p className="mt-4 text-base leading-relaxed text-slate-700">
-            This page documents every machine-learning feature used by ARKA-CLIN appropriateness
-            scoring: the clinical rationale for each feature&apos;s inclusion in the model, and the
-            published or regulatory citation that supports it. Context-dependent features are
-            documented here on ARKA; guideline-anchored features link to their external authority
-            sources.
-          </p>
-        </header>
+    <DocsPageLayout
+      title="ARKA Feature Rationale Catalogue"
+      description="Every machine-learning feature used by ARKA-CLIN appropriateness scoring — clinical rationale and published citations for FDA Criterion 4 independent review."
+      toc={CATALOG_TOC}
+    >
+      <div className="space-y-12">
+        {FEATURE_ENTRIES.map(([featureName, entry]) => (
+          <FeatureSection key={featureName} featureName={featureName} entry={entry} />
+        ))}
+      </div>
 
-        <nav className="mt-8 rounded-lg border border-arka-primary/10 bg-arka-bg-light/60 p-4" aria-label="Table of contents">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-arka-teal">
-            Table of contents
-          </h2>
-          <ol className="mt-3 columns-1 gap-x-6 text-sm sm:columns-2">
-            {FEATURE_ENTRIES.map(([featureName, entry]) => (
-              <li key={featureName} className="mb-1.5 break-inside-avoid">
-                <a
-                  href={`#${featureName}`}
-                  className="text-arka-cyan underline-offset-2 hover:text-arka-teal hover:underline"
-                >
-                  {entry.label}
-                </a>
-              </li>
-            ))}
-          </ol>
-        </nav>
-
-        <div className="mt-10 space-y-12">
-          {FEATURE_ENTRIES.map(([featureName, entry]) => (
-            <FeatureSection key={featureName} featureName={featureName} entry={entry} />
-          ))}
-        </div>
-
-        <p className="mt-12 text-center text-xs text-slate-500">
-          <Link href="/docs/regulatory-rationale" className="text-arka-cyan hover:underline">
-            Regulatory rationale memo
-          </Link>
-          {' · '}
-          <Link href="/docs/model-card" className="text-arka-cyan hover:underline">
-            ML model card
-          </Link>
-        </p>
-      </article>
-    </div>
+      <p className="mt-12 text-center text-caption text-arka-slate-500">
+        <Link href="/docs/regulatory-rationale">Regulatory rationale memo</Link>
+        {' · '}
+        <Link href="/docs/model-card">ML model card</Link>
+        {' · '}
+        <Link href="/trust">Trust center</Link>
+      </p>
+    </DocsPageLayout>
   );
 }
 

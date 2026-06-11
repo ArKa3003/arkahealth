@@ -1,28 +1,30 @@
 # Multiple-Function Analysis
 
-> **DRAFT.** Frames ARKA under FDA's *Multiple Function Device Products: Policy and Considerations* guidance.
-> Purpose: show that a multi-feature app can still be non-device, and pre-empt "but what about X?" questions.
+**ARKA Health, Inc. — Pre-Submission · Document 05 · Version 1.0 · June 9, 2026**
 
----
+This analysis follows FDA's guidance *Multiple Function Device Products: Policy and Considerations*. ARKA is a single platform with distinct software functions; each function is presented with its regulatory basis so the function under review can be assessed on its own merits.
 
-## Function map
+## 1. Function map
 
-| Function | What it does | Regulatory basis | Status sought |
+| Function | What it does | Regulatory basis presented | Status requested |
 |---|---|---|---|
-| **ARKA-CLIN** | Imaging-appropriateness recommendations from structured data; ranked, cited options | **§520(o)(1)(E)** Non-Device CDS (four criteria) | Concurrence (Question 1) |
-| **ARKA-INS** | Benefit eligibility, claims-based utilization/cost analysis, PA documentation, cost transparency, scheduling | **§520(o)(1)(A)** administrative support | Concurrence (Question 2) |
-| **Reference viewer** | Displays prior DICOM studies as non-diagnostic thumbnails | Separate display function; does not feed any recommendation | Out of scope — not under review |
+| **ARKA-CLIN** | Imaging-appropriateness recommendations from structured data; ranked, evidence-cited options with reviewable basis | §520(o)(1)(E) — Non-Device CDS (four criteria) | Concurrence (Question 1) |
+| **ARKA-INS** | Benefit-eligibility determination, claims-based utilization/cost analysis, prior-authorization documentation, cost transparency, scheduling | §520(o)(1)(A) — administrative support of a health care facility | Concurrence (Question 2) |
+| **Reference viewer** | Displays previously acquired DICOM studies as non-diagnostic thumbnails for study identification | Separate display function; contributes nothing to any recommendation | Out of scope — not under review |
 
-## Why the functions don't contaminate each other
-- **ARKA-CLIN never consumes images or signals.** Input validation + a CI guard prevent image/signal code from entering CLIN paths; the reference viewer is import-fenced (`SCOPE_BOUNDARY.md`, `scripts/lint-scope-boundary.ts`).
-- **ARKA-INS recommendations are administrative, not clinical.** Coverage/denial-risk/cost outputs concern benefits and finance, not diagnosis or treatment, and do not alter ARKA-CLIN's guideline-anchored clinical logic.
-- **No function makes another a device.** Under the multiple-function framework, the function-under-review (ARKA-CLIN) is assessed on its own; the other functions do not introduce image/signal processing, directives, or non-reviewable outputs into it.
+## 2. Why the functions do not contaminate one another
 
-## Requested concurrence
-That FDA agrees with the above mapping: ARKA-CLIN as Non-Device CDS under (E); ARKA-INS as administrative support under (A); and the reference viewer as a separate display function not part of this review.
+**ARKA-CLIN never consumes images or signals.** Input validation accepts only structured FHIR resources, and continuous-integration guards (`scripts/regulatory-checks.ts` and the import-lint in `scripts/lint-scope-boundary.ts`, executed on every push and pull request by `.github/workflows/go-live.yml`) fail the build if image- or signal-processing code enters in-scope CDS paths. The reference viewer is import-fenced behind a documented scope boundary (`docs/SCOPE_BOUNDARY.md`); no CDS card content is derived from its code path.
 
----
+**ARKA-INS outputs are administrative, not clinical.** Coverage, denial-risk, cost, and scheduling outputs concern benefits, finance, and workflow. They do not alter ARKA-CLIN's guideline-anchored clinical logic, and they are visually and semantically distinct card types.
 
-### Attach / reference
-- [ ] `SCOPE_BOUNDARY.md`
-- [ ] CI guard configuration + a passing run screenshot (Criterion-1 firewall)
+**No function changes the analysis of another.** Under the multiple-function framework, ARKA-CLIN — the function for which a CDS determination is requested — is assessed on its own. The other functions introduce no image or signal processing, no clinical directives, and no non-reviewable outputs into ARKA-CLIN's path.
+
+## 3. Requested concurrence
+
+ARKA requests FDA's concurrence with this mapping: ARKA-CLIN assessed as Non-Device CDS under §520(o)(1)(E); ARKA-INS as administrative support under §520(o)(1)(A); and the reference viewer treated as a separate display function not part of this review.
+
+## 4. Evidence attached with this document
+
+- Scope boundary documentation (`docs/SCOPE_BOUNDARY.md`)
+- CI enforcement configuration (`.github/workflows/go-live.yml`; `scripts/regulatory-checks.ts`; `scripts/lint-scope-boundary.ts`)

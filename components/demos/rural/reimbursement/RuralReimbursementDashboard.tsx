@@ -1,6 +1,8 @@
 "use client";
 
 import { RuralStatBanner } from "@/components/demos/rural/shared/RuralStatBanner";
+import { RuralRateTable } from "@/components/demos/rural/reimbursement/RuralRateTable";
+import { RuralRevenueCalculator } from "@/components/demos/rural/reimbursement/RuralRevenueCalculator";
 import { RuralExemptionDetector } from "@/components/demos/rural/reimbursement/RuralExemptionDetector";
 import { AlternativeStudyJustifier } from "@/components/demos/rural/reimbursement/AlternativeStudyJustifier";
 import { BatchAuthorizationWorkflow } from "@/components/demos/rural/reimbursement/BatchAuthorizationWorkflow";
@@ -19,6 +21,10 @@ export function RuralReimbursementDashboard() {
           { label: "Rural adj.", value: "+3%", hint: "Illustrative" },
         ]}
       />
+      <div className="grid gap-6 lg:grid-cols-2">
+        <RuralRateTable />
+        <RuralRevenueCalculator />
+      </div>
       <div className="grid gap-6 lg:grid-cols-2">
         <RuralExemptionDetector />
         <BatchAuthorizationWorkflow />

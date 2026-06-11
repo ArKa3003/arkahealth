@@ -56,11 +56,14 @@ export function SchedulingIntentBanner() {
   }, []);
 
   React.useEffect(() => {
-    void load();
+    const boot = window.setTimeout(() => void load(), 0);
     const id = window.setInterval(() => {
       void load();
     }, 60_000);
-    return () => window.clearInterval(id);
+    return () => {
+      window.clearTimeout(boot);
+      window.clearInterval(id);
+    };
   }, [load]);
 
   const pending = data?.pendingCount ?? 0;

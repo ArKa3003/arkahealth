@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { RuralPhaseChrome } from "@/components/demos/rural/shared/RuralPhaseChrome";
 import { RuralTrainingClient } from "./RuralTrainingClient";
 
 export const metadata: Metadata = {
@@ -8,5 +9,9 @@ export const metadata: Metadata = {
 };
 
 export default function RuralTrainingPage() {
-  return <RuralTrainingClient />;
+  return (
+    <RuralPhaseChrome areaId="training">
+      <RuralTrainingClient />
+    </RuralPhaseChrome>
+  );
 }

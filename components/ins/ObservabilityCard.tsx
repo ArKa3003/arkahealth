@@ -4,7 +4,6 @@ import * as React from "react";
 import { Activity, RefreshCw } from "lucide-react";
 import { Line, LineChart, ResponsiveContainer } from "recharts";
 
-import { FDANonDeviceBanner } from "@/components/ins/FDANonDeviceBanner";
 import type { ObservabilitySnapshot, TimeSeriesPoint } from "@/lib/server/metrics-counters";
 import { cn } from "@/lib/utils";
 
@@ -141,11 +140,14 @@ export function ObservabilityCard({ className }: { className?: string }) {
   }, []);
 
   React.useEffect(() => {
-    void load(true);
+    const boot = window.setTimeout(() => void load(true), 0);
     const id = window.setInterval(() => {
       void load(true);
     }, REFRESH_MS);
-    return () => window.clearInterval(id);
+    return () => {
+      window.clearTimeout(boot);
+      window.clearInterval(id);
+    };
   }, [load]);
 
   const series = snapshot?.series;
@@ -210,7 +212,7 @@ export function ObservabilityCard({ className }: { className?: string }) {
                 <span className="text-[11px] font-medium text-arka-text-dark leading-tight">
                   {spec.title}
                 </span>
-                <span className="text-xs font-semibold tabular-nums text-arka-teal">
+                <span className="text-xs font-semibold tabular-nums text-arka-teal-600">
                   {latestValue(points, spec.unit)}
                 </span>
               </div>
@@ -221,7 +223,6 @@ export function ObservabilityCard({ className }: { className?: string }) {
         })}
       </div>
 
-      <FDANonDeviceBanner product="INS" className="mt-4 rounded-lg text-xs" />
     </section>
   );
 }

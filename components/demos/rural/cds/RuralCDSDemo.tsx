@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Stethoscope, MapPin, Building2 } from "lucide-react";
+import { MapPin, Building2 } from "lucide-react";
 import { evaluateRAAS } from "@/lib/demos/rural/scoring/raas-engine";
 import { DEMO_FACILITIES } from "@/lib/demos/rural/facility-profiles";
 import { DualScoreDisplay } from "./DualScoreDisplay";
@@ -229,31 +229,6 @@ export function RuralCDSDemo() {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
-      <div>
-        <div className="flex items-center gap-3 mb-4">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-arka-teal/10">
-            <Stethoscope className="h-5 w-5 text-arka-teal" />
-          </div>
-          <div>
-            <h2 className="text-xl font-heading text-arka-text-dark">
-              ARKA-RURAL CDS Engine
-            </h2>
-            <p className="text-sm text-arka-text-dark-muted">
-              Resource-Aware Clinical Decision Support
-            </p>
-          </div>
-        </div>
-        <p className="text-arka-text-dark-muted leading-relaxed max-w-3xl">
-          Unlike standard CDS that evaluates clinical criteria alone, the ARKA-RURAL engine
-          generates a <strong>dual-score system</strong>: the traditional Clinical Appropriateness
-          Score (CAS) plus a new <strong>Resource-Adjusted Appropriateness Score (RAAS)</strong>
-          {" "}that factors in local equipment availability, patient travel burden, and facility
-          capabilities. Each evaluation produces a <strong>Smart Triage Pathway</strong> — a tiered
-          recommendation (Local-First, Mobile-Unit, or Transfer) with full protocol details.
-        </p>
-      </div>
-
       {/* Facility Selector */}
       <section
         className="rounded-xl border border-slate-200 bg-white p-6 shadow-card"

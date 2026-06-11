@@ -1,13 +1,14 @@
 "use client";
 
 import * as React from "react";
-import { ChevronDown, ChevronRight, Clock } from "lucide-react";
 import { formatDistanceToNowStrict } from "date-fns";
 
 import type { ReviewerQueueCase } from "@/lib/ins/reviewer-types";
+import { Badge } from "@/components/ui/badge";
+import { ScoreRing } from "@/components/ui/score-ring";
 import { cn } from "@/lib/utils";
 
-import { Badge } from "@/components/demos/ins/ui/Badge";
+import { SlaCountdownChip } from "./SlaCountdownChip";
 
 export interface QueueListProps {
   cases: ReviewerQueueCase[];
@@ -16,122 +17,80 @@ export interface QueueListProps {
   className?: string;
 }
 
-function slaLabel(deadlineAt: string): { text: string; urgent: boolean } {
-  const end = new Date(deadlineAt).getTime();
-  const hours = (end - Date.now()) / 3600000;
-  if (hours <= 0) return { text: "SLA overdue", urgent: true };
-  if (hours < 24) return { text: `${Math.ceil(hours)}h left`, urgent: true };
-  return { text: `${Math.ceil(hours / 24)}d left`, urgent: false };
-}
-
-function riskTone(risk: number): "error" | "warning" | "info" | "success" {
-  if (risk >= 65) return "error";
+function riskVariant(risk: number): "danger" | "warning" | "info" | "success" {
+  if (risk >= 65) return "danger";
   if (risk >= 45) return "warning";
   if (risk >= 30) return "info";
   return "success";
 }
 
 /**
- * Left column: sortable queue with progressive disclosure (expand for AIIE narrative).
+ * Work queue list — SLA chips, denial risk, and AIIE mini gauge per row.
  */
 export function QueueList({ cases, selectedId, onSelect, className }: QueueListProps) {
-  const [expandedId, setExpandedId] = React.useState<string | null>(null);
-
   return (
     <aside
       className={cn(
-        "flex w-full max-w-[300px] shrink-0 flex-col border-r border-slate-200 bg-slate-50/80",
+        "flex w-full shrink-0 flex-col overflow-hidden rounded-radius-lg border border-border-subtle bg-surface-raised shadow-elevation-1",
         className,
       )}
     >
-      <div className="border-b border-slate-200 px-3 py-3">
-        <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500">Review queue</h2>
-        <p className="mt-1 text-[11px] leading-snug text-slate-500">
-          Sorted: SLA urgency, denial risk, then submission time.
+      <div className="border-b border-border-subtle px-4 py-3">
+        <h2 className="text-sm font-semibold text-arka-slate-900">Review queue</h2>
+        <p className="mt-0.5 text-caption text-arka-slate-500">
+          Sorted by SLA urgency, denial risk, submission time
         </p>
       </div>
-      <ul className="flex-1 overflow-y-auto p-2 space-y-1" role="list">
-        {cases.map((c) => {
-          const selected = c.id === selectedId;
-          const expanded = c.id === expandedId;
-          const sla = slaLabel(c.slaDeadlineAt);
-          const risk = riskTone(c.denialRisk);
-          return (
-            <li key={c.id}>
-              <div
-                className={cn(
-                  "rounded-lg border transition-colors",
-                  selected ? "border-arka-teal bg-white shadow-sm" : "border-transparent bg-white/60 hover:border-slate-200",
-                )}
-              >
+      <ul className="flex-1 overflow-y-auto p-2" role="listbox" aria-label="Cases awaiting review">
+        {cases.length === 0 ? (
+          <li className="px-4 py-8 text-center text-sm text-arka-slate-500">Queue empty</li>
+        ) : (
+          cases.map((c) => {
+            const selected = c.id === selectedId;
+            return (
+              <li key={c.id} role="option" aria-selected={selected}>
                 <button
                   type="button"
                   onClick={() => onSelect(c.id)}
-                  className="flex w-full items-start gap-2 px-2 py-2 text-left"
+                  className={cn(
+                    "mb-1 w-full rounded-radius-md border px-3 py-3 text-left transition-colors",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-teal-500",
+                    selected
+                      ? "border-arka-teal-300 bg-arka-teal-50"
+                      : "border-transparent hover:border-border-subtle hover:bg-surface-sunken",
+                  )}
                 >
-                  <span
-                    className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-arka-teal/15 text-sm font-bold text-arka-teal"
-                    aria-hidden
-                  >
-                    {c.payerDisplay.charAt(0).toUpperCase()}
-                  </span>
-                  <div className="min-w-0 flex-1 space-y-1">
-                    {/* Miller: at most 7 visible data points in collapsed summary */}
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      <span className="text-sm font-semibold text-slate-900">{c.patientInitials}</span>
-                      <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-xs text-slate-700">
-                        {c.cptCode}
-                      </span>
-                      <span className="truncate text-xs font-medium text-slate-600" title={c.payerDisplay}>
-                        {c.payerDisplay}
-                      </span>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      <Badge
-                        status={sla.urgent ? "error" : "neutral"}
-                        variant="subtle"
-                        size="sm"
-                        dot
-                        className="font-normal"
-                      >
-                        {sla.text}
-                      </Badge>
-                      <Badge status={risk} variant="subtle" size="sm" className="font-normal">
-                        Risk {c.denialRisk}%
-                      </Badge>
-                      <span className="inline-flex items-center gap-0.5 text-[10px] text-slate-500">
-                        <Clock className="h-3 w-3" aria-hidden />
-                        {formatDistanceToNowStrict(new Date(c.submittedAt), { addSuffix: true })}
-                      </span>
-                      {c.expedited && (
-                        <Badge status="warning" variant="outline" size="sm">
-                          EXP
+                  <div className="flex items-start gap-3">
+                    <ScoreRing score={c.clinical.score} size={36} label="" animate={false} />
+                    <div className="min-w-0 flex-1 space-y-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-sm font-semibold text-arka-slate-900">{c.patientInitials}</span>
+                        <span className="rounded-radius-sm bg-arka-slate-100 px-1.5 py-0.5 font-mono text-xs text-arka-slate-700">
+                          {c.cptCode}
+                        </span>
+                        <span className="truncate text-xs text-arka-slate-600">{c.payerDisplay}</span>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <SlaCountdownChip deadlineAt={c.slaDeadlineAt} expedited={c.expedited} />
+                        <Badge variant={riskVariant(c.denialRisk)} className="font-normal">
+                          Risk {c.denialRisk}%
                         </Badge>
-                      )}
+                        {c.expedited ? (
+                          <Badge variant="warning" className="font-normal">
+                            EXP
+                          </Badge>
+                        ) : null}
+                      </div>
+                      <p className="text-[11px] text-arka-slate-500">
+                        Submitted {formatDistanceToNowStrict(new Date(c.submittedAt), { addSuffix: true })}
+                      </p>
                     </div>
                   </div>
                 </button>
-                <button
-                  type="button"
-                  className="flex w-full items-center gap-1 border-t border-slate-100 px-2 py-1.5 text-left text-[11px] text-arka-teal hover:bg-slate-50"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setExpandedId((id) => (id === c.id ? null : c.id));
-                  }}
-                  aria-expanded={expanded}
-                >
-                  {expanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
-                  {expanded ? "Hide AIIE detail" : "Full AIIE explanation"}
-                </button>
-                {expanded && (
-                  <div className="border-t border-slate-100 px-2 pb-2 pt-1 text-xs leading-relaxed text-slate-600">
-                    {c.aiieNarrative}
-                  </div>
-                )}
-              </div>
-            </li>
-          );
-        })}
+              </li>
+            );
+          })
+        )}
       </ul>
     </aside>
   );

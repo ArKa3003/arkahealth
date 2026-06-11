@@ -83,6 +83,64 @@ function referenceToId(ref: { reference?: string } | null | undefined): string |
 }
 
 // -----------------------------------------------------------------------------
+// Exported helpers: draft orders
+// -----------------------------------------------------------------------------
+
+/**
+ * Extracts EVERY ServiceRequest from a draftOrders Bundle (not just the first).
+ * Multiple draft orders map to one card per order, each independently scored.
+ *
+ * @param draftOrders - CDS Hooks context.draftOrders Bundle.
+ */
+export function extractDraftServiceRequests(
+  draftOrders: FHIRBundle<FHIRServiceRequest> | null | undefined,
+): FHIRServiceRequest[] {
+  return getBundleResources(draftOrders ?? null).filter(
+    (r) => (r as { resourceType?: string })?.resourceType === 'ServiceRequest',
+  );
+}
+
+/** ICD-10 / SNOMED reason codings extracted from ServiceRequest.reasonCode. */
+export interface ReasonCodings {
+  /** ICD-10-CM codes (e.g. "M54.5"). */
+  icd10: string[];
+  /** SNOMED CT codes. */
+  snomed: string[];
+  /** Display texts for narrative use. */
+  displays: string[];
+}
+
+/**
+ * Extracts ICD-10-CM and SNOMED CT codes from a draft order's reasonCode array
+ * for deterministic Knowledge Matrix scenario candidate scoring.
+ *
+ * @param draftOrder - Draft imaging ServiceRequest.
+ */
+export function extractReasonCodings(
+  draftOrder: FHIRServiceRequest | null | undefined,
+): ReasonCodings {
+  const icd10: string[] = [];
+  const snomed: string[] = [];
+  const displays: string[] = [];
+  for (const rc of draftOrder?.reasonCode ?? []) {
+    const text = rc?.text?.trim() || getDisplayFromCodeableConcept(rc);
+    if (text) displays.push(text);
+    for (const coding of rc?.coding ?? []) {
+      const sys = (coding.system ?? '').toLowerCase();
+      const code = coding.code?.trim();
+      if (!code) continue;
+      if (sys.includes('icd')) icd10.push(code.toUpperCase());
+      else if (sys.includes('snomed')) snomed.push(code);
+    }
+  }
+  return {
+    icd10: [...new Set(icd10)],
+    snomed: [...new Set(snomed)],
+    displays: [...new Set(displays)],
+  };
+}
+
+// -----------------------------------------------------------------------------
 // Exported helpers: demographics
 // -----------------------------------------------------------------------------
 
@@ -592,13 +650,27 @@ export function mapPrefetchToClinicalScenario(
       'Unmapped body site; use code-systems for new mappings'
     );
   }
+  const reasonCodings = extractReasonCodings(draftOrder);
   const indication =
     draftOrder?.reasonCode?.[0]?.text?.trim() ||
     getDisplayFromCodeableConcept(draftOrder?.reasonCode?.[0]) ||
+    reasonCodings.displays[0] ||
     undefined;
   const urgency = mapUrgency(draftOrder?.priority);
 
   const priorImaging = mapPriorImaging(prefetch.recentImaging);
+
+  const conditionEntries = conditionList.map((c) => {
+    const coding =
+      (c?.code?.coding ?? []).find((x) => x.system?.toLowerCase().includes('icd')) ??
+      c?.code?.coding?.[0];
+    return {
+      code: coding?.code,
+      system: coding?.system,
+      display: getDisplayFromCodeableConcept(c?.code) ?? coding?.display,
+      onset: c?.onsetDateTime ?? c?.onsetString,
+    };
+  });
 
   const scenario: ClinicalScenario = {
     patientId,
@@ -620,13 +692,16 @@ export function mapPrefetchToClinicalScenario(
       urgency,
     },
     priorImaging,
+    conditions: conditionEntries,
     serviceRequests: [
       {
         code: cptCode,
         display: draftOrder?.code?.text ?? getDisplayFromCodeableConcept(draftOrder?.code),
-        reasonCodes: (draftOrder?.reasonCode ?? [])
-          .map((rc) => rc?.text ?? getDisplayFromCodeableConcept(rc))
-          .filter((t): t is string => Boolean(t)),
+        authoredOn: draftOrder?.authoredOn,
+        occurrenceDateTime: draftOrder?.occurrenceDateTime,
+        reasonCodes: reasonCodings.displays,
+        reasonIcd10: reasonCodings.icd10,
+        reasonSnomed: reasonCodings.snomed,
       },
     ],
   };

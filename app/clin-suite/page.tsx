@@ -8,7 +8,6 @@ import { ChevronRight, ExternalLink } from "lucide-react";
 
 import { CdsDemoClient } from "@/components/cds-platform/demo/CdsDemoClient";
 import { DemoLoadingSkeleton } from "@/components/demos/DemoLoadingSkeleton";
-import { FDANonDeviceBanner } from "@/components/shared/compliance/FDANonDeviceBanner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { complianceLinks, routes } from "@/lib/constants";
 import { cn } from "@/lib/utils";
@@ -91,14 +90,14 @@ function ClinSuitePageContent() {
             <li>
               <Link
                 href={routes.home}
-                className="text-arka-text-dark-muted hover:text-arka-teal transition-colors"
+                className="text-arka-text-dark-muted hover:text-arka-teal-600 transition-colors"
               >
                 Home
               </Link>
             </li>
             <li className="flex items-center gap-1.5">
               <ChevronRight className="h-4 w-4 text-arka-text-dark-soft" aria-hidden />
-              <span className="text-arka-teal">ARKA-CLIN Suite</span>
+              <span className="text-arka-teal-600">ARKA-CLIN Suite</span>
             </li>
           </ol>
         </nav>
@@ -157,7 +156,6 @@ function ClinSuitePageContent() {
               — the way a clinician sees ARKA in production. The live JSON panel shows real CDS Hooks 2.0
               traffic.
             </p>
-            <FDANonDeviceBanner product="CLIN" className="mb-6 rounded-xl" />
             <CdsDemoClient />
           </TabsContent>
 
@@ -220,7 +218,7 @@ function DiscoveryTabContent() {
             const external = "external" in rest && rest.external === true;
             const cardLabel = (
               <>
-                <span className="inline-flex items-center gap-1.5 font-semibold text-arka-teal">
+                <span className="inline-flex items-center gap-1.5 font-semibold text-arka-teal-600">
                   {label}
                   {external ? <ExternalLink className="h-3.5 w-3.5 shrink-0" aria-hidden /> : null}
                 </span>
@@ -265,7 +263,7 @@ function DiscoveryTabContent() {
             href="/.well-known/cds-services"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm font-medium text-arka-teal hover:underline"
+            className="text-sm font-medium text-arka-teal-600 hover:underline"
           >
             Open raw JSON
           </a>

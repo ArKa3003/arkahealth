@@ -239,6 +239,29 @@ export interface AIIEInput {
 }
 
 /**
+ * Provenance of the AIIE Clinical Knowledge Matrix match backing a score.
+ *
+ * The tier union mirrors `MatchTier` in `lib/aiie/knowledge-matrix/types.ts`
+ * (kept literal here to avoid a type-import cycle between the modules).
+ */
+export interface AIIEMatrixMatch {
+  /** Specificity tier of the matrix resolution cascade. */
+  tier:
+    | "exact_variant"
+    | "scenario_default"
+    | "region_default"
+    | "conservative_default";
+  /** Matched scenario slug (or synthetic region/indeterminate default id). */
+  scenarioId: string;
+  /** Matched variant slug; null for scenario, region, and conservative defaults. */
+  variantId: string | null;
+  /** Stable evidence slug for the resolved modality rating. */
+  evidenceSlug: string;
+  /** Semantic version of the knowledge matrix used for resolution. */
+  matrixVersion: string;
+}
+
+/**
  * AIIE scoring output.
  */
 export interface AIIEScore {
@@ -264,6 +287,11 @@ export interface AIIEScore {
    * Interesting-case rarity assessment (top-decile flag); append-only for teaching / QI workflows.
    */
   rarity?: RarityAssessment;
+  /**
+   * AIIE Clinical Knowledge Matrix match provenance for audit trails. Set by
+   * the shared scoring engine; optional so legacy fallback scorers remain valid.
+   */
+  matrixMatch?: AIIEMatrixMatch;
 }
 
 /**

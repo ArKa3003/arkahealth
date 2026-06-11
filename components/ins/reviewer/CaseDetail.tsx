@@ -73,12 +73,14 @@ export function CaseDetail({ caseRow, className }: CaseDetailProps) {
 
   React.useEffect(() => {
     if (!caseRow) {
-      setHistory(null);
-      return;
+      const t = window.setTimeout(() => setHistory(null), 0);
+      return () => window.clearTimeout(t);
     }
     const ac = new AbortController();
-    setHistoryLoading(true);
-    setHistoryError(null);
+    const boot = window.setTimeout(() => {
+      setHistoryLoading(true);
+      setHistoryError(null);
+    }, 0);
     const u = new URL("/api/ins/reviewer/history", window.location.origin);
     u.searchParams.set("providerId", caseRow.providerId);
     u.searchParams.set("cptCode", caseRow.cptCode);
@@ -101,7 +103,10 @@ export function CaseDetail({ caseRow, className }: CaseDetailProps) {
       })
       .finally(() => setHistoryLoading(false));
 
-    return () => ac.abort();
+    return () => {
+      window.clearTimeout(boot);
+      ac.abort();
+    };
   }, [caseRow]);
 
   if (!caseRow) {

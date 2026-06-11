@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { AIIEForUtilizationManagementSection } from "@/components/demos/ins/AIIEForUtilizationManagementSection";
 import { HowArkaInsWorksSection } from "@/components/demos/ins/HowArkaInsWorksSection";
 import { ObservabilityCard } from "@/components/ins/ObservabilityCard";
+import { PhaseComplianceBar } from "@/components/shared/PhaseComplianceBar";
 
 const InsDemoView = dynamic(
   () => import("@/components/demos/ins/InsDemoView").then((m) => m.InsDemoView),
@@ -27,16 +28,17 @@ export default function InsPage() {
 
   return (
     <div className="min-h-screen bg-arka-bg-light">
+      <PhaseComplianceBar />
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
         <nav aria-label="Breadcrumb" className="mb-4 sm:mb-6">
           <ol className="flex flex-wrap items-center gap-1.5 text-sm font-medium text-arka-text-dark-muted">
             <li>
-              <Link href={routes.home} className="text-arka-text-dark-muted hover:text-arka-teal transition-colors">Home</Link>
+              <Link href={routes.home} className="text-arka-text-dark-muted hover:text-arka-teal-600 transition-colors">Home</Link>
             </li>
             <li className="flex items-center gap-1.5">
               <ChevronRight className="h-4 w-4 text-arka-text-dark-soft" aria-hidden />
-              <span className="text-arka-teal font-medium">ARKA-INS</span>
+              <span className="text-arka-teal-600 font-medium">ARKA-INS</span>
             </li>
           </ol>
         </nav>
@@ -61,7 +63,7 @@ export default function InsPage() {
             <Link
               key={href}
               href={href}
-              className="inline-flex items-center gap-2 rounded-lg border border-arka-teal/30 bg-arka-teal/5 px-3 py-2 text-arka-teal transition hover:border-arka-teal hover:bg-arka-teal/10"
+              className="inline-flex items-center gap-2 rounded-lg border border-arka-teal/30 bg-arka-teal/5 px-3 py-2 text-arka-teal-600 transition hover:border-arka-teal hover:bg-arka-teal/10"
             >
               <Icon className="h-4 w-4" />
               {label}
@@ -80,7 +82,7 @@ export default function InsPage() {
             id="about-arka-ins-heading"
           >
             <span className="flex items-center gap-2 font-semibold text-arka-text-dark">
-              <Shield className="h-5 w-5 text-arka-teal" aria-hidden />
+              <Shield className="h-5 w-5 text-arka-teal-600" aria-hidden />
               About ARKA-INS
             </span>
             <ChevronDown className={cn("h-5 w-5 shrink-0 text-arka-text-dark-muted transition-transform", aboutOpen && "rotate-180")} aria-hidden />

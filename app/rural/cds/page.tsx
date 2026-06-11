@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { DemoLoadingSkeleton } from "@/components/demos/DemoLoadingSkeleton";
+import { RuralPhaseChrome } from "@/components/demos/rural/shared/RuralPhaseChrome";
 
 const RuralCDSDemo = dynamic(
   () => import("@/components/demos/rural/cds/RuralCDSDemo").then((m) => m.RuralCDSDemo),
-  { loading: () => <DemoLoadingSkeleton />, ssr: true }
+  { loading: () => <DemoLoadingSkeleton />, ssr: true },
 );
 
 export const metadata: Metadata = {
@@ -15,8 +16,8 @@ export const metadata: Metadata = {
 
 export default function RuralCDSPage() {
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+    <RuralPhaseChrome areaId="cds">
       <RuralCDSDemo />
-    </div>
+    </RuralPhaseChrome>
   );
 }

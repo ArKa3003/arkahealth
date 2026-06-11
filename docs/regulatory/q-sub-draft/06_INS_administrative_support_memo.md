@@ -1,40 +1,29 @@
 # ARKA-INS — Administrative-Support Memo (§520(o)(1)(A))
 
-> **DRAFT.** Supports Question 2. Keep to 1–2 pages.
+**ARKA Health, Inc. — Pre-Submission · Document 06 · Version 1.0 · June 9, 2026**
 
----
+## 1. Position
 
-## Position
-ARKA-INS performs administrative-support functions of a health care facility and is excluded from the
-definition of a device under **FD&C Act §520(o)(1)(A)**. Paragraph (A) covers software for the
-administrative support of a health care facility — including processing/maintenance of financial
-records and claims/billing information, appointment schedules, business analytics, **determination
-of health-benefit eligibility**, and **analysis of historical claims data to predict future
-utilization or cost-effectiveness**. ARKA-INS functions map directly onto this language.
+ARKA-INS performs administrative-support functions of a health care facility and is presented for FDA's concurrence as software excluded from the device definition under **FD&C Act §520(o)(1)(A)**. Paragraph (A) covers software intended for the administrative support of a health care facility — including the processing and maintenance of financial records and claims or billing information, appointment schedules, business analytics, **determination of health-benefit eligibility**, and **analysis of historical claims data to predict future utilization or cost-effectiveness**. Each ARKA-INS function maps directly onto this statutory language.
 
-## Feature-by-feature mapping
+## 2. Feature-by-feature mapping
 
-| ARKA-INS feature | Statutory (A) hook |
+| ARKA-INS function | Statutory (A) language engaged |
 |---|---|
-| Coverage / eligibility cards | "determination of health-benefit eligibility" |
-| Gold-card auto-approval scoring (claims-history based) | "analysis of historical claims data to predict future utilization or cost-effectiveness" |
-| Out-of-pocket estimate, Good Faith Estimate, shoppable-site comparison | "processing and maintenance of financial records"; price transparency |
-| Prior-authorization documentation (Da Vinci CRD/DTR/PAS) | claims/administrative workflow; documentation support (FDA has signaled documentation tools are administrative, not CDS) |
-| Appointment-booking / site optimization | "appointment schedules"; practice management |
+| Coverage / benefit-eligibility cards | "determination of health benefits eligibility" |
+| Gold-card auto-approval scoring (based on historical claims) | "analysis of historical claims data to predict future utilization or cost-effectiveness" |
+| Out-of-pocket estimates, Good Faith Estimates, shoppable-site comparison | "processing and maintenance of financial records"; price-transparency support |
+| Prior-authorization documentation (HL7 Da Vinci CRD/DTR/PAS) | Claims and administrative workflow; documentation support for payer adjudication |
+| Appointment-booking and site-of-service checks | "appointment schedules"; practice and business management |
 
-## On the "critical" / "override required" card language
-Where INS cards use payer-driven framing (e.g., "denial risk — signature requires override or DTR
-completion"), this reflects **Da Vinci CRD payer-adjudication semantics** — i.e., administrative
-gating of a claim — not clinical coercion of a diagnosis or treatment decision. Because these are
-administrative-support functions under (A), they are not assessed against the CDS Criterion 3
-non-directive test. (ARKA-CLIN, the CDS function, is separately non-blocking.)
+## 3. On the "denial-risk" and "override required" card language
 
-## Requested concurrence
-That FDA agrees ARKA-INS's benefit-eligibility and claims-based functions are administrative-support
-functions under §520(o)(1)(A), outside FDA device authority.
+Certain ARKA-INS order-sign cards use urgent framing — for example, a denial-risk card stating that DTR completion or a documented override is needed for adjudication. This language implements **HL7 Da Vinci CRD payer-adjudication semantics**: it communicates the administrative status of a claim under the patient's benefit plan, not a clinical judgment about diagnosis or treatment. The gating is of the claim's documentation path, never of the clinical order itself, and it originates from payer coverage requirements rather than from ARKA's clinical logic. Because these are administrative-support functions under paragraph (A), they are presented under that exclusion rather than under the CDS criteria; ARKA-CLIN — the clinical decision support function — is separately non-blocking, as described in Documents 02 and 04.
 
----
+## 4. Boundary discipline
 
-### Reviewer notes
-- If any feature blends clinical recommendation with administrative output, flag it — it may need to
-  move under ARKA-CLIN's CDS analysis or be redesigned. Keep INS strictly administrative/financial.
+ARKA maintains ARKA-INS as strictly administrative and financial. INS outputs do not modify, re-rank, or suppress ARKA-CLIN's guideline-anchored clinical recommendations, and the two card families are visually and semantically distinct. Should any future feature blend clinical recommendation with administrative output, ARKA's change-control procedure routes it through the clinical sign-off and regulatory review gates before release.
+
+## 5. Requested concurrence
+
+ARKA requests FDA's concurrence that the ARKA-INS benefit-eligibility and claims-based functions described above are administrative-support functions under §520(o)(1)(A), outside FDA device authority.

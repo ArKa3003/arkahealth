@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+import { InsShell } from "@/components/ins/InsShell";
+
 export const metadata: Metadata = {
   title: "ARKA-INS | Utilization Management",
   description:
@@ -14,5 +16,5 @@ export const metadata: Metadata = {
 export default function InsLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  return <>{children}</>;
+  return <InsShell>{children}</InsShell>;
 }

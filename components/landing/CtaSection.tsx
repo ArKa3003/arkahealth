@@ -3,7 +3,10 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import Link from "next/link";
-import { useEvidenceModal } from "@/components/shared/compliance/evidence-modal-context";
+
+import { buttonVariants } from "@/components/ui/Button";
+import { LandingEyebrow } from "@/components/landing/LandingEyebrow";
+import { cn } from "@/lib/utils";
 
 const fadeIn = {
   initial: { opacity: 0, y: 24 },
@@ -13,22 +16,28 @@ const fadeIn = {
 export function CtaSection() {
   const ref = useRef<HTMLElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
-  const { setOpen } = useEvidenceModal();
 
   return (
     <section
       ref={ref}
       id="cta"
-      className="scroll-mt-14 border-t border-arka-light bg-arka-bg-alt px-4 py-24 sm:px-6 lg:px-8"
+      className="scroll-mt-14 bg-grain relative bg-surface-dark px-4 py-24 md:py-32 sm:px-6 lg:px-8"
       aria-labelledby="cta-heading"
     >
-      <div className="mx-auto max-w-3xl text-center">
+      <div className="relative z-10 mx-auto max-w-3xl text-center">
+        <motion.div
+          initial={fadeIn.initial}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={fadeIn.transition}
+        >
+          <LandingEyebrow dark>Get started</LandingEyebrow>
+        </motion.div>
         <motion.h2
           id="cta-heading"
           initial={fadeIn.initial}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={fadeIn.transition}
-          className="text-2xl font-bold text-arka-text-dark sm:text-3xl"
+          className="text-h2 font-semibold text-white"
         >
           Find out what you&apos;re leaving on the table.
         </motion.h2>
@@ -36,37 +45,33 @@ export function CtaSection() {
           initial={fadeIn.initial}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ ...fadeIn.transition, delay: 0.08 }}
-          className="mt-4 text-arka-text-dark-muted"
+          className="mt-4 text-body-lg text-arka-slate-300"
         >
-          ARKA recovers revenue you&apos;re already losing to denials, speeds up
-          your highest-margin service line, and reduces the admin burden doing
-          it — without changing how your physicians order.
+          ARKA recovers revenue you&apos;re already losing to denials, speeds up your
+          highest-margin service line, and reduces the admin burden doing it — without changing how
+          your physicians order.
         </motion.p>
         <motion.div
           initial={fadeIn.initial}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ ...fadeIn.transition, delay: 0.15 }}
-          className="mt-10 flex flex-wrap items-center justify-center gap-4"
+          className="mt-10 flex justify-center"
         >
-          <button
-            type="button"
-            onClick={() => setOpen(true)}
-            className="arka-button-primary inline-flex min-h-[44px] items-center justify-center px-8 py-3 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-arka-teal focus:ring-offset-2 focus:ring-offset-arka-bg-light touch-manipulation"
-          >
-            Evidence & Compliance
-          </button>
           <Link
             href="/action-plan"
-            className="arka-button-secondary inline-flex min-h-[44px] items-center justify-center px-8 py-3 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-arka-teal focus:ring-offset-2 focus:ring-offset-arka-bg-light touch-manipulation"
+            className={cn(
+              buttonVariants({ variant: "premium", size: "lg" }),
+              "min-h-[44px] touch-manipulation",
+            )}
           >
-            Action Plan
+            Build your action plan
           </Link>
         </motion.div>
         <motion.p
           initial={fadeIn.initial}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ ...fadeIn.transition, delay: 0.22 }}
-          className="mt-6 text-xs text-arka-text-soft/70"
+          className="mt-6 text-xs text-arka-slate-500"
         >
           remARKAbly precise — and remarkably profitable.
         </motion.p>

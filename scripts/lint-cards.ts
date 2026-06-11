@@ -110,9 +110,20 @@ function detailForLanguageLint(detail: string): string {
   if (fdaIdx >= 0) {
     return detail.slice(0, fdaIdx);
   }
-  const sectionIdx = detail.indexOf("FD&C Act §520(o)(1)(E)");
-  if (sectionIdx >= 0) {
-    return detail.slice(0, sectionIdx);
+  const footerMarkers = [
+    "This recommendation is intended to support, not replace, clinical judgment",
+    "This recommendation is provided by ARKA Imaging Intelligence Engine",
+    "FD&C Act §520(o)(1)(E)",
+  ];
+  let cutAt = detail.length;
+  for (const marker of footerMarkers) {
+    const idx = detail.indexOf(marker);
+    if (idx >= 0 && idx < cutAt) {
+      cutAt = idx;
+    }
+  }
+  if (cutAt < detail.length) {
+    return detail.slice(0, cutAt);
   }
   return detail;
 }

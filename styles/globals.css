@@ -5,77 +5,220 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ==========================================================================
-   1. CSS custom properties for all ARKA colors
+   1. CSS custom properties — legacy aliases + semantic tokens
    WCAG 2.1 AA: Normal text 4.5:1, large text 3:1.
    CONTRAST RULES:
-   - On white/light backgrounds (arka-bg-light, white, arka-pale): use --arka-text-dark, --arka-text-dark-muted, --arka-text-dark-soft.
-   - On dark backgrounds (arka-bg-dark, arka-navy, arka-bg-medium): use --arka-text, --arka-text-muted, --arka-text-soft.
-   - On teal/accent (arka-teal): use white text.
+   - On white/light backgrounds: use --arka-text-dark, --arka-text-dark-muted, --arka-text-dark-soft.
+   - On dark backgrounds: use --arka-text, --arka-text-muted, --arka-text-soft.
+   - On teal/accent: use white text.
    ========================================================================== */
 :root {
-  /* ARKA color palette: Navy primary, Teal accent, light backgrounds */
-  --arka-primary: #0f172a;
-  --arka-navy: #0f172a;
-  --arka-teal: #14b8a6;
-  --arka-cyan: #14b8a6;
-  --arka-deep: #1e293b;
-  --arka-light: #e2e8f0;
-  --arka-pale: #f1f5f9;
-  --arka-bg-dark: #0f172a;
-  --arka-bg-medium: #1e293b;
-  --arka-bg-light: #f8fafc;
-  --arka-bg-alt: #f1f5f9;
-  /* Light text – use ONLY on dark backgrounds */
+  /* ARKA teal ramp (50–950) */
+  --arka-teal-50: #f0fdfa;
+  --arka-teal-100: #ccfbf1;
+  --arka-teal-200: #99f6e4;
+  --arka-teal-300: #5eead4;
+  --arka-teal-400: #2dd4bf;
+  --arka-teal-500: #14b8a6;
+  --arka-teal-600: #0d9488;
+  --arka-teal-700: #0f766e;
+  --arka-teal-800: #115e59;
+  --arka-teal-900: #134e4a;
+  --arka-teal-950: #042f2e;
+
+  /* ARKA slate ramp (50–950) */
+  --arka-slate-50: #f8fafc;
+  --arka-slate-100: #f1f5f9;
+  --arka-slate-200: #e2e8f0;
+  --arka-slate-300: #cbd5e1;
+  --arka-slate-400: #94a3b8;
+  --arka-slate-500: #64748b;
+  --arka-slate-600: #475569;
+  --arka-slate-700: #334155;
+  --arka-slate-800: #1e293b;
+  --arka-slate-900: #0f172a;
+  --arka-slate-950: #020617;
+
+  /* Legacy flat aliases */
+  --arka-primary: var(--arka-slate-900);
+  --arka-navy: var(--arka-slate-900);
+  --arka-teal: var(--arka-teal-500);
+  --arka-cyan: var(--arka-teal-500);
+  --arka-deep: var(--arka-slate-800);
+  --arka-light: var(--arka-slate-200);
+  --arka-pale: var(--arka-slate-100);
+  --arka-bg-dark: var(--arka-slate-900);
+  --arka-bg-medium: var(--arka-slate-800);
+  --arka-bg-light: var(--arka-slate-50);
+  --arka-bg-alt: var(--arka-slate-100);
   --arka-text: #ffffff;
-  --arka-text-muted: #f8fafc;
-  --arka-text-soft: #e2e8f0;
-  /* Dark text – use on light backgrounds for WCAG AA */
-  --arka-text-dark: #0f172a;
-  --arka-text-dark-muted: #475569;
-  --arka-text-dark-soft: #64748b;
+  --arka-text-muted: var(--arka-slate-50);
+  --arka-text-soft: var(--arka-slate-200);
+  --arka-text-dark: var(--arka-slate-900);
+  --arka-text-dark-muted: var(--arka-slate-600);
+  --arka-text-dark-soft: var(--arka-slate-500);
+
+  /* Semantic surfaces & borders */
+  --surface: #ffffff;
+  --surface-raised: #fcfdfe;
+  --surface-sunken: #f1f5f9;
+  --surface-dark: var(--arka-slate-900);
+  --surface-dark-raised: #16203a;
+  --border-subtle: var(--arka-slate-200);
+  --border-strong: var(--arka-slate-300);
+
+  /* Clinical status */
+  --success: #059669;
+  --success-bg: #ecfdf5;
+  --warning: #d97706;
+  --warning-bg: #fffbeb;
+  --danger: #dc2626;
+  --danger-bg: #fef2f2;
+  --info: #0284c7;
+  --info-bg: #eff6ff;
 }
 
 @theme {
-  /* ARKA color palette (Tailwind theme) */
-  --color-arka-primary: #0f172a;
-  --color-arka-navy: #0f172a;
-  --color-arka-teal: #14b8a6;
-  --color-arka-cyan: #14b8a6;
-  --color-arka-deep: #1e293b;
-  --color-arka-light: #e2e8f0;
-  --color-arka-pale: #f1f5f9;
-  --color-arka-bg-dark: #0f172a;
-  --color-arka-bg-medium: #1e293b;
-  --color-arka-bg-light: #f8fafc;
-  --color-arka-bg-alt: #f1f5f9;
-  --color-arka-text: #ffffff;
-  --color-arka-text-muted: #f8fafc;
-  --color-arka-text-soft: #e2e8f0;
-  --color-arka-text-dark: #0f172a;
-  --color-arka-text-dark-muted: #475569;
-  --color-arka-text-dark-soft: #64748b;
+  /* ARKA teal ramp */
+  --color-arka-teal-50: #f0fdfa;
+  --color-arka-teal-100: #ccfbf1;
+  --color-arka-teal-200: #99f6e4;
+  --color-arka-teal-300: #5eead4;
+  --color-arka-teal-400: #2dd4bf;
+  --color-arka-teal-500: #14b8a6;
+  --color-arka-teal-600: #0d9488;
+  --color-arka-teal-700: #0f766e;
+  --color-arka-teal-800: #115e59;
+  --color-arka-teal-900: #134e4a;
+  --color-arka-teal-950: #042f2e;
+  --color-arka-teal: var(--color-arka-teal-500);
 
-  /* Typography: headings & body use Inter, accent/tagline use Georgia */
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-heading: "Inter", ui-sans-serif, system-ui, sans-serif;
+  /* ARKA slate ramp */
+  --color-arka-slate-50: #f8fafc;
+  --color-arka-slate-100: #f1f5f9;
+  --color-arka-slate-200: #e2e8f0;
+  --color-arka-slate-300: #cbd5e1;
+  --color-arka-slate-400: #94a3b8;
+  --color-arka-slate-500: #64748b;
+  --color-arka-slate-600: #475569;
+  --color-arka-slate-700: #334155;
+  --color-arka-slate-800: #1e293b;
+  --color-arka-slate-900: #0f172a;
+  --color-arka-slate-950: #020617;
+  --color-arka-slate: var(--color-arka-slate-900);
+
+  /* Legacy flat aliases */
+  --color-arka-primary: var(--color-arka-slate-900);
+  --color-arka-navy: var(--color-arka-slate-900);
+  --color-arka-cyan: var(--color-arka-teal-500);
+  --color-arka-deep: var(--color-arka-slate-800);
+  --color-arka-light: var(--color-arka-slate-200);
+  --color-arka-pale: var(--color-arka-slate-100);
+  --color-arka-bg-dark: var(--color-arka-slate-900);
+  --color-arka-bg-medium: var(--color-arka-slate-800);
+  --color-arka-bg-light: var(--color-arka-slate-50);
+  --color-arka-bg-alt: var(--color-arka-slate-100);
+  --color-arka-text: #ffffff;
+  --color-arka-text-muted: var(--color-arka-slate-50);
+  --color-arka-text-soft: var(--color-arka-slate-200);
+  --color-arka-text-dark: var(--color-arka-slate-900);
+  --color-arka-text-dark-muted: var(--color-arka-slate-600);
+  --color-arka-text-dark-soft: var(--color-arka-slate-500);
+
+  /* Semantic surfaces & borders */
+  --color-surface: #ffffff;
+  --color-surface-raised: #fcfdfe;
+  --color-surface-sunken: #f1f5f9;
+  --color-surface-dark: var(--color-arka-slate-900);
+  --color-surface-dark-raised: #16203a;
+  --color-border-subtle: var(--color-arka-slate-200);
+  --color-border-strong: var(--color-arka-slate-300);
+
+  /* Clinical status */
+  --color-success: #059669;
+  --color-success-bg: #ecfdf5;
+  --color-warning: #d97706;
+  --color-warning-bg: #fffbeb;
+  --color-danger: #dc2626;
+  --color-danger-bg: #fef2f2;
+  --color-info: #0284c7;
+  --color-info-bg: #eff6ff;
+
+  /* Typography — Inter via next/font; OpenType features applied in base styles */
+  --font-sans: var(--font-inter), "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-inter), "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-accent: "Georgia", ui-serif, serif;
+
+  /* Type scale — paired line-heights & letter-spacing */
+  --text-display: clamp(2.5rem, 5vw, 4rem);
+  --text-display--line-height: 1.05;
+  --text-display--letter-spacing: -0.03em;
+
+  --text-h1: 2.25rem;
+  --text-h1--line-height: 1.15;
+  --text-h1--letter-spacing: -0.025em;
+
+  --text-h2: 1.75rem;
+  --text-h2--line-height: 1.2;
+  --text-h2--letter-spacing: -0.02em;
+
+  --text-h3: 1.375rem;
+  --text-h3--line-height: 1.25;
+  --text-h3--letter-spacing: -0.015em;
+
+  --text-body-lg: 1.125rem;
+  --text-body-lg--line-height: 1.6;
+  --text-body-lg--letter-spacing: 0;
+
+  --text-body: 1rem;
+  --text-body--line-height: 1.6;
+  --text-body--letter-spacing: 0;
+
+  --text-caption: 0.875rem;
+  --text-caption--line-height: 1.5;
+  --text-caption--letter-spacing: 0.01em;
+
+  /* Radii tokens — cards: lg, buttons/inputs: md, modals: xl */
+  --radius-radius-sm: 6px;
+  --radius-radius-md: 10px;
+  --radius-radius-lg: 14px;
+  --radius-radius-xl: 20px;
 
   /* Default transition: 300ms ease-out */
   --transition-duration: 300ms;
   --transition-timing-function: ease-out;
   --ease-arka: ease-out;
 
-  /* Glow shadow (teal at 20% opacity) */
-  --shadow-glow: 0 0 20px 4px rgb(20 184 166 / 0.2);
-  --shadow-glow-sm: 0 0 12px 2px rgb(20 184 166 / 0.15);
-  --shadow-glow-lg: 0 0 32px 8px rgb(20 184 166 / 0.25);
+  /* Layered elevation shadows */
+  --shadow-elevation-1: 0 1px 2px rgb(15 23 42 / 0.03), 0 1px 3px rgb(15 23 42 / 0.04);
+  --shadow-elevation-2:
+    0 1px 2px rgb(15 23 42 / 0.04), 0 4px 8px rgb(15 23 42 / 0.06),
+    0 12px 24px rgb(15 23 42 / 0.05);
+  --shadow-elevation-3:
+    0 2px 4px rgb(15 23 42 / 0.04), 0 8px 16px rgb(15 23 42 / 0.07),
+    0 20px 40px rgb(15 23 42 / 0.06);
+  --shadow-elevation-4:
+    0 4px 8px rgb(15 23 42 / 0.05), 0 16px 32px rgb(15 23 42 / 0.08),
+    0 32px 64px rgb(15 23 42 / 0.07);
+
+  /* Glow shadow — ~30% lower opacity */
+  --shadow-glow: 0 0 20px 4px rgb(20 184 166 / 0.14);
+  --shadow-glow-sm: 0 0 12px 2px rgb(20 184 166 / 0.105);
+  --shadow-glow-lg: 0 0 32px 8px rgb(20 184 166 / 0.175);
+
+  /* Legacy card shadows */
   --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.08);
   --shadow-card-hover: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.06);
 
-  /* Custom animations */
+  /* Existing animations — preserved exactly */
   --animate-fade-in: fade-in 0.3s ease-out forwards;
   --animate-slide-up: slide-up 0.3s ease-out forwards;
   --animate-pulse-glow: pulse-glow 2s ease-in-out infinite;
+
+  /* Additive animations for new components */
+  --animate-fade-in-up: fade-in-up 400ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-scale-in: scale-in 250ms ease-out forwards;
+  --animate-shimmer: shimmer 2s linear infinite;
 
   @keyframes fade-in {
     from {
@@ -106,7 +249,54 @@
       box-shadow: 0 0 28px 6px rgb(20 184 166 / 0.35);
     }
   }
+
+  /* Additive keyframes */
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
 }
+
+/*
+ * stagger-children pattern (for new components):
+ * Apply `stagger-children` on the parent; each direct child reads
+ * `--stagger-index` (0, 1, 2, …) for incremental animation-delay.
+ *
+ * Example:
+ *   <ul class="stagger-children">
+ *     <li style="--stagger-index: 0" class="animate-fade-in-up">…</li>
+ *     <li style="--stagger-index: 1" class="animate-fade-in-up">…</li>
+ *   </ul>
+ *
+ * Or use nth-child in a scoped component stylesheet:
+ *   .stagger-children > *:nth-child(n) { --stagger-index: calc(n - 1); }
+ */
 
 /* Logo gem subtle pulse (inline SVG) */
 @keyframes logo-gem-pulse {
@@ -158,12 +348,11 @@
   );
   --arka-gradient-accent: linear-gradient(90deg, #0f172a 0%, #14b8a6 100%);
 
-  /* Main content: light background, dark text */
-  --background: var(--arka-bg-light);
+  --background: var(--surface);
   --foreground: var(--arka-text-dark);
   --primary: var(--arka-navy);
   --primary-foreground: var(--arka-text);
-  --muted: var(--arka-bg-alt);
+  --muted: var(--surface-sunken);
   --muted-foreground: var(--arka-text-dark-soft);
 }
 
@@ -176,19 +365,21 @@ html {
 }
 
 body {
-  background: var(--arka-bg-light);
+  background: var(--surface);
   color: var(--foreground);
   font-family: var(--font-inter, var(--font-sans));
   font-weight: 400;
   font-size: 1rem;
   line-height: 1.6;
   overflow-x: hidden;
+  font-feature-settings: "cv02" 1, "cv03" 1, "cv04" 1, "cv11" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* ==========================================================================
    2b. Mobile: safe area insets, overflow, momentum scrolling
    ========================================================================== */
-/* Safe area insets (notch / home indicator) */
 .safe-area-top { padding-top: env(safe-area-inset-top, 0); }
 .safe-area-bottom { padding-bottom: env(safe-area-inset-bottom, 0); }
 .safe-area-left { padding-left: env(safe-area-inset-left, 0); }
@@ -200,14 +391,12 @@ body {
   padding-right: env(safe-area-inset-right, 0);
 }
 
-/* Smooth momentum scrolling on iOS */
 .u-scroll-touch {
   -webkit-overflow-scrolling: touch;
   overflow-x: auto;
   overflow-y: auto;
 }
 
-/* Horizontal scroll container with fade indicators (use on wrapper) */
 .u-scroll-x-wrapper {
   position: relative;
   overflow: hidden;
@@ -226,7 +415,6 @@ body {
   display: none;
 }
 
-/* Prevent horizontal overflow on viewport */
 @media (max-width: 767px) {
   html, body {
     max-width: 100vw;
@@ -234,7 +422,6 @@ body {
   }
 }
 
-/* Custom scrollbar: thin, arka-primary colored */
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--arka-teal) var(--arka-bg-alt);
@@ -255,28 +442,138 @@ body {
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  background: #0d9488;
+  background: var(--arka-teal-600);
 }
 
 /* ==========================================================================
    3. Utility classes
    ========================================================================== */
+
+/* Slow ambient teal radial drift — hero background (CSS only) */
+.hero-ambient-gradient {
+  background-color: var(--surface-dark);
+  background-image:
+    radial-gradient(ellipse 90% 70% at 30% 100%, rgb(20 184 166 / 0.14) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 50% at 75% 15%, rgb(20 184 166 / 0.09) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 40% at 50% 50%, rgb(30 58 95 / 0.4) 0%, transparent 70%);
+  background-size: 200% 200%;
+  animation: hero-ambient-drift 24s ease-in-out infinite;
+}
+
+@keyframes hero-ambient-drift {
+  0%,
+  100% {
+    background-position: 0% 40%;
+  }
+  50% {
+    background-position: 100% 60%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-ambient-gradient {
+    animation: none;
+    background-position: 50% 50%;
+  }
+}
+
+/* Orbital diagram dashed path animation */
+@keyframes orbital-dash {
+  to {
+    stroke-dashoffset: -24;
+  }
+}
+
+.orbital-path-animate {
+  animation: orbital-dash 1.2s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orbital-path-animate {
+    animation: none;
+  }
+}
+
+/* Rural hub map — connection line dash + traveling pulse */
+@keyframes rural-map-dash {
+  to {
+    stroke-dashoffset: -32;
+  }
+}
+
+.rural-map-path-animate {
+  animation: rural-map-dash 1.4s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rural-map-path-animate {
+    animation: none;
+  }
+
+  .rural-map-pulse-dot {
+    display: none;
+  }
+}
+
+/* Subtle film grain for dark hero sections (4% opacity) */
+.bg-grain {
+  position: relative;
+  isolation: isolate;
+}
+
+.bg-grain::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  background-size: 128px 128px;
+  background-repeat: repeat;
+}
+
+/* Faint technical grid — 1px slate lines, 32px cells, radial mask fade */
+.bg-grid-faint {
+  background-image:
+    linear-gradient(to right, rgb(148 163 184 / 0.35) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(148 163 184 / 0.35) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 50%, black 20%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 50%, black 20%, transparent 75%);
+}
+
+/* Skeleton shimmer — pair with animate-shimmer */
+.bg-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--surface-sunken) 0%,
+    var(--surface-raised) 50%,
+    var(--surface-sunken) 100%
+  );
+  background-size: 200% 100%;
+}
+
+.stagger-children > * {
+  animation-delay: calc(var(--stagger-index, 0) * 60ms);
+}
+
 .arka-gradient-text {
-  background: linear-gradient(90deg, #0f172a 0%, #14b8a6 100%);
+  background: linear-gradient(90deg, var(--arka-slate-900) 0%, var(--arka-teal-500) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .arka-card {
-  background: #ffffff;
+  background: var(--surface);
   box-shadow: var(--shadow-card);
   border: 1px solid rgb(15 23 42 / 0.08);
   border-radius: 12px;
 }
 
 .arka-button-primary {
-  background: linear-gradient(90deg, #0f172a 0%, #14b8a6 100%);
+  background: linear-gradient(90deg, var(--arka-slate-900) 0%, var(--arka-teal-500) 100%);
   color: #ffffff;
   font-weight: 600;
   padding: 0.625rem 1.25rem;
@@ -287,7 +584,7 @@ body {
 }
 
 .arka-button-primary:hover {
-  box-shadow: 0 0 20px 4px rgb(20 184 166 / 0.35);
+  box-shadow: var(--shadow-glow);
   transform: translateY(-2px) scale(1.02);
 }
 
@@ -308,7 +605,7 @@ body {
 
 .arka-button-secondary:hover {
   background: rgb(20 184 166 / 0.1);
-  color: #0d9488;
+  color: var(--arka-teal-600);
   transform: translateY(-1px);
 }
 
@@ -316,7 +613,6 @@ body {
   transform: translateY(0) scale(0.98);
 }
 
-/* Card hover lift and glow */
 .arka-card {
   transition: transform 0.25s ease-out, box-shadow 0.25s ease-out, border-color 0.25s ease-out;
 }
@@ -327,7 +623,6 @@ body {
   border-color: rgb(20 184 166 / 0.3);
 }
 
-/* Link underline animation (for footer/nav links) */
 .arka-link-underline {
   position: relative;
   transition: color 0.2s ease-out;
@@ -349,7 +644,6 @@ body {
   width: 100%;
 }
 
-/* Form input focus effects */
 .arka-input {
   transition: border-color 0.2s ease-out, box-shadow 0.2s ease-out, outline 0.2s ease-out;
 }
@@ -366,48 +660,50 @@ body {
 }
 
 /* ==========================================================================
-   4. Typography hierarchy
+   4. Typography hierarchy — use text-h1/h2/h3 tokens in new components
    ========================================================================== */
 h1 {
-  font-size: 3.5rem;
+  font-size: var(--text-h1);
   font-weight: 600;
-  line-height: 1.2;
+  line-height: var(--text-h1--line-height);
+  letter-spacing: var(--text-h1--letter-spacing);
 }
 
 h1.arka-gradient-text {
-  background: linear-gradient(90deg, #0f172a 0%, #14b8a6 100%);
+  background: linear-gradient(90deg, var(--arka-slate-900) 0%, var(--arka-teal-500) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 h2 {
-  font-size: 2rem;
+  font-size: var(--text-h2);
   font-weight: 600;
-  line-height: 1.25;
+  line-height: var(--text-h2--line-height);
+  letter-spacing: var(--text-h2--letter-spacing);
 }
 
 h3 {
-  font-size: 1.5rem;
+  font-size: var(--text-h3);
   font-weight: 600;
-  line-height: 1.3;
+  line-height: var(--text-h3--line-height);
+  letter-spacing: var(--text-h3--letter-spacing);
 }
 
 @media (min-width: 768px) {
   h1 {
-    font-size: 5rem;
+    font-size: clamp(2.5rem, 4vw, 3.5rem);
   }
 
   h2 {
-    font-size: 3rem;
+    font-size: 2.25rem;
   }
 
   h3 {
-    font-size: 2rem;
+    font-size: 1.75rem;
   }
 }
 
-/* Heading weights (600–700) */
 h4,
 h5,
 h6 {
@@ -415,7 +711,7 @@ h6 {
 }
 
 /* ==========================================================================
-   5. Focus states (accessibility – arka-cyan)
+   5. Focus states (accessibility – arka-teal)
    ========================================================================== */
 :focus-visible {
   outline: 2px solid var(--arka-teal);
@@ -433,21 +729,138 @@ select:focus-visible,
 }
 
 /* ==========================================================================
-   6. Selection color (arka-primary at 30% opacity)
+   6. Selection color — also set via layout Tailwind utilities
    ========================================================================== */
 ::selection {
-  background: rgb(20 184 166 / 0.3);
-  color: var(--arka-text-dark);
+  background: var(--arka-teal-200);
+  color: var(--arka-slate-900);
 }
 
 ::-moz-selection {
-  background: rgb(20 184 166 / 0.3);
-  color: var(--arka-text-dark);
+  background: var(--arka-teal-200);
+  color: var(--arka-slate-900);
 }
 
-/* Accent/tagline: Georgia italic */
 .font-accent,
 [data-tagline] {
   font-family: var(--font-accent);
   font-style: italic;
+}
+
+/* ==========================================================================
+   7. Docs prose — long-form legal, regulatory, and trust pages
+   ========================================================================== */
+.docs-prose {
+  color: var(--arka-text-dark);
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
+}
+
+.docs-prose h2 {
+  margin-top: 2.5rem;
+  margin-bottom: 0.75rem;
+  font-size: var(--text-h2);
+  font-weight: 600;
+  line-height: var(--text-h2--line-height);
+  letter-spacing: var(--text-h2--letter-spacing);
+  color: var(--arka-slate-900);
+}
+
+.docs-prose h3 {
+  margin-top: 1.75rem;
+  margin-bottom: 0.5rem;
+  font-size: var(--text-h3);
+  font-weight: 600;
+  color: var(--arka-slate-900);
+}
+
+.docs-prose p {
+  margin-bottom: 1rem;
+  color: var(--arka-slate-700);
+}
+
+.docs-prose ul,
+.docs-prose ol {
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+  color: var(--arka-slate-700);
+}
+
+.docs-prose li {
+  margin-bottom: 0.35rem;
+}
+
+.docs-prose a {
+  color: var(--arka-teal-700);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.docs-prose a:hover {
+  color: var(--arka-teal-600);
+}
+
+.docs-prose code {
+  border-radius: var(--radius-radius-sm);
+  background: var(--surface-sunken);
+  padding: 0.1rem 0.35rem;
+  font-size: 0.875em;
+  color: var(--arka-slate-800);
+}
+
+.docs-prose strong {
+  font-weight: 600;
+  color: var(--arka-slate-900);
+}
+
+.docs-markdown h1 {
+  display: none;
+}
+
+.docs-markdown pre {
+  margin: 1rem 0;
+  overflow-x: auto;
+  border-radius: var(--radius-radius-lg);
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-sunken);
+  padding: 1rem;
+  font-size: 0.875rem;
+}
+
+.docs-markdown table {
+  width: 100%;
+  margin: 1rem 0;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.docs-markdown th,
+.docs-markdown td {
+  border: 1px solid var(--border-subtle);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+
+/* ARKA-ED STAT pathway — pulsing red left border on results panel */
+.ed-stat-border {
+  border-left: 6px solid var(--danger);
+  animation: ed-stat-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes ed-stat-pulse {
+  0%,
+  100% {
+    border-left-color: var(--danger);
+    box-shadow: inset 6px 0 12px -4px rgb(220 38 38 / 0.35);
+  }
+  50% {
+    border-left-color: #f87171;
+    box-shadow: inset 6px 0 20px -2px rgb(220 38 38 / 0.55);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ed-stat-border {
+    animation: none;
+  }
 }

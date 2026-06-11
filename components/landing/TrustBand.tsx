@@ -4,6 +4,8 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import Link from "next/link";
 import { MousePointerClick, ShieldCheck } from "lucide-react";
+
+import { LandingEyebrow } from "@/components/landing/LandingEyebrow";
 import { routes } from "@/lib/constants";
 
 const regulatoryPoints = [
@@ -39,16 +41,23 @@ export function TrustBand() {
     <section
       ref={ref}
       id="trust"
-      className="scroll-mt-14 border-t border-arka-light bg-arka-bg-light px-4 py-20 sm:px-6 lg:px-8"
+      className="scroll-mt-14 bg-surface-sunken px-4 py-24 md:py-32 sm:px-6 lg:px-8"
       aria-labelledby="trust-heading"
     >
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-7xl">
+        <motion.div
+          initial={fadeIn.initial}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={fadeIn.transition}
+        >
+          <LandingEyebrow>Compliance & workflow</LandingEyebrow>
+        </motion.div>
         <motion.h2
           id="trust-heading"
           initial={fadeIn.initial}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={fadeIn.transition}
-          className="text-center text-2xl font-bold text-arka-text-dark sm:text-3xl"
+          className="text-center text-h2 font-semibold text-arka-slate-900"
         >
           Built to clear the two reviews that kill health tech
         </motion.h2>
@@ -58,16 +67,14 @@ export function TrustBand() {
             initial={fadeIn.initial}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ ...fadeIn.transition, delay: 0.12 }}
-            className="rounded-xl border border-arka-light bg-white px-6 py-8 shadow-card"
+            className="rounded-radius-lg border border-border-subtle bg-surface px-6 py-8 shadow-elevation-2"
           >
-            <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-arka-teal/15 text-arka-teal">
+            <span className="flex h-12 w-12 items-center justify-center rounded-radius-md bg-arka-teal/15 text-arka-teal">
               <ShieldCheck className="h-6 w-6" aria-hidden />
             </span>
-            <h3 className="mt-4 text-lg font-semibold text-arka-text-dark">
-              Regulatory: clears by design
-            </h3>
+            <h3 className="mt-4 text-h3 text-arka-slate-900">Regulatory: clears by design</h3>
 
-            <ul className="mt-4 list-disc space-y-3 pl-5 text-sm leading-relaxed text-arka-text-dark-muted">
+            <ul className="mt-4 list-disc space-y-3 pl-5 text-sm leading-relaxed text-arka-slate-600">
               {regulatoryPoints.map((point) => (
                 <li key={point}>{point}</li>
               ))}
@@ -82,16 +89,14 @@ export function TrustBand() {
             initial={fadeIn.initial}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ ...fadeIn.transition, delay: 0.22 }}
-            className="rounded-xl border border-arka-light bg-white px-6 py-8 shadow-card"
+            className="rounded-radius-lg border border-border-subtle bg-surface px-6 py-8 shadow-elevation-2"
           >
-            <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-arka-teal/15 text-arka-teal">
+            <span className="flex h-12 w-12 items-center justify-center rounded-radius-md bg-arka-teal/15 text-arka-teal">
               <MousePointerClick className="h-6 w-6" aria-hidden />
             </span>
-            <h3 className="mt-4 text-lg font-semibold text-arka-text-dark">
-              Workflow: doctors never notice
-            </h3>
+            <h3 className="mt-4 text-h3 text-arka-slate-900">Workflow: doctors never notice</h3>
 
-            <ul className="mt-4 list-disc space-y-3 pl-5 text-sm leading-relaxed text-arka-text-dark-muted">
+            <ul className="mt-4 list-disc space-y-3 pl-5 text-sm leading-relaxed text-arka-slate-600">
               {workflowPoints.map((point) => (
                 <li key={point}>{point}</li>
               ))}
@@ -103,7 +108,7 @@ export function TrustBand() {
           initial={fadeIn.initial}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ ...fadeIn.transition, delay: 0.36 }}
-          className="mx-auto mt-12 max-w-3xl text-center text-sm text-arka-text-dark-muted"
+          className="mx-auto mt-12 max-w-3xl text-center text-sm text-arka-slate-600"
         >
           <p>
             Measured today: 74% three-class accuracy on our synthetic, ACR-aligned validation cohort

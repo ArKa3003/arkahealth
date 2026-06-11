@@ -1,18 +1,25 @@
 import type { Metadata } from "next";
 
+import { PhaseComplianceBar } from "@/components/shared/PhaseComplianceBar";
+
 export const metadata: Metadata = {
-  title: "ARKA-ED | Educational Platform",
+  title: "ARKA-ED | Emergency Imaging Triage",
   description:
-    "Case-based learning for imaging appropriateness. Practice with clinical vignettes, select imaging, and get evidence-based feedback aligned with ACR criteria.",
+    "Emergency department imaging cockpit. Instant AIIE scoring, red-flag callouts, and disposition guidance for incoming cases.",
   openGraph: {
     title: "ARKA-ED | ARKA Health",
     description:
-      "Educational platform for imaging appropriateness. Case-based learning with ACR criteria.",
+      "ED imaging triage with instant AIIE appropriateness scoring and STAT pathway detection.",
   },
 };
 
 export default function EdLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  return <>{children}</>;
+  return (
+    <>
+      <PhaseComplianceBar />
+      {children}
+    </>
+  );
 }

@@ -84,10 +84,12 @@ export function ReferenceEvidenceDrawer({
       return;
     }
     const controller = new AbortController();
-    setLoading(true);
-    setLoaded(false);
-    setFetchError(null);
-    setShowSkeleton(true);
+    const boot = window.setTimeout(() => {
+      setLoading(true);
+      setLoaded(false);
+      setFetchError(null);
+      setShowSkeleton(true);
+    }, 0);
     const hideSkeletonTimer = window.setTimeout(() => {
       setShowSkeleton(false);
     }, SKELETON_MS);
@@ -135,6 +137,7 @@ export function ReferenceEvidenceDrawer({
 
     return () => {
       controller.abort();
+      window.clearTimeout(boot);
       window.clearTimeout(hideSkeletonTimer);
     };
   }, [open, cpt, bodyPart, complaint]);

@@ -28,17 +28,11 @@ const REGULATORY_LINK_CLASS =
  */
 export function FDAAcknowledgmentModal() {
   const pathname = usePathname();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(() => !isFdaNoticeAcknowledged());
 
   const product = inferProductFromPathname(pathname);
   const variant = isPatientFdaRoute(pathname) ? "patient" : "default";
   const noticeText = getFdaNoticeParagraph(product, variant);
-
-  React.useEffect(() => {
-    if (!isFdaNoticeAcknowledged()) {
-      setOpen(true);
-    }
-  }, []);
 
   const handleAcknowledge = () => {
     setFdaNoticeAcknowledged();
@@ -77,7 +71,7 @@ export function FDAAcknowledgmentModal() {
           <button
             type="button"
             onClick={handleAcknowledge}
-            className="w-full rounded-lg bg-arka-teal px-7 py-3 text-base font-semibold text-white transition-colors hover:bg-arka-teal/90 focus:outline-none focus:ring-2 focus:ring-arka-teal focus:ring-offset-2 focus:ring-offset-arka-bg-dark sm:w-auto"
+            className="w-full rounded-lg bg-arka-teal-600 px-7 py-3 text-base font-semibold text-white transition-colors hover:bg-arka-teal-700 focus:outline-none focus:ring-2 focus:ring-arka-teal-600 focus:ring-offset-2 focus:ring-offset-arka-bg-dark sm:w-auto"
           >
             I Acknowledge
           </button>

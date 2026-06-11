@@ -1,3 +1,5 @@
+import { slugifyHeading } from "@/lib/docs/extract-headings";
+
 /**
  * Minimal Markdown → HTML for in-repo regulatory docs (headings, lists, links, code, emphasis).
  * Used by `/docs/*` server pages; not a general-purpose Markdown implementation.
@@ -60,8 +62,10 @@ export function markdownToHtml(source: string): string {
         6: 'text-sm font-medium mt-2 mb-1',
       };
       const content = line.replace(/^#+\s*/, '');
+      const idAttr =
+        level >= 2 ? ` id="${slugifyHeading(content.replace(/\*\*/g, ''))}"` : "";
       html.push(
-        `<${tag} class="${sizes[level] ?? sizes[2]} text-slate-900 dark:text-slate-100">${inlineMarkdown(content)}</${tag}>`,
+        `<${tag}${idAttr} class="${sizes[level] ?? sizes[2]} text-slate-900 scroll-mt-24">${inlineMarkdown(content)}</${tag}>`,
       );
       i += 1;
       continue;

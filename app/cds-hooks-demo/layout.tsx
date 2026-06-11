@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+import { PhaseComplianceBar } from "@/components/shared/PhaseComplianceBar";
+
 /**
  * CDS Hooks live demo route metadata. The visible wrapper is a <div>, not
  * a <main>, because the root layout already provides a top-level <main>
@@ -19,5 +21,10 @@ export const metadata: Metadata = {
 export default function CdsHooksDemoLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  return <div className="min-h-screen bg-arka-navy">{children}</div>;
+  return (
+    <div className="min-h-screen bg-arka-navy">
+      <PhaseComplianceBar />
+      {children}
+    </div>
+  );
 }

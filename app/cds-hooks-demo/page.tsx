@@ -1,7 +1,6 @@
 import Link from "next/link";
 
 import { CdsDemoClient } from "@/components/cds-platform/demo/CdsDemoClient";
-import { FDANonDeviceBanner } from "@/components/shared/compliance/FDANonDeviceBanner";
 import { DemoViewSwitcher } from "@/components/shared/demos/DemoViewSwitcher";
 import { routes } from "@/lib/constants";
 
@@ -17,10 +16,6 @@ export default function CdsHooksDemoPage() {
         <h1 className="text-3xl font-bold tracking-tight text-white">
           CDS Hooks Live Demo — ARKA Inside an EHR (Epic / Cerner Simulation)
         </h1>
-        <FDANonDeviceBanner
-          product="CLIN"
-          className="mt-4 flex-col items-center gap-3 rounded-lg text-center [&>div]:justify-center"
-        />
         <p className="mt-4 text-base leading-relaxed text-arka-text-soft">
           This is the same ARKA engine you saw in ARKA-CLIN, but rendered the way a clinician would actually see it:
           as a sidebar card inside their EHR while they draft an imaging order. The left panel is a mock Epic chart

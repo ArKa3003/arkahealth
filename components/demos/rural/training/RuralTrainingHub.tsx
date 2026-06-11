@@ -8,6 +8,7 @@ import { RURAL_CASES } from "@/lib/demos/rural/training/rural-cases";
 import { RuralCaseViewer } from "@/components/demos/rural/training/RuralCaseViewer";
 import { FacilityContextCard } from "@/components/demos/rural/training/FacilityContextCard";
 import { CMETracker } from "@/components/demos/rural/training/CMETracker";
+import { CurriculumChecklist } from "@/components/demos/rural/training/CurriculumChecklist";
 import { RuralStatBanner } from "@/components/demos/rural/shared/RuralStatBanner";
 import { Button } from "@/components/demos/rural/shared/ui/Button";
 import type { RuralCase, RuralCaseCategory } from "@/lib/demos/rural/types";
@@ -87,6 +88,8 @@ export function RuralTrainingHub() {
           { label: "Est. time", value: `${RURAL_CASES[0]?.estimatedCompletionMinutes ?? "—"}`, hint: "First case" },
         ]}
       />
+
+      <CurriculumChecklist />
 
       <AnimatePresence mode="wait">
         {!selectedCase ? (

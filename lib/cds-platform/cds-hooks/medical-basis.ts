@@ -1,4 +1,11 @@
 import { CITATIONS, getCitation, tryGetCitation } from '@/lib/cds-platform/citations';
+import { evidenceUrl } from '@/lib/evidence/url';
+import type { MatchTier, ResolvedRating } from '@/lib/aiie/knowledge-matrix';
+import {
+  MATRIX_VERSION,
+  resolveMatrixForScenario,
+} from '@/lib/cds-platform/cds-hooks/matrix-bridge';
+import type { ClinicalScenario } from '@/lib/cds-platform/types';
 
 /**
  * Authority tier for the evidence underlying a CDS recommendation (Appendix A).
@@ -38,6 +45,9 @@ const AUTHORITY_CLASSES: readonly AuthorityClass[] = [
 
 const DEFAULT_LAST_CLINICAL_REVIEW_ISO = '2026-05-24';
 
+/** Prefix for citation ids resolved through the AIIE Clinical Knowledge Matrix. */
+export const MATRIX_CITATION_PREFIX = 'matrix:';
+
 /**
  * Structured medical basis attached to every CDS card (playbook Appendix A).
  */
@@ -48,6 +58,10 @@ export interface MedicalBasis {
   url: string;
   authorityClass: AuthorityClass;
   lastClinicalReviewISO: string;
+  /** Knowledge Matrix evidence slug when the basis resolved through the matrix. */
+  evidenceSlug?: string;
+  /** Matrix resolution tier when the basis resolved through the matrix. */
+  matchTier?: MatchTier;
 }
 
 function citationLabel(citationId: string): string {
@@ -153,43 +167,41 @@ export function mapOveruseCitationToCitationId(citation: string): {
 }
 
 /**
- * Derives guideline-anchored {@link MedicalBasis} from the clinical scenario (primary FDA Criterion 2 source).
+ * Builds a {@link MedicalBasis} from a resolved AIIE Clinical Knowledge Matrix rating.
+ * Tier-4 (conservative_default) yields the indeterminate-order basis whose rationale
+ * carries documentation guidance — there is no dead-end path.
+ *
+ * @param resolved - Output of the matrix four-tier resolution cascade.
+ */
+export function medicalBasisFromMatrix(resolved: ResolvedRating): MedicalBasis {
+  const slug = resolved.rating.evidenceSlug;
+  const rawRationale = resolved.rating.rationale.trim();
+  const rationale =
+    rawRationale.length >= 40
+      ? rawRationale
+      : `${rawRationale} Documenting indication, duration, and red-flag status enables a scenario-level appropriateness rating.`;
+  return {
+    label: `${resolved.scenario.name} — AIIE Clinical Knowledge Matrix v${MATRIX_VERSION}`,
+    rationale,
+    citationId: `${MATRIX_CITATION_PREFIX}${slug}`,
+    url: evidenceUrl(slug),
+    authorityClass: 'guideline',
+    lastClinicalReviewISO: DEFAULT_LAST_CLINICAL_REVIEW_ISO,
+    evidenceSlug: slug,
+    matchTier: resolved.matchTier,
+  };
+}
+
+/**
+ * Derives guideline-anchored {@link MedicalBasis} from the clinical scenario (primary FDA
+ * Criterion 2 source). Resolves through the AIIE Clinical Knowledge Matrix evidence slug and
+ * ALWAYS returns a basis: tier-4 falls back to the indeterminate-order basis with
+ * documentation guidance rather than a dead-end.
  *
  * @param scenario - Mapped prefetch + draft order context.
  */
-export function medicalBasisFromScenario(scenario: {
-  proposedImaging?: { indication?: string; modality?: string; bodyPart?: string };
-  chiefComplaint?: string;
-  serviceRequests?: { reasonCodes?: string[]; display?: string }[];
-}): MedicalBasis {
-  const indication = (
-    scenario.proposedImaging?.indication ??
-    scenario.chiefComplaint ??
-    scenario.serviceRequests?.[0]?.display ??
-    ''
-  ).toLowerCase();
-  const reasonText = (scenario.serviceRequests?.[0]?.reasonCodes ?? []).join(' ').toLowerCase();
-  const bodyPart = (scenario.proposedImaging?.bodyPart ?? '').toLowerCase();
-  const combined = `${indication} ${reasonText} ${bodyPart}`;
-
-  if (
-    combined.includes('low back') ||
-    combined.includes('lumbar') ||
-    combined.includes('m54')
-  ) {
-    return medicalBasisFromCitation(
-      'doi:10.1016/j.jacr.2022.02.018',
-      'guideline',
-      'Evidence-based imaging appropriateness criteria for low back pain generally favor conservative management before lumbar MRI when red flags are absent; duration, prior therapy, and neurologic status determine the appropriate variant.',
-    );
-  }
-
-  return medicalBasisFromCitation(
-    'context_dependent',
-    'context_dependent',
-    'No indication-specific guideline mapping is registered for this order. Apply institutional appropriateness policies and peer-reviewed sources when interpreting the AIIE score.',
-    'Clinical context',
-  );
+export function medicalBasisFromScenario(scenario: ClinicalScenario): MedicalBasis {
+  return medicalBasisFromMatrix(resolveMatrixForScenario(scenario));
 }
 
 /**
@@ -270,7 +282,14 @@ export function assertMedicalBasis(b: unknown): asserts b is MedicalBasis {
       'FDA Criterion 2 violation: medicalBasis.rationale must be at least 40 characters',
     );
   }
-  if (basis.citationId !== 'context_dependent' && !CITATIONS[basis.citationId]) {
+  if (basis.citationId.startsWith(MATRIX_CITATION_PREFIX)) {
+    const slug = basis.citationId.slice(MATRIX_CITATION_PREFIX.length);
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
+      throw new Error(
+        `FDA Criterion 2 violation: matrix citationId has an invalid evidence slug (${basis.citationId})`,
+      );
+    }
+  } else if (basis.citationId !== 'context_dependent' && !CITATIONS[basis.citationId]) {
     throw new Error(
       `FDA Criterion 2 violation: medicalBasis.citationId is not registered (${basis.citationId})`,
     );

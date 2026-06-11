@@ -91,7 +91,13 @@ export interface ClinicalScenario {
     system?: string;
     display?: string;
     authoredOn?: string;
+    /** ServiceRequest.occurrenceDateTime when present on the draft order. */
+    occurrenceDateTime?: string;
     reasonCodes?: string[];
+    /** ICD-10-CM reason codes extracted from ServiceRequest.reasonCode. */
+    reasonIcd10?: string[];
+    /** SNOMED CT reason codes extracted from ServiceRequest.reasonCode. */
+    reasonSnomed?: string[];
   }>;
   imagingStudies?: Array<{
     modality?: string;

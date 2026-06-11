@@ -18,32 +18,38 @@ export function withInsApiLogging<A extends unknown[]>(
     const method = request.method;
     const ip = clientIpFromRequest(request);
 
+    // `after` throws outside a Next.js request scope (e.g. direct handler invocation
+    // in tests); request logging must never break the response itself.
+    const scheduleLog = (statusCode: number, end: number): void => {
+      try {
+        after(() =>
+          void insertInsRequestLog({
+            requestId,
+            path,
+            method,
+            durationMs: Math.max(0, end - start),
+            statusCode,
+            clientIp: ip,
+          }),
+        );
+      } catch {
+        void insertInsRequestLog({
+          requestId,
+          path,
+          method,
+          durationMs: Math.max(0, end - start),
+          statusCode,
+          clientIp: ip,
+        });
+      }
+    };
+
     try {
       const response = await handler(request, ...args);
-      const end = Date.now();
-      after(() =>
-        void insertInsRequestLog({
-          requestId,
-          path,
-          method,
-          durationMs: Math.max(0, end - start),
-          statusCode: response.status,
-          clientIp: ip,
-        }),
-      );
+      scheduleLog(response.status, Date.now());
       return response;
     } catch (err) {
-      const end = Date.now();
-      after(() =>
-        void insertInsRequestLog({
-          requestId,
-          path,
-          method,
-          durationMs: Math.max(0, end - start),
-          statusCode: 500,
-          clientIp: ip,
-        }),
-      );
+      scheduleLog(500, Date.now());
       throw err;
     }
   }) as (request: Request, ...args: A) => Promise<Response>;

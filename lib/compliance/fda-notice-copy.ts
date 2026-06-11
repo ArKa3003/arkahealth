@@ -66,7 +66,7 @@ export function fdaProductClause(product: ArkaProduct): string {
 }
 
 const CORE_FDA_NOTICE =
-  "ARKA Clinical Decision Support is designed to meet all four criteria for Non-Device CDS under FD&C Act §520(o)(1)(E) and FDA's September 2022 final guidance on Clinical Decision Support Software. Recommendations support, not replace, the clinician's judgment. Every recommendation is anchored in a published guideline or peer-reviewed source, with the basis available for independent review.";
+  "ARKA Clinical Decision Support is designed to meet all four criteria for Non-Device CDS under FD&C Act §520(o)(1)(E) and FDA's January 2026 final guidance on Clinical Decision Support Software. Recommendations support, not replace, the clinician's judgment. Every recommendation is anchored in a published guideline or peer-reviewed source, with the basis available for independent review.";
 
 /**
  * Full FDA notice paragraph for the given product and audience variant.

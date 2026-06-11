@@ -177,7 +177,7 @@ export function FeedbackWidget() {
                 <button
                   type="button"
                   onClick={closePanel}
-                  className="rounded-lg bg-arka-teal px-4 py-2.5 font-medium text-white transition-colors hover:bg-arka-teal/90 focus:outline-none focus:ring-2 focus:ring-arka-teal focus:ring-offset-2"
+                  className="rounded-lg bg-arka-teal-600 px-4 py-2.5 font-medium text-white transition-colors hover:bg-arka-teal-700 focus:outline-none focus:ring-2 focus:ring-arka-teal-600 focus:ring-offset-2"
                 >
                   Close
                 </button>

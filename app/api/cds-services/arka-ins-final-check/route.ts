@@ -11,6 +11,8 @@ import {
   buildOrderSignModerateRiskCard,
   hasCompletedDtrQuestionnaireInContext,
 } from "@/lib/davinci/crd";
+import { invalidRequestResponse } from "@/lib/cds-platform/cds-hooks/request-validator";
+import { withCdsTiming } from "@/lib/cds-platform/cds-hooks/timing";
 import { parseCoverage } from "@/lib/fhir/coverage";
 import { FHIRClient } from "@/lib/fhir/client";
 import {
@@ -486,15 +488,16 @@ async function handleFinalCheckPost(req: Request): Promise<NextResponse> {
     try {
       hookBody = (await req.json()) as CDSHookRequest;
     } catch {
-      const cards = [buildCoverageUnavailableCard()];
-      await logValidationEvent("gold_card_check", {});
-      return jsonResponse({ cards });
+      // HTTP 200 + OperationOutcome extension: CDS services never 4xx/5xx into an EHR.
+      return jsonResponse(
+        invalidRequestResponse(["Request body must be valid JSON"]) as unknown as CDSHookResponse,
+      );
     }
 
     if (!hookBody || typeof hookBody !== "object") {
-      const cards = [buildCoverageUnavailableCard()];
-      await logValidationEvent("gold_card_check", {});
-      return jsonResponse({ cards });
+      return jsonResponse(
+        invalidRequestResponse(["Request body must be a JSON object"]) as unknown as CDSHookResponse,
+      );
     }
 
     const context = asRecord(hookBody.context);
@@ -703,7 +706,9 @@ async function handleFinalCheckPost(req: Request): Promise<NextResponse> {
   }
 }
 
-export const POST = withInsApiLogging(handleFinalCheckPost);
+export const POST = withInsApiLogging(
+  withCdsTiming("arka-ins-final-check", handleFinalCheckPost),
+);
 
 /**
  * CORS preflight for CDS Hooks clients.

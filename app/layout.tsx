@@ -1,13 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "@/styles/globals.css";
-import { Navbar } from "@/components/navigation/Navbar";
-import { Footer } from "@/components/navigation/Footer";
-import { MainWithDemoNav } from "@/components/navigation/MainWithDemoNav";
+import { SiteChrome } from "@/components/navigation/SiteChrome";
 import { FDAComplianceProvider } from "@/components/shared/compliance/FDAComplianceProvider";
 import { ThemeProvider } from "@/components/shared/ThemeProvider";
 import { RouteAnnouncer } from "@/components/accessibility/RouteAnnouncer";
-import { FeedbackWidget } from "@/components/FeedbackWidget";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -75,23 +72,12 @@ export default function RootLayout({
       data-arka-platform-version="unified-2.0"
     >
       <body
-        className={`${inter.variable} font-sans min-h-screen antialiased overflow-x-hidden`}
+        className={`${inter.variable} font-sans min-h-screen antialiased overflow-x-hidden text-arka-slate-900 bg-surface selection:bg-arka-teal-200 selection:text-arka-slate-900`}
       >
-        <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-arka-teal focus:px-4 focus:py-2 focus:text-white focus:outline-none focus:ring-2 focus:ring-arka-teal"
-        >
-          Skip to main content
-        </a>
         <ThemeProvider>
           <FDAComplianceProvider>
             <RouteAnnouncer />
-            <div className="flex min-h-screen min-h-dvh flex-col overflow-x-hidden">
-              <Navbar />
-              <MainWithDemoNav>{children}</MainWithDemoNav>
-              <Footer />
-              <FeedbackWidget />
-            </div>
+            <SiteChrome>{children}</SiteChrome>
           </FDAComplianceProvider>
         </ThemeProvider>
       </body>

@@ -11,7 +11,12 @@ import { NextResponse } from "next/server";
 
 import { redact, writeDecisionLog } from "@/lib/cds-platform/audit/decision-log";
 import { handleOrderSign } from "@/lib/cds-platform/cds-hooks/order-sign";
-import type { CDSCard, CDSHooksContext, CDSHooksRequest } from "@/lib/cds-platform/cds-hooks/types";
+import {
+  invalidRequestResponse,
+  validateCDSRequest,
+} from "@/lib/cds-platform/cds-hooks/request-validator";
+import { withCdsTiming } from "@/lib/cds-platform/cds-hooks/timing";
+import type { CDSCard } from "@/lib/cds-platform/cds-hooks/types";
 import type { MedicalBasis } from "@/lib/cds-platform/cds-hooks/medical-basis";
 import {
   detailIncludesFdaDisclosure,
@@ -19,7 +24,6 @@ import {
   FDA_NON_DEVICE_CDS_DISCLOSURE,
 } from "@/lib/compliance/fda-disclosure";
 import { withInsApiLogging } from "@/lib/server/with-ins-api-logging";
-import { safeParseCdsHookRequest, type ParsedCdsHookRequest } from "@/lib/validation/cds-hooks-request";
 import { cdsHookResponseSchema } from "@/lib/validation/cds-hooks-response";
 
 export const maxDuration = 10;
@@ -43,7 +47,10 @@ const ARKA_CLIN_GUIDELINE_PREFIX = "ARKA-CLIN (Guideline-anchored CDS) — ";
 
 type ClinCard = CDSCard & { medicalBasis?: MedicalBasis };
 
-function jsonResponse(body: { cards: ClinCard[] }, status = 200): NextResponse {
+function jsonResponse(
+  body: { cards: ClinCard[]; extension?: Record<string, unknown> },
+  status = 200,
+): NextResponse {
   return NextResponse.json(body, { status, headers: CDS_HEADERS });
 }
 
@@ -64,29 +71,6 @@ function logDecisionSafe(entry: Parameters<typeof writeDecisionLog>[0]): void {
   void writeDecisionLog(entry).catch((err) => {
     console.warn("[arka-clin-appropriateness-sign] decision-log write failed", err);
   });
-}
-
-/**
- * Maps the INS/shared CDS Hooks request shape to cds-platform snake_case auth fields.
- */
-function toCdsPlatformRequest(parsed: ParsedCdsHookRequest): CDSHooksRequest {
-  const auth = parsed.fhirAuthorization;
-  return {
-    hook: parsed.hook,
-    hookInstance: parsed.hookInstance,
-    fhirServer: parsed.fhirServer,
-    fhirAuthorization: auth
-      ? {
-          access_token: auth.accessToken,
-          token_type: "Bearer",
-          expires_in: auth.expiresIn,
-          scope: auth.scope ?? "",
-          subject: auth.subject ?? "",
-        }
-      : undefined,
-    context: parsed.context as CDSHooksContext,
-    prefetch: parsed.prefetch,
-  };
 }
 
 function ensureClinSourceLabel(label: string): string {
@@ -147,17 +131,18 @@ async function handleClinAppropriatenessSignPost(req: Request): Promise<NextResp
     try {
       body = await req.json();
     } catch {
-      return jsonResponse({ cards: [] }, 400);
+      // CDS Hooks services must not 4xx/5xx into an EHR: HTTP 200 + OperationOutcome extension.
+      return jsonResponse(invalidRequestResponse(["Request body must be valid JSON"]));
     }
 
-    const parsed = safeParseCdsHookRequest(body);
-    if (!parsed.ok) {
-      return jsonResponse({ cards: [] }, 400);
+    const requestValidation = validateCDSRequest(body, "order-sign");
+    if (!requestValidation.valid) {
+      return jsonResponse(requestValidation.response);
     }
 
-    hookInstance = parsed.data.hookInstance;
+    hookInstance = requestValidation.hookInstance;
 
-    const platformRequest = toCdsPlatformRequest(parsed.data);
+    const platformRequest = requestValidation.request;
     const raw = await withDeadline(handleOrderSign(platformRequest), 8000, { cards: [] });
 
     // FDA Non-Device CDS Criterion 2: empty cards when no guideline-anchored rule fired is intentional — not an error.
@@ -259,7 +244,9 @@ async function handleClinAppropriatenessSignPost(req: Request): Promise<NextResp
   }
 }
 
-export const POST = withInsApiLogging(handleClinAppropriatenessSignPost);
+export const POST = withInsApiLogging(
+  withCdsTiming("arka-clin-appropriateness-sign", handleClinAppropriatenessSignPost),
+);
 
 /**
  * CORS preflight for CDS Hooks clients.

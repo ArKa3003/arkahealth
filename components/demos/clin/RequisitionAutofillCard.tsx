@@ -74,16 +74,17 @@ export function RequisitionAutofillCard({
   );
 
   useEffect(() => {
-    setPreviewInput(baseInput);
+    const t = window.setTimeout(() => setPreviewInput(baseInput), 0);
+    return () => window.clearTimeout(t);
   }, [baseInput]);
 
   useEffect(() => {
     if (pendingFields.length === 0) {
-      setPreviewScore(null);
-      return;
+      const t = window.setTimeout(() => setPreviewScore(null), 0);
+      return () => window.clearTimeout(t);
     }
     let cancelled = false;
-    setPreviewLoading(true);
+    const boot = window.setTimeout(() => setPreviewLoading(true), 0);
     void scoreOrder(previewInput).then((score) => {
       if (!cancelled) {
         setPreviewScore(score);
@@ -92,6 +93,7 @@ export function RequisitionAutofillCard({
     });
     return () => {
       cancelled = true;
+      window.clearTimeout(boot);
     };
   }, [previewInput, pendingFields.length]);
 

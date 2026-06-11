@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+import { PhaseComplianceBar } from "@/components/shared/PhaseComplianceBar";
+
 export const metadata: Metadata = {
   title: "ARKA-CLIN | Clinical Decision Support",
   description:
@@ -14,5 +16,10 @@ export const metadata: Metadata = {
 export default function ClinLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  return <>{children}</>;
+  return (
+    <>
+      <PhaseComplianceBar />
+      {children}
+    </>
+  );
 }

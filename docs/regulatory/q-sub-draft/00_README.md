@@ -1,43 +1,47 @@
-# ARKA — FDA Pre-Submission (Q-Sub) draft package
+# ARKA Health — FDA Pre-Submission (Q-Sub) Package Manifest
 
-**Status:** First drafts — _pending human review before filing._
-**Created:** 2026-06 · **Owner:** Arri Kanna
-**Companion:** `docs/regulatory/ARKA_FDA_QSub_Playbook.pdf` (the step-by-step guide)
+**Package version:** 1.0 (Final) · **Date:** June 9, 2026
+**Sponsor:** ARKA Health, Inc. · **Contact:** Arri Kanna, Founder — arrihantk@gmail.com
+**Submission type:** Pre-Submission (Q-Submission) — request for written feedback and teleconference
+**Channel:** CDRH Customer Collaboration Portal, via PreSTAR2 v3.0
 
-These are working first drafts of the documents you'll assemble into the free FDA Pre-Submission.
-They are written in the **corrected framing** decided for this submission:
+This package requests FDA's written feedback on the regulatory status of two software functions of the ARKA platform: **ARKA-CLIN**, designed to meet the four Non-Device Clinical Decision Support criteria under FD&C Act §520(o)(1)(E), and **ARKA-INS**, administrative-support software under §520(o)(1)(A). A reference-image viewer is a separate display function outside the scope of this submission.
 
-- **ARKA-CLIN** → Non-Device Clinical Decision Support under **FD&C Act §520(o)(1)(E)** (the four criteria)
-- **ARKA-INS** → Administrative-support software under **§520(o)(1)(A)** (eligibility / claims-based functions)
-- **Reference DICOM viewer** → a separate display function, **out of scope** for this submission
+## Package contents
 
-> ⚠️ Nothing here is legal/regulatory advice. Get a licensed clinician to sign off on clinical
-> content, and (ideally) have a regulatory-savvy human red-line `03_intended_use_statement.md`
-> and `04_fda_questions.md` before you file. See Part 5 of the playbook for cheap ways to do this.
+| # | Document (this folder) | Final PDF (`../q-sub-final/`) | Purpose |
+|---|---|---|---|
+| 01 | `01_cover_letter.md` | `ARKA_QSub_01_Cover_Letter.pdf` | One-page cover letter and statement of request |
+| 02 | `02_product_description.md` | `ARKA_QSub_02_Product_and_Function_Description.pdf` | What each function does, data flow, and design boundaries |
+| 03 | `03_intended_use_statement.md` | `ARKA_QSub_03_Intended_Use_Statement.pdf` | Intended use and indications for ARKA-CLIN and ARKA-INS |
+| 04 | `04_fda_questions.md` | `ARKA_QSub_04_Questions_for_FDA.pdf` | Four concurrence-style questions (FDA's recommended ceiling) |
+| 05 | `05_multiple_function_analysis.md` | `ARKA_QSub_05_Multiple_Function_Analysis.pdf` | Function-by-function regulatory map per FDA's multiple-function framework |
+| 06 | `06_INS_administrative_support_memo.md` | `ARKA_QSub_06_ARKA-INS_Administrative_Support_Memo.pdf` | Feature-level support for the §520(o)(1)(A) position |
+| 07 | `07_meeting_request.md` | `ARKA_QSub_07_Meeting_Request.pdf` | Meeting type, format, preferred dates, agenda, attendees |
+| 08 | `08_labeling_attestation.md` | `ARKA_QSub_08_Labeling_Attestation.pdf` | No-misbranding attestation with dated repository evidence |
 
-## Files
+## Supporting evidence (attach from the repository)
 
-| # | File | Maps to playbook | What it is |
-|---|------|------------------|------------|
-| 01 | `01_cover_letter.md` | Part 4.1 ① | One-page cover letter for the submission |
-| 02 | `02_product_description.md` | Part 4.1 ③ | What CLIN + INS do; data flow; what they don't do |
-| 03 | `03_intended_use_statement.md` | Part 4.1 ④ | The single most important paragraph — get it reviewed |
-| 04 | `04_fda_questions.md` | Part 4.1 ⑤ | Your ≤4 concurrence-style questions |
-| 05 | `05_multiple_function_analysis.md` | Part 4.1 ⑥ | CLIN/INS/viewer → regulatory basis map |
-| 06 | `06_INS_administrative_support_memo.md` | Part 4.3 ⑬ | Why INS is §520(o)(1)(A), feature by feature |
-| 07 | `07_meeting_request.md` | Part 4.1 ⑦ | Meeting type, format, 3+ dates, agenda, attendees |
-| 08 | `08_labeling_attestation.md` | Part 4.3 ⑱ | No "FDA-approved/cleared" anywhere; disclosure copy |
+| Evidence | Location | Supports |
+|---|---|---|
+| Model card (XGBoost refinement model) | `ml-service/MODEL_CARD.md` | Criteria 2 and 4; Question 4 |
+| Scope boundary (viewer fenced out of CDS) | `docs/SCOPE_BOUNDARY.md` | Criterion 1; multiple-function analysis |
+| CI enforcement configuration | `.github/workflows/go-live.yml` + `scripts/regulatory-checks.ts`, `scripts/lint-scope-boundary.ts`, `scripts/lint-cards.ts` | Criterion 1 firewall; change control |
+| Sandbox screenshots (5) | `docs/regulatory-evidence/sandbox-screenshots/` | Criterion 4 transparency; product description |
+| Clinical sign-off log and change-control procedure | `docs/CLINICAL_SIGN_OFF_LOG.md` | Question 3 |
+| On-card FDA disclosure (v1.2.0) | `lib/compliance/fda-disclosure.ts` | Labeling attestation |
 
-## How to use
+## Pre-filing gates (complete before submitting)
 
-1. Read the playbook Part 3 first and fix the underlying brief (`ARKA_FDA_CDS_Regulatory_Brief`).
-2. Fill every `[FILL: …]` placeholder and resolve every `[DECIDE: …]` note.
-3. Get the clinician sign-off moving (longest lead time).
-4. Drop these into the free **PreSTAR2 v3.0** template and submit via the CDRH Portal (playbook Part 7).
+1. **Clinician sign-off — IN PROGRESS.** At least one licensed clinician must review the rule library, citations, feature catalogue, and card language and sign a dated entry in `docs/CLINICAL_SIGN_OFF_LOG.md`. Do not file before this gate closes.
+2. **CDRH Portal account** registered under the same name, organization, and email used in this package (arrihantk@gmail.com).
+3. **PreSTAR2 v3.0** downloaded locally and completed; the status banner must read "eSTAR COMPLETE" before upload.
+4. *Recommended:* run FDA's Digital Health Policy Navigator for ARKA-CLIN and ARKA-INS separately and retain screenshots; send a short informal note to DigitalHealth@fda.hhs.gov before filing.
 
-## Open decisions to resolve before filing
+## Assembly order (PreSTAR)
 
-- [ ] **Patient population:** adults only, or adults + pediatrics? Must be consistent across brief, model card, rules, and `03_intended_use_statement.md`.
-- [ ] **Evidence-source policy:** ACR or non-ACR? Make cards and the rationale memo agree.
-- [ ] **One professional contact** (email + phone) used identically everywhere and on the Portal account.
-- [ ] **Confirm every cited exhibit exists** and can be attached (Loom URL, SHAP screenshot, validation report).
+Attach PDFs in numerical order under the prompts for cover letter, product description, intended use, questions, and meeting request; attach documents 05, 06, and 08 plus the repository evidence under supporting information. Keep all attachments on a local drive while editing PreSTAR, and sign the Truthful & Accurate statement last.
+
+---
+
+*This package requests FDA feedback; it does not represent and must never be described as FDA approval, clearance, registration, or endorsement.*

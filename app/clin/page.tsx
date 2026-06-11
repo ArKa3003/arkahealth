@@ -11,7 +11,7 @@ import { useState } from "react";
 
 const ClinDemoContent = dynamic(
   () => import("@/components/demos/clin/ClinDemoContent").then((m) => m.ClinDemoContent),
-  { loading: () => <DemoLoadingSkeleton />, ssr: true }
+  { loading: () => <DemoLoadingSkeleton />, ssr: false },
 );
 
 const HowArkaWorksSection = dynamic(
@@ -29,21 +29,21 @@ export default function ClinPage() {
 
   return (
     <div className="min-h-screen bg-arka-bg-light">
-      <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-[1600px] px-4 py-6 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
         <nav aria-label="Breadcrumb" className="mb-4 sm:mb-6">
           <ol className="flex flex-wrap items-center gap-1.5 text-sm font-medium text-arka-text-dark-muted">
             <li>
               <Link
                 href={routes.home}
-                className="text-arka-text-dark-muted hover:text-arka-teal transition-colors"
+                className="text-arka-text-dark-muted hover:text-arka-teal-600 transition-colors"
               >
                 Home
               </Link>
             </li>
             <li className="flex items-center gap-1.5">
               <ChevronRight className="h-4 w-4 text-arka-text-dark-soft" aria-hidden />
-              <span className="text-arka-teal">ARKA-CLIN</span>
+              <span className="text-arka-teal-600">ARKA-CLIN</span>
             </li>
           </ol>
         </nav>
@@ -74,7 +74,7 @@ export default function ClinPage() {
             id="about-arka-clin-heading"
           >
             <span className="flex items-center gap-2 font-semibold text-arka-text-dark">
-              <Stethoscope className="h-5 w-5 text-arka-teal" aria-hidden />
+              <Stethoscope className="h-5 w-5 text-arka-teal-600" aria-hidden />
               About ARKA-CLIN
             </span>
             <ChevronDown
@@ -124,7 +124,7 @@ export default function ClinPage() {
                 </p>
                 <Link
                   href={routes.cdsHooksDemo}
-                  className="mt-3 inline-flex items-center gap-2 rounded-lg border border-arka-teal/40 bg-arka-teal/5 px-4 py-2.5 text-sm font-medium text-arka-teal hover:bg-arka-teal/10 hover:border-arka-teal/60 transition-colors"
+                  className="mt-3 inline-flex items-center gap-2 rounded-lg border border-arka-teal/40 bg-arka-teal/5 px-4 py-2.5 text-sm font-medium text-arka-teal-600 hover:bg-arka-teal/10 hover:border-arka-teal/60 transition-colors"
                 >
                   CDS Hooks Live Demo
                 </Link>
@@ -143,11 +143,11 @@ export default function ClinPage() {
         <footer className="mt-12 sm:mt-16 pt-8 border-t border-arka-primary/20">
           <p className="text-sm font-medium text-arka-text-dark-muted mb-3">
             Also explore:{" "}
-            <Link href={routes.ed} className="text-arka-teal hover:underline">
+            <Link href={routes.ed} className="text-arka-teal-600 hover:underline">
               ARKA-ED
             </Link>
             {" | "}
-            <Link href={routes.ins} className="text-arka-teal hover:underline">
+            <Link href={routes.ins} className="text-arka-teal-600 hover:underline">
               ARKA-INS
             </Link>
           </p>
@@ -156,7 +156,7 @@ export default function ClinPage() {
               <li key={href}>
                 <Link
                   href={href}
-                  className="inline-flex items-center gap-2 rounded-lg border border-arka-teal/40 bg-arka-teal/5 px-4 py-2.5 text-sm font-medium text-arka-teal hover:bg-arka-teal/10 hover:border-arka-teal/60 transition-colors"
+                  className="inline-flex items-center gap-2 rounded-lg border border-arka-teal/40 bg-arka-teal/5 px-4 py-2.5 text-sm font-medium text-arka-teal-600 hover:bg-arka-teal/10 hover:border-arka-teal/60 transition-colors"
                 >
                   <Icon className="h-4 w-4" aria-hidden />
                   {label}

@@ -20,6 +20,8 @@ import type { PrefetchData } from '@/lib/cds-platform/fhir/prefetch';
 import { createFHIRClient } from '@/lib/cds-platform/fhir/client';
 import { PrefetchResolver } from '@/lib/cds-platform/fhir/prefetch';
 import { createMlClient } from '@/lib/cds-platform/ml/ml-config';
+import { scoreScenario } from '@/lib/cds-platform/scoring-fallback';
+import type { MLPrediction } from '@/lib/cds-platform/ml/types';
 import { runTieredEngine } from '@/lib/cds-platform/alerting/tiered-engine';
 import { evaluateGuidelineRules } from '@/lib/cds-platform/alerting/rules';
 import { STANDARD_OVERRIDE_REASONS } from '@/lib/cds-platform/alerting/override-reasons';
@@ -36,6 +38,33 @@ const logger = pino({
 
 const ORDER_SIGN_DISCRETION_LABEL =
   'This is a final-check recommendation. The clinician may proceed at their discretion; if proceeding, please document the reasoning.';
+
+/** Per-order ML budget (ms) keeping the cold path inside the 800ms p95 contract. */
+const ML_BUDGET_MS = 500;
+
+/**
+ * Runs ML prediction with a hard time budget; falls back to the in-memory
+ * rule-based scorer on timeout or error.
+ *
+ * @param mlClient - Configured XGBoost client.
+ * @param scenario - Mapped scenario for one draft order.
+ */
+async function predictWithBudget(
+  mlClient: ReturnType<typeof createMlClient>,
+  scenario: ClinicalScenario,
+): Promise<MLPrediction> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const budget = new Promise<MLPrediction>((resolve) => {
+    timer = setTimeout(() => resolve(scoreScenario(scenario)), ML_BUDGET_MS);
+  });
+  try {
+    return await Promise.race([mlClient.predict(scenario), budget]);
+  } catch {
+    return scoreScenario(scenario);
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 /** CDS Hooks card with optional non-blocking actionRequired cue (not a sign block). */
 export type OrderSignCard = CDSCard & {
@@ -175,10 +204,12 @@ function standardOverrideReasonsForCard(): CDSOverrideReason[] {
 
 /**
  * True when a guideline rule with registered citation fired (not ML score threshold alone).
+ * Knowledge Matrix tier-4 (conservative_default / indeterminate order) does not count as
+ * a guideline-anchored basis for a critical-tier card.
  */
 function hasGuidelineAnchoredRule(scenario: ClinicalScenario, score: number): boolean {
   const medicalBasis = medicalBasisFromScenario(scenario);
-  if (medicalBasis.citationId === 'context_dependent') {
+  if (medicalBasis.matchTier === 'conservative_default') {
     return false;
   }
   const guidelineAlerts = evaluateGuidelineRules(scenario);
@@ -235,13 +266,7 @@ export async function handleOrderSign(request: CDSHooksRequest): Promise<CDSHook
     const scenario = mapPrefetchToClinicalScenario(prefetch, draftOrder);
     const medicalBasis = medicalBasisFromScenario(scenario);
 
-    let prediction: Awaited<ReturnType<ReturnType<typeof createMlClient>['predict']>>;
-    try {
-      prediction = await mlClient.predict(scenario as ClinicalScenario);
-    } catch {
-      continue;
-    }
-
+    const prediction = await predictWithBudget(mlClient, scenario as ClinicalScenario);
     const score = prediction.score;
     runTieredEngine({ score, scenarioSummary: { modality: scenario.proposedImaging?.modality } });
 

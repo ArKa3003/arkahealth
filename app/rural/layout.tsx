@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { RuralSidebar } from "@/components/demos/rural/shared/RuralSidebar";
 import { RuralMobileNav } from "@/components/demos/rural/shared/RuralMobileNav";
+import { PhaseComplianceBar } from "@/components/shared/PhaseComplianceBar";
 
 export const metadata: Metadata = {
   title: "Rural Imaging Solutions",
@@ -19,6 +20,7 @@ export default function RuralLayout({ children }: Readonly<{ children: React.Rea
       <RuralSidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <RuralMobileNav />
+        <PhaseComplianceBar />
         <div className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-6 lg:px-8">{children}</div>
       </div>
     </div>

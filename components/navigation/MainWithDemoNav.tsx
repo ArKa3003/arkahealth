@@ -26,7 +26,7 @@ export function MainWithDemoNav({ children }: { children: React.ReactNode }) {
       <main
         id="main-content"
         className={cn(
-          "flex-1 pt-14 min-h-[calc(100dvh-3.5rem)]",
+          "flex-1 pt-16 min-h-[calc(100dvh-4rem)]",
           isDemoPage && "pb-20 md:pb-0"
         )}
         tabIndex={-1}

@@ -84,6 +84,16 @@ type SortKey = keyof Pick<
   "payerId" | "pasProcessed" | "autoApprovalRate" | "avgDecisionTimeHours" | "appealOverturnRate" | "estAnnualSavingsUsd"
 >;
 
+type SortState = { key: SortKey; dir: "asc" | "desc" };
+
+/** Renders the active column sort direction glyph for payer ROI table headers. */
+function renderSortIcon(k: SortKey, sort: SortState) {
+  if (sort.key !== k) return null;
+  return sort.dir === "asc" ?
+      <ArrowUp className="inline h-3 w-3" />
+    : <ArrowDown className="inline h-3 w-3" />;
+}
+
 export function RoiDashboardClient() {
   const data = useMetricsStore((s) => s.data);
   const loading = useMetricsStore((s) => s.loading);
@@ -221,13 +231,6 @@ export function RoiDashboardClient() {
       s.key === key ? { key, dir: s.dir === "asc" ? "desc" : "asc" } : { key, dir: "desc" },
     );
   }
-
-  const SortIcon = ({ k }: { k: SortKey }) =>
-    tableSort.key === k ?
-      tableSort.dir === "asc" ?
-        <ArrowUp className="inline h-3 w-3" />
-      : <ArrowDown className="inline h-3 w-3" />
-    : null;
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
@@ -552,22 +555,22 @@ export function RoiDashboardClient() {
               <thead>
                 <tr className="border-b border-slate-800 font-mono text-[10px] uppercase tracking-wide text-slate-500">
                   <th className="cursor-pointer py-2 pr-2" onClick={() => toggleSort("payerId")}>
-                    Payer <SortIcon k="payerId" />
+                    Payer {renderSortIcon("payerId", tableSort)}
                   </th>
                   <th className="cursor-pointer py-2 pr-2 text-right" onClick={() => toggleSort("pasProcessed")}>
-                    PAs <SortIcon k="pasProcessed" />
+                    PAs {renderSortIcon("pasProcessed", tableSort)}
                   </th>
                   <th className="cursor-pointer py-2 pr-2 text-right" onClick={() => toggleSort("autoApprovalRate")}>
-                    Auto-appr. <SortIcon k="autoApprovalRate" />
+                    Auto-appr. {renderSortIcon("autoApprovalRate", tableSort)}
                   </th>
                   <th className="cursor-pointer py-2 pr-2 text-right" onClick={() => toggleSort("avgDecisionTimeHours")}>
-                    Avg decision (h) <SortIcon k="avgDecisionTimeHours" />
+                    Avg decision (h) {renderSortIcon("avgDecisionTimeHours", tableSort)}
                   </th>
                   <th className="cursor-pointer py-2 pr-2 text-right" onClick={() => toggleSort("appealOverturnRate")}>
-                    Appeal overturn <SortIcon k="appealOverturnRate" />
+                    Appeal overturn {renderSortIcon("appealOverturnRate", tableSort)}
                   </th>
                   <th className="cursor-pointer py-2 text-right" onClick={() => toggleSort("estAnnualSavingsUsd")}>
-                    Est. annual $ <SortIcon k="estAnnualSavingsUsd" />
+                    Est. annual $ {renderSortIcon("estAnnualSavingsUsd", tableSort)}
                   </th>
                 </tr>
               </thead>

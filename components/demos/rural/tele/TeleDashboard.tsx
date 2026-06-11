@@ -2,18 +2,16 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import {
-  Radio,
-  Clock,
-  CheckCircle2,
-  AlertTriangle,
-  ArrowRight,
-  FileText,
-  Activity,
-  Zap,
-} from "lucide-react";
+import { AlertTriangle, ArrowRight, FileText, Zap } from "lucide-react";
+import { TeleSiteFlow } from "@/components/demos/rural/tele/TeleSiteFlow";
+import { RuralStatBanner } from "@/components/demos/rural/shared/RuralStatBanner";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { TableScrollWrapper } from "@/components/ui/TableScrollWrapper";
 import { DEMO_FACILITIES } from "@/lib/demos/rural/facility-profiles";
 import type { TeleStudy, TeleStudyStatus, QualityMetrics } from "@/lib/demos/rural/types";
+import { cn } from "@/lib/utils";
 
 // Mock teleradiology studies for the demo queue
 const MOCK_TELE_STUDIES: TeleStudy[] = [
@@ -222,105 +220,93 @@ const statusConfig: Record<TeleStudyStatus, { label: string; color: string; bg: 
 
 export function TeleDashboard() {
   const [selectedStudy, setSelectedStudy] = useState<TeleStudy | null>(null);
-  const [activeTab, setActiveTab] = useState<"queue" | "quality">("queue");
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div>
-        <div className="flex items-center gap-3 mb-4">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-arka-teal/10">
-            <Radio className="h-5 w-5 text-arka-teal" />
-          </div>
-          <div>
-            <h2 className="text-xl font-heading text-arka-text-dark">ARKA-TELE</h2>
-            <p className="text-sm text-arka-text-dark-muted">Teleradiology Orchestration Dashboard</p>
-          </div>
-        </div>
-        <p className="text-arka-text-dark-muted leading-relaxed max-w-3xl">
-          ARKA-TELE sits between rural facilities and their teleradiology providers, automatically assembling
-          clinical context packages, running AI triage on incoming studies, and routing to the optimal provider
-          based on complexity, subspecialty needs, and turnaround time.
-        </p>
-      </div>
+    <div className="space-y-6">
+      <RuralStatBanner
+        stats={[
+          { label: "Queue depth", value: String(MOCK_TELE_STUDIES.length), hint: "Active studies" },
+          { label: "Avg turnaround", value: `${MOCK_QUALITY_METRICS.averageTurnaroundMinutes} min`, hint: "Q1 demo" },
+          { label: "Concordance", value: `${MOCK_QUALITY_METRICS.concordanceRate}%`, hint: "Peer review" },
+        ]}
+      />
 
-      {/* Tab Switcher */}
-      <div className="flex gap-2">
-        {(["queue", "quality"] as const).map((tab) => (
-          <button
-            key={tab}
-            type="button"
-            onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 rounded-lg text-sm font-body-medium transition-colors ${
-              activeTab === tab
-                ? "bg-arka-teal text-white"
-                : "bg-slate-100 text-arka-text-dark-muted hover:bg-slate-200"
-            }`}
-          >
-            {tab === "queue" ? "Study Queue" : "Quality Metrics"}
-          </button>
-        ))}
-      </div>
+      <TeleSiteFlow />
 
-      {/* Study Queue Tab */}
-      {activeTab === "queue" && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Study List */}
-          <div className="lg:col-span-2 space-y-3">
+      <Tabs defaultValue="queue">
+        <TabsList className="w-full justify-start sm:w-auto">
+          <TabsTrigger value="queue">Study queue</TabsTrigger>
+          <TabsTrigger value="quality">Quality metrics</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="queue" className="mt-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <div className="space-y-3 lg:col-span-2">
             {MOCK_TELE_STUDIES.map((study) => (
               <motion.button
                 key={study.id}
                 type="button"
                 onClick={() => setSelectedStudy(study)}
-                className={`w-full text-left rounded-xl border p-4 transition-all ${
+                className={cn(
+                  "w-full rounded-radius-lg border p-4 text-left transition-all",
                   selectedStudy?.id === study.id
-                    ? "border-arka-teal bg-arka-teal/5 shadow-glow-sm"
-                    : "border-slate-200 bg-white hover:border-slate-300 shadow-card"
-                } ${study.aiTriageResult?.priority === "critical" ? "ring-2 ring-red-300" : ""}`}
+                    ? "border-arka-teal-400 bg-arka-teal-50 shadow-elevation-2"
+                    : "border-border-subtle bg-surface hover:border-border-strong hover:shadow-elevation-1",
+                  study.aiTriageResult?.priority === "critical" && "ring-2 ring-danger/30",
+                )}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
               >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
+                <div className="mb-2 flex items-center justify-between gap-2">
+                  <div className="flex min-w-0 items-center gap-2">
                     {study.aiTriageResult?.priority === "critical" && (
-                      <AlertTriangle className="h-4 w-4 text-red-500" />
+                      <AlertTriangle className="h-4 w-4 shrink-0 text-danger" aria-hidden />
                     )}
-                    <span className="font-body-medium text-arka-text-dark">
+                    <span className="truncate font-medium text-arka-slate-900">
                       {study.modality} — {study.bodyPart}
                     </span>
                   </div>
-                  <span
-                    className={`text-xs rounded-full px-2 py-0.5 ${statusConfig[study.status].bg} ${statusConfig[study.status].color}`}
+                  <Badge
+                    variant={
+                      study.status === "preliminary" || study.status === "final"
+                        ? "success"
+                        : study.status === "in-progress"
+                          ? "warning"
+                          : "neutral"
+                    }
                   >
                     {statusConfig[study.status].label}
-                  </span>
+                  </Badge>
                 </div>
-                <p className="text-xs text-arka-text-dark-muted line-clamp-1">
+                <p className="line-clamp-1 text-xs text-arka-slate-600">
                   {study.clinicalContextPackage.orderingIndication}
                 </p>
-                <div className="flex items-center gap-3 mt-2 text-xs text-arka-text-dark-soft">
-                  <span>CAS: {study.clinicalContextPackage.arkaClnScore}/9</span>
-                  {study.aiTriageResult && (
+                <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-arka-slate-500">
+                  <span className="tabular-nums">CAS: {study.clinicalContextPackage.arkaClnScore}/9</span>
+                  {study.aiTriageResult ? (
                     <span className="flex items-center gap-1">
-                      <Zap className="h-3 w-3" />
+                      <Zap className="h-3 w-3" aria-hidden />
                       AI: {study.aiTriageResult.priority}
                     </span>
-                  )}
-                  <span>
-                    <ArrowRight className="inline h-3 w-3" /> {study.routingDecision.selectedProvider}
+                  ) : null}
+                  <span className="flex items-center gap-1">
+                    <ArrowRight className="h-3 w-3" aria-hidden />
+                    {study.routingDecision.selectedProvider}
                   </span>
                 </div>
               </motion.button>
             ))}
           </div>
 
-          {/* Detail Panel */}
           <div className="lg:col-span-1">
             {selectedStudy ? (
-              <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-card sticky top-24 space-y-4">
-                <h4 className="font-heading text-arka-text-dark">
-                  {selectedStudy.modality} — {selectedStudy.bodyPart}
-                </h4>
+              <Card className="sticky top-24 space-y-4">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base">
+                    {selectedStudy.modality} — {selectedStudy.bodyPart}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4 pt-0">
 
                 {/* Clinical Context */}
                 <div>
@@ -387,122 +373,118 @@ export function TeleDashboard() {
                   </div>
                 </div>
 
-                {/* Report */}
-                {selectedStudy.report && (
+                {selectedStudy.report ? (
                   <div>
-                    <p className="text-xs font-body-medium text-arka-text-dark mb-1">Report</p>
-                    <div className="rounded-lg bg-green-50 border border-green-200 p-3 text-xs space-y-2">
-                      <p className="text-arka-text-dark-muted">
+                    <p className="mb-1 text-xs font-medium text-arka-slate-900">Report</p>
+                    <div className="space-y-2 rounded-radius-md border border-success/30 bg-success-bg p-3 text-xs">
+                      <p className="text-arka-slate-600">
                         <strong>Radiologist:</strong> {selectedStudy.report.radiologist}
                       </p>
-                      <p className="text-arka-text-dark-muted">
+                      <p className="text-arka-slate-600">
                         <strong>Findings:</strong> {selectedStudy.report.findings}
                       </p>
-                      <p className="font-body-medium text-green-700">
+                      <p className="font-medium text-success">
                         <strong>Impression:</strong> {selectedStudy.report.impression}
                       </p>
-                      {selectedStudy.report.criticalFindings.length > 0 && (
-                        <p className="text-red-600">
+                      {selectedStudy.report.criticalFindings.length > 0 ? (
+                        <p className="text-danger">
                           <strong>Critical:</strong> {selectedStudy.report.criticalFindings.join("; ")}
                         </p>
-                      )}
+                      ) : null}
                     </div>
                   </div>
-                )}
-              </div>
+                ) : null}
+                </CardContent>
+              </Card>
             ) : (
-              <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center">
-                <p className="text-sm text-arka-text-dark-muted">Select a study to view details</p>
-              </div>
+              <Card className="border-dashed">
+                <CardContent className="py-10 text-center">
+                  <p className="text-sm text-arka-slate-600">Select a study to view details</p>
+                </CardContent>
+              </Card>
             )}
           </div>
         </div>
-      )}
+        </TabsContent>
 
-      {/* Quality Metrics Tab */}
-      {activeTab === "quality" && (
-        <div className="space-y-6">
-          {/* Summary Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              { label: "Total Studies (Q1)", value: MOCK_QUALITY_METRICS.totalStudies, icon: Activity },
-              { label: "Avg Turnaround", value: `${MOCK_QUALITY_METRICS.averageTurnaroundMinutes} min`, icon: Clock },
-              { label: "Concordance Rate", value: `${MOCK_QUALITY_METRICS.concordanceRate}%`, icon: CheckCircle2 },
-              { label: "Critical Callback", value: `${MOCK_QUALITY_METRICS.criticalFindingCallbackRate}%`, icon: AlertTriangle },
-            ].map(({ label, value, icon: Icon }) => (
-              <div key={label} className="rounded-xl border border-slate-200 bg-white p-4 shadow-card">
-                <div className="flex items-center gap-2 mb-2">
-                  <Icon className="h-4 w-4 text-arka-teal" />
-                  <span className="text-xs text-arka-text-dark-muted">{label}</span>
-                </div>
-                <p className="text-2xl font-heading text-arka-text-dark">{value}</p>
-              </div>
-            ))}
-          </div>
+        <TabsContent value="quality" className="mt-6 space-y-6">
+          <RuralStatBanner
+            stats={[
+              { label: "Total studies (Q1)", value: String(MOCK_QUALITY_METRICS.totalStudies), hint: "All modalities" },
+              { label: "Avg turnaround", value: `${MOCK_QUALITY_METRICS.averageTurnaroundMinutes} min`, hint: "Weighted" },
+              { label: "Concordance rate", value: `${MOCK_QUALITY_METRICS.concordanceRate}%`, hint: "Peer review" },
+              { label: "Critical callback", value: `${MOCK_QUALITY_METRICS.criticalFindingCallbackRate}%`, hint: "SLA met" },
+            ]}
+          />
 
-          {/* Turnaround by Urgency */}
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-card">
-            <h4 className="font-heading text-arka-text-dark mb-4">Turnaround by Urgency</h4>
-            <div className="space-y-3">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-h3">Turnaround by urgency</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
               {Object.entries(MOCK_QUALITY_METRICS.turnaroundByUrgency).map(([urgency, minutes]) => (
                 <div key={urgency} className="flex items-center gap-4">
-                  <span className="w-16 text-sm font-body-medium text-arka-text-dark capitalize">{urgency}</span>
-                  <div className="flex-1 h-6 rounded-full bg-slate-100 overflow-hidden">
+                  <span className="w-16 text-sm font-medium capitalize text-arka-slate-900">{urgency}</span>
+                  <div className="h-6 flex-1 overflow-hidden rounded-full bg-arka-slate-100">
                     <motion.div
-                      className="h-full rounded-full bg-arka-teal"
+                      className="h-full rounded-full bg-arka-teal-500"
                       initial={{ width: 0 }}
                       animate={{ width: `${(minutes / 60) * 100}%` }}
                       transition={{ duration: 0.8 }}
                     />
                   </div>
-                  <span className="w-16 text-right text-sm text-arka-text-dark-muted">{minutes} min</span>
+                  <span className="w-16 text-right text-sm tabular-nums text-arka-slate-600">
+                    {minutes} min
+                  </span>
                 </div>
               ))}
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
-          {/* Provider Performance */}
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-card">
-            <h4 className="font-heading text-arka-text-dark mb-4">Provider Performance</h4>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-slate-200 text-left text-xs text-arka-text-dark-muted">
-                    <th className="pb-2 pr-4">Provider</th>
-                    <th className="pb-2 pr-4">Studies</th>
-                    <th className="pb-2 pr-4">Avg TAT</th>
-                    <th className="pb-2 pr-4">Addendum Rate</th>
-                    <th className="pb-2">Quality Score</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {MOCK_QUALITY_METRICS.providerPerformance.map((p) => (
-                    <tr key={p.providerId} className="border-b border-slate-100">
-                      <td className="py-3 pr-4 font-body-medium text-arka-text-dark">{p.providerName}</td>
-                      <td className="py-3 pr-4 text-arka-text-dark-muted">{p.studiesRead}</td>
-                      <td className="py-3 pr-4 text-arka-text-dark-muted">{p.averageTurnaround} min</td>
-                      <td className="py-3 pr-4 text-arka-text-dark-muted">{p.addendumRate}%</td>
-                      <td className="py-3">
-                        <span
-                          className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                            p.qualityScore >= 90
-                              ? "bg-green-100 text-green-700"
-                              : p.qualityScore >= 80
-                                ? "bg-amber-100 text-amber-700"
-                                : "bg-red-100 text-red-700"
-                          }`}
-                        >
-                          {p.qualityScore}/100
-                        </span>
-                      </td>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-h3">Provider performance</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <TableScrollWrapper aria-label="Teleradiology provider performance">
+                <table className="w-full min-w-[520px] text-sm">
+                  <thead className="sticky top-0 z-10 bg-surface shadow-[0_1px_0_var(--border-subtle)]">
+                    <tr className="text-left text-xs font-medium uppercase tracking-wide text-arka-slate-500">
+                      <th className="px-4 py-3">Provider</th>
+                      <th className="px-4 py-3">Studies</th>
+                      <th className="px-4 py-3">Avg TAT</th>
+                      <th className="px-4 py-3">Addendum</th>
+                      <th className="px-4 py-3">Quality</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      )}
+                  </thead>
+                  <tbody>
+                    {MOCK_QUALITY_METRICS.providerPerformance.map((p) => (
+                      <tr
+                        key={p.providerId}
+                        className="border-t border-border-subtle transition-colors hover:bg-surface-sunken"
+                      >
+                        <td className="px-4 py-3 font-medium text-arka-slate-900">{p.providerName}</td>
+                        <td className="px-4 py-3 tabular-nums text-arka-slate-600">{p.studiesRead}</td>
+                        <td className="px-4 py-3 tabular-nums text-arka-slate-600">{p.averageTurnaround} min</td>
+                        <td className="px-4 py-3 tabular-nums text-arka-slate-600">{p.addendumRate}%</td>
+                        <td className="px-4 py-3">
+                          <Badge
+                            variant={
+                              p.qualityScore >= 90 ? "success" : p.qualityScore >= 80 ? "warning" : "danger"
+                            }
+                          >
+                            {p.qualityScore}/100
+                          </Badge>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </TableScrollWrapper>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

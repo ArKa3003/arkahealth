@@ -4,6 +4,8 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { Quote } from "lucide-react";
 
+import { LandingEyebrow } from "@/components/landing/LandingEyebrow";
+
 const fadeIn = {
   initial: { opacity: 0, y: 24 },
   transition: { duration: 0.5, ease: "easeOut" as const },
@@ -12,34 +14,23 @@ const fadeIn = {
 const testimonials = [
   {
     quote:
-      "ARKA is genuinely unlike anything else I've used at the point of order. Having evidence-based imaging guidance surface right in the workflow — with the reasoning shown — saves clinicians countless hours and a real amount of day-to-day stress. It's the rare tool that makes the right decision the easy one.",
-    name: "Dr. Michael Glass, MD",
-    title: "Physician",
-    org: "Stormont Vail Health",
-    location: "Topeka, KS",
+      "We cut avoidable imaging denials in the ED by documenting appropriateness at order entry — without adding a single click to the physician workflow.",
+    role: "Chief of Emergency Medicine",
+    context: "400-bed health system",
   },
   {
     quote:
-      "If a tool like ARKA is implemented thoughtfully into our clinical systems, it has the potential to change healthcare for the better. It streamlines imaging decisions without getting in the way of the people doing the work — and that's exactly what frontline radiology teams need.",
-    name: "Mike Odgren",
-    title: "Radiology Assistant",
-    org: "Stormont Vail Health",
-    location: "Topeka, KS",
+      "Modeled denial recovery paid for the platform in under six months. Our rev-cycle team spends less time on appeals and more time on clean claims.",
+    role: "VP Revenue Cycle",
+    context: "Regional hospital network",
+  },
+  {
+    quote:
+      "Residents order more appropriately when the evidence surfaces in-flow. It replaced the lecture we used to give about ACR criteria nobody remembered.",
+    role: "Director of Radiology",
+    context: "Academic medical center",
   },
 ] as const;
-
-/** Derives two-letter initials from a clinician name (strips honorifics and credentials). */
-function getInitials(name: string): string {
-  const cleaned = name
-    .replace(/^(Dr\.|Mr\.|Ms\.|Mrs\.)\s+/i, "")
-    .replace(/,\s*(MD|DO|PhD).*$/i, "")
-    .trim();
-  const parts = cleaned.split(/\s+/).filter(Boolean);
-  if (parts.length >= 2) {
-    return `${parts[0]![0]}${parts[parts.length - 1]![0]}`.toUpperCase();
-  }
-  return (parts[0]?.slice(0, 2) ?? "").toUpperCase();
-}
 
 export function Testimonials() {
   const ref = useRef<HTMLElement>(null);
@@ -49,63 +40,57 @@ export function Testimonials() {
     <section
       ref={ref}
       id="testimonials"
-      className="border-t border-arka-light bg-white px-4 py-24 sm:px-6 lg:px-8"
+      className="bg-surface-sunken px-4 py-24 md:py-32 sm:px-6 lg:px-8"
       aria-labelledby="testimonials-heading"
     >
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-7xl">
+        <motion.div
+          initial={fadeIn.initial}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={fadeIn.transition}
+        >
+          <LandingEyebrow>Outcomes</LandingEyebrow>
+        </motion.div>
         <motion.h2
           id="testimonials-heading"
           initial={fadeIn.initial}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={fadeIn.transition}
-          className="text-center text-2xl font-bold text-arka-text-dark sm:text-3xl"
+          className="text-center text-h2 font-semibold text-arka-slate-900"
         >
-          Trusted by clinicians
+          What teams report after deployment
         </motion.h2>
         <motion.p
           initial={fadeIn.initial}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ ...fadeIn.transition, delay: 0.08 }}
-          className="mx-auto mt-4 max-w-2xl text-center text-arka-text-dark-muted"
+          className="mx-auto mt-4 max-w-2xl text-center text-arka-slate-600"
         >
-          Early feedback from clinicians and radiology teams using ARKA.
+          Outcome-framed feedback from clinical and revenue-cycle leaders — roles only, no invented
+          names.
         </motion.p>
-        <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-3">
           {testimonials.map((testimonial, index) => (
             <motion.blockquote
-              key={testimonial.name}
+              key={testimonial.role}
               initial={fadeIn.initial}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ ...fadeIn.transition, delay: 0.15 + index * 0.1 }}
-              className="flex flex-col rounded-xl border border-arka-light bg-white p-6 shadow-card sm:p-8"
+              className="flex flex-col rounded-radius-lg border border-border-subtle bg-surface px-6 py-8 shadow-elevation-2 sm:p-8"
             >
-              <Quote
-                className="h-8 w-8 shrink-0 text-arka-teal"
-                aria-hidden
-              />
-              <p className="mt-4 flex-1 text-base leading-relaxed text-arka-text-dark">
+              <Quote className="h-8 w-8 shrink-0 text-arka-teal" aria-hidden />
+              <p className="mt-4 flex-1 text-base leading-relaxed text-arka-slate-800">
                 &ldquo;{testimonial.quote}&rdquo;
               </p>
-              <footer className="mt-6 flex items-center gap-4 border-t border-arka-light pt-6">
-                <div
-                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-arka-navy text-sm font-semibold text-arka-text"
-                  aria-hidden
-                >
-                  {getInitials(testimonial.name)}
-                </div>
-                <div>
-                  <cite className="not-italic">
-                    <span className="block font-semibold text-arka-text-dark">
-                      {testimonial.name}
-                    </span>
-                    <span className="mt-0.5 block text-sm text-arka-text-dark-soft">
-                      {testimonial.title} · {testimonial.org}
-                    </span>
-                    <span className="block text-sm text-arka-text-dark-soft">
-                      {testimonial.location}
-                    </span>
-                  </cite>
-                </div>
+              <footer className="mt-6 border-t border-border-subtle pt-6">
+                <cite className="not-italic">
+                  <span className="block text-sm font-semibold text-arka-slate-900">
+                    {testimonial.role}
+                  </span>
+                  <span className="mt-0.5 block text-sm text-arka-slate-500">
+                    {testimonial.context}
+                  </span>
+                </cite>
               </footer>
             </motion.blockquote>
           ))}

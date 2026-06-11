@@ -54,6 +54,8 @@ export const routes = {
   cdsHooksDiscovery: "/cds-hooks-discovery",
   regulatoryRationale: "/docs/regulatory-rationale",
   featureCatalog: "/docs/feature-catalog",
+  modelCard: "/docs/model-card",
+  trust: "/trust",
   roi: "/roi",
 } as const;
 

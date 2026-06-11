@@ -101,7 +101,8 @@ export function GoldCardDashboardClient({ embedded = false }: GoldCardDashboardC
   const [teachingDone, setTeachingDone] = React.useState(false);
 
   React.useEffect(() => {
-    setChartReady(true);
+    const t = window.setTimeout(() => setChartReady(true), 0);
+    return () => window.clearTimeout(t);
   }, []);
 
   React.useEffect(() => {
@@ -203,10 +204,12 @@ export function GoldCardDashboardClient({ embedded = false }: GoldCardDashboardC
 
   React.useEffect(() => {
     if (!detailCpt || !detailSnapshot) {
-      setDetailRarity(null);
-      setDetailTotalOrders(undefined);
-      setTeachingDone(false);
-      return;
+      const t = window.setTimeout(() => {
+        setDetailRarity(null);
+        setDetailTotalOrders(undefined);
+        setTeachingDone(false);
+      }, 0);
+      return () => window.clearTimeout(t);
     }
 
     let cancelled = false;
