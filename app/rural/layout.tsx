@@ -21,7 +21,9 @@ export default function RuralLayout({ children }: Readonly<{ children: React.Rea
       <div className="flex min-w-0 flex-1 flex-col">
         <RuralMobileNav />
         <PhaseComplianceBar />
-        <div className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-6 lg:px-8">{children}</div>
+        <div className="mx-auto w-full max-w-6xl flex-1 scroll-pt-[8.5rem] px-4 py-6 sm:px-6 md:scroll-pt-24 lg:px-8">
+          {children}
+        </div>
       </div>
     </div>
   );

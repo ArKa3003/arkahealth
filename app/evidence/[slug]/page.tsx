@@ -5,6 +5,7 @@ import { ArrowLeft, ExternalLink } from "lucide-react";
 
 import { ComplianceBar } from "@/components/shared/ComplianceBar";
 import { Badge } from "@/components/ui/badge";
+import { routes } from "@/lib/constants";
 import { MATRIX_VERSION } from "@/lib/aiie/knowledge-matrix";
 import { FDA_NON_DEVICE_CDS_DISCLOSURE } from "@/lib/compliance/fda-disclosure";
 import {
@@ -71,8 +72,8 @@ export default async function EvidenceDetailPage({ params }: EvidencePageProps) 
 
       <div className="mx-auto max-w-3xl px-4 py-12 pb-20 sm:px-6 lg:px-8">
         <Link
-          href="/evidence"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-arka-teal-700 hover:text-arka-teal-600"
+          href={routes.evidence}
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-arka-teal-700 hover:text-arka-teal-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-teal-500 focus-visible:ring-offset-2"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden />
           Evidence library
@@ -184,6 +185,24 @@ export default async function EvidenceDetailPage({ params }: EvidencePageProps) 
             </div>
           </section>
         ) : null}
+
+        <nav
+          aria-label="Evidence library navigation"
+          className="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-border-subtle pt-8"
+        >
+          <Link
+            href={routes.evidence}
+            className="inline-flex min-h-[44px] touch-manipulation items-center text-sm font-medium text-arka-teal-700 hover:text-arka-teal-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-teal-500 focus-visible:ring-offset-2"
+          >
+            ← All topics
+          </Link>
+          <Link
+            href={routes.featureCatalog}
+            className="inline-flex min-h-[44px] touch-manipulation items-center text-sm font-medium text-arka-teal-700 hover:text-arka-teal-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-teal-500 focus-visible:ring-offset-2"
+          >
+            Feature Catalogue →
+          </Link>
+        </nav>
 
         <div
           role="note"

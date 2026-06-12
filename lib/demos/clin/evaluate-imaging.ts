@@ -198,10 +198,10 @@ function aiiToEvidenceLinks(
   const t = (x: string): EvidenceLink['type'] => x === 'peer-reviewed' ? 'study' : x === 'systematic-review' ? 'recommendation' : 'guideline';
   const links: EvidenceLink[] = sources.map(s => ({
     title: `${s.title} — ${s.citation}`,
-    url: '/methodology',
+    url: '/docs/feature-catalog',
     type: t(s.type),
   }));
-  if (links.length === 0) links.push({ title: 'AIIE Methodology', url: '/methodology', type: 'guideline' });
+  if (links.length === 0) links.push({ title: 'AIIE Feature Catalog', url: '/docs/feature-catalog', type: 'guideline' });
   return links;
 }
 

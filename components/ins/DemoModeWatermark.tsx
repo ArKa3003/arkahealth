@@ -11,7 +11,7 @@ export function DemoModeWatermark() {
   }
   return (
     <div
-      className="pointer-events-none fixed bottom-3 right-3 z-[100] rounded border border-amber-300/60 bg-amber-50/90 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-amber-900/80 shadow-sm backdrop-blur-sm"
+      className="pointer-events-none fixed bottom-3 right-3 z-[100] rounded border border-amber-400/70 bg-amber-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-amber-950 shadow-sm backdrop-blur-sm"
       aria-hidden
     >
       Demo

@@ -7,12 +7,13 @@ import { Card, CardContent } from "@/components/ui/card";
 
 export interface ClinEmptyStateProps {
   onLoadExample: () => void;
+  onStartNew: () => void;
 }
 
 /**
  * Zero-state when no case is loaded — explains workflow with example loader.
  */
-export function ClinEmptyState({ onLoadExample }: ClinEmptyStateProps) {
+export function ClinEmptyState({ onLoadExample, onStartNew }: ClinEmptyStateProps) {
   return (
     <Card className="border-dashed border-border-strong bg-surface-sunken/30 animate-fade-in-up">
       <CardContent className="flex flex-col items-center px-6 py-12 text-center">
@@ -40,16 +41,27 @@ export function ClinEmptyState({ onLoadExample }: ClinEmptyStateProps) {
             Review AIIE score and factor breakdown in the results panel
           </li>
         </ol>
-        <Button
-          type="button"
-          variant="primary"
-          size="lg"
-          className="mt-8"
-          onClick={onLoadExample}
-        >
-          <Sparkles className="h-4 w-4" aria-hidden />
-          Load example case
-        </Button>
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <Button
+            type="button"
+            variant="primary"
+            size="lg"
+            className="min-h-[44px] touch-manipulation"
+            onClick={onLoadExample}
+          >
+            <Sparkles className="h-4 w-4" aria-hidden />
+            Load example case
+          </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            size="lg"
+            className="min-h-[44px] touch-manipulation"
+            onClick={onStartNew}
+          >
+            Start new order
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );

@@ -3,7 +3,13 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { AlertTriangle, ArrowRight, FileText, Zap } from "lucide-react";
+import { AITriagePrioritizer } from "@/components/demos/rural/tele/AITriagePrioritizer";
+import { ClinicalContextPackager } from "@/components/demos/rural/tele/ClinicalContextPackager";
+import { MultiProviderRouter } from "@/components/demos/rural/tele/MultiProviderRouter";
+import { QualityAssuranceDashboard } from "@/components/demos/rural/tele/QualityAssuranceDashboard";
+import { StoreAndForwardManager } from "@/components/demos/rural/tele/StoreAndForwardManager";
 import { TeleSiteFlow } from "@/components/demos/rural/tele/TeleSiteFlow";
+import { RuralDashboardPanel } from "@/components/demos/rural/shared/RuralDashboardPanel";
 import { RuralStatBanner } from "@/components/demos/rural/shared/RuralStatBanner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -221,21 +227,28 @@ const statusConfig: Record<TeleStudyStatus, { label: string; color: string; bg: 
 export function TeleDashboard() {
   const [selectedStudy, setSelectedStudy] = useState<TeleStudy | null>(null);
 
+  const hubFacility = DEMO_FACILITIES[0]!;
+
   return (
     <div className="space-y-6">
-      <RuralStatBanner
-        stats={[
-          { label: "Queue depth", value: String(MOCK_TELE_STUDIES.length), hint: "Active studies" },
-          { label: "Avg turnaround", value: `${MOCK_QUALITY_METRICS.averageTurnaroundMinutes} min`, hint: "Q1 demo" },
-          { label: "Concordance", value: `${MOCK_QUALITY_METRICS.concordanceRate}%`, hint: "Peer review" },
-        ]}
-      />
+      <RuralDashboardPanel>
+        <RuralStatBanner
+          stats={[
+            { label: "Queue depth", value: String(MOCK_TELE_STUDIES.length), hint: "Active studies" },
+            { label: "Avg turnaround", value: `${MOCK_QUALITY_METRICS.averageTurnaroundMinutes} min`, hint: "Q1 demo" },
+            { label: "Concordance", value: `${MOCK_QUALITY_METRICS.concordanceRate}%`, hint: "Peer review" },
+          ]}
+        />
+      </RuralDashboardPanel>
 
-      <TeleSiteFlow />
+      <RuralDashboardPanel delay={0.05}>
+        <TeleSiteFlow />
+      </RuralDashboardPanel>
 
       <Tabs defaultValue="queue">
-        <TabsList className="w-full justify-start sm:w-auto">
+        <TabsList className="w-full justify-start overflow-x-auto sm:w-auto">
           <TabsTrigger value="queue">Study queue</TabsTrigger>
+          <TabsTrigger value="operations">Operations</TabsTrigger>
           <TabsTrigger value="quality">Quality metrics</TabsTrigger>
         </TabsList>
 
@@ -300,7 +313,7 @@ export function TeleDashboard() {
 
           <div className="lg:col-span-1">
             {selectedStudy ? (
-              <Card className="sticky top-24 space-y-4">
+              <Card className="sticky top-32 space-y-4 md:top-28">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base">
                     {selectedStudy.modality} — {selectedStudy.bodyPart}
@@ -405,6 +418,26 @@ export function TeleDashboard() {
             )}
           </div>
         </div>
+        </TabsContent>
+
+        <TabsContent value="operations" className="mt-6 space-y-6">
+          <div className="grid gap-6 lg:grid-cols-2">
+            <RuralDashboardPanel>
+              <AITriagePrioritizer />
+            </RuralDashboardPanel>
+            <RuralDashboardPanel delay={0.05}>
+              <StoreAndForwardManager />
+            </RuralDashboardPanel>
+            <RuralDashboardPanel delay={0.1}>
+              <MultiProviderRouter />
+            </RuralDashboardPanel>
+            <RuralDashboardPanel delay={0.15}>
+              <ClinicalContextPackager facility={hubFacility} />
+            </RuralDashboardPanel>
+          </div>
+          <RuralDashboardPanel delay={0.2}>
+            <QualityAssuranceDashboard />
+          </RuralDashboardPanel>
         </TabsContent>
 
         <TabsContent value="quality" className="mt-6 space-y-6">

@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Database, MousePointerClick, AlertCircle, RotateCcw, ChevronRight, HelpCircle } from "lucide-react";
 import { Button } from "@/components/demos/ins/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/demos/ins/ui/Card";
@@ -66,6 +66,7 @@ export function DemoErrorState({
 }: DemoErrorStateProps) {
   const config = variantConfig[variant];
   const Icon = config.icon;
+  const prefersReducedMotion = useReducedMotion();
 
   const handlePrimary = () => {
     if (variant === "demo-data-unavailable" && onResetDemo) onResetDemo();
@@ -83,9 +84,9 @@ export function DemoErrorState({
   return (
     <motion.div
       className={cn("w-full max-w-xl mx-auto", className)}
-      initial={{ opacity: 0, y: 12 }}
+      initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
+      transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.3, ease: "easeOut" }}
     >
       <Card variant="default" className="border-2 border-arka-deep/30 overflow-hidden">
         <CardHeader className="border-b border-white/10 bg-arka-bg-medium/60">

@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { motion, type HTMLMotionProps } from "framer-motion";
+import { motion, useReducedMotion, type HTMLMotionProps } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -73,6 +73,7 @@ const Button = React.forwardRef<HTMLButtonElement, InsButtonProps>(
     ref
   ) => {
     const isDisabled = disabled || isLoading;
+    const prefersReducedMotion = useReducedMotion();
     return (
       <motion.button
         ref={ref}
@@ -88,9 +89,9 @@ const Button = React.forwardRef<HTMLButtonElement, InsButtonProps>(
         disabled={isDisabled}
         aria-busy={isLoading}
         aria-disabled={isDisabled}
-        whileHover={!isDisabled ? { scale: 1.02 } : undefined}
-        whileTap={!isDisabled ? { scale: 0.98 } : undefined}
-        transition={{ duration: 0.15, ease: "easeOut" }}
+        whileHover={!prefersReducedMotion && !isDisabled ? { scale: 1.02 } : undefined}
+        whileTap={!prefersReducedMotion && !isDisabled ? { scale: 0.98 } : undefined}
+        transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.15, ease: "easeOut" }}
         {...props}
       >
         {isLoading ? (

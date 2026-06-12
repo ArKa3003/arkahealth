@@ -16,7 +16,7 @@ export function FieldError({ id, message, className }: FieldErrorProps) {
       role="alert"
       aria-live="polite"
       className={clsx(
-        "mt-1 flex items-start gap-1.5 text-[13px] leading-snug text-red-300",
+        "mt-1 flex items-start gap-1.5 text-[13px] leading-snug text-danger",
         className
       )}
     >

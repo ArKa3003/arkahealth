@@ -72,12 +72,14 @@ export default function RootLayout({
       data-arka-platform-version="unified-2.0"
     >
       <body
-        className={`${inter.variable} font-sans min-h-screen antialiased overflow-x-hidden text-arka-slate-900 bg-surface selection:bg-arka-teal-200 selection:text-arka-slate-900`}
+        className={`${inter.variable} font-sans flex min-h-dvh min-h-screen flex-col antialiased overflow-x-hidden text-arka-slate-900 bg-surface selection:bg-arka-teal-200 selection:text-arka-slate-900`}
       >
         <ThemeProvider>
           <FDAComplianceProvider>
-            <RouteAnnouncer />
-            <SiteChrome>{children}</SiteChrome>
+            <div className="flex min-h-0 flex-1 flex-col">
+              <RouteAnnouncer />
+              <SiteChrome>{children}</SiteChrome>
+            </div>
           </FDAComplianceProvider>
         </ThemeProvider>
       </body>

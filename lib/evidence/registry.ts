@@ -82,6 +82,11 @@ export const EVIDENCE_REGISTRY: Readonly<Record<string, EvidenceEntry>> = Object
   Object.fromEntries(ALL_ENTRIES.map((entry) => [entry.slug, entry])),
 );
 
+/** Total registered evidence topics (canonical slugs only). */
+export function evidenceRegistryCount(): number {
+  return Object.keys(EVIDENCE_REGISTRY).length;
+}
+
 /**
  * Aliases from concept-level slugs emitted by phase UIs (CLIN SHAP factor rows,
  * ED red-flag chips) to canonical registry slugs. The `/evidence/[slug]` route

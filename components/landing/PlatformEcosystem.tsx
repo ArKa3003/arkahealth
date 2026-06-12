@@ -87,7 +87,7 @@ export function PlatformEcosystem() {
     <section
       ref={ref}
       id="platform"
-      className="scroll-mt-14 bg-surface px-4 py-24 md:py-32 sm:px-6 lg:px-8"
+      className="scroll-mt-20 bg-surface px-4 py-24 md:py-32 sm:px-6 lg:px-8"
       aria-labelledby="platform-ecosystem-heading"
     >
       <div className="mx-auto max-w-7xl">

@@ -32,6 +32,21 @@ export default function TrustPage() {
       lastUpdated="June 9, 2026"
       toc={[...TOC]}
     >
+      <div className="not-prose mb-8 flex items-start gap-3 rounded-xl border border-arka-teal-300 bg-arka-teal-50 px-5 py-4">
+        <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-arka-teal-600" aria-hidden />
+        <p className="text-sm text-arka-slate-700">
+          This page covers ARKA&apos;s FDA regulatory posture. For HIPAA, SOC 2, HITRUST, and
+          data-security controls, see{" "}
+          <Link
+            href={routes.security}
+            className="font-medium text-arka-teal-700 underline-offset-2 hover:underline"
+          >
+            Security & Compliance
+          </Link>
+          .
+        </p>
+      </div>
+
       <section id="overview" className="scroll-mt-24">
         <h2>Overview</h2>
         <p>

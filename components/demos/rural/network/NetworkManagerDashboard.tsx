@@ -4,7 +4,9 @@ import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Building2, Cpu, Phone, Truck, Users } from "lucide-react";
 import { HubSpokeNetworkDiagram, type NetworkLayoutNode } from "@/components/demos/rural/network/HubSpokeNetworkDiagram";
+import { MobileUnitScheduler } from "@/components/demos/rural/network/MobileUnitScheduler";
 import { SharedQualityDashboard } from "@/components/demos/rural/network/SharedQualityDashboard";
+import { RuralDashboardPanel } from "@/components/demos/rural/shared/RuralDashboardPanel";
 import { RuralStatBanner } from "@/components/demos/rural/shared/RuralStatBanner";
 import { Badge } from "@/components/demos/rural/shared/ui/Badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/demos/rural/shared/ui/Card";
@@ -78,13 +80,15 @@ export function NetworkManagerDashboard() {
 
   return (
     <div className="space-y-6">
-      <RuralStatBanner
-        stats={[
-          { label: "Network sites", value: String(layoutNodes.length), hint: "Hub + connected" },
-          { label: "Spokes (contracted)", value: String(spokes.length), hint: "To this hub" },
-          { label: "Mobile visit days", value: String(mobileDays), hint: "Across demo cohort" },
-        ]}
-      />
+      <RuralDashboardPanel>
+        <RuralStatBanner
+          stats={[
+            { label: "Network sites", value: String(layoutNodes.length), hint: "Demo" },
+            { label: "Spokes (contracted)", value: String(spokes.length), hint: "Illustrative" },
+            { label: "Mobile visit days", value: String(mobileDays), hint: "Synthetic" },
+          ]}
+        />
+      </RuralDashboardPanel>
 
       <div className="grid gap-6 lg:grid-cols-5">
         <Card className="lg:col-span-3">
@@ -132,7 +136,13 @@ export function NetworkManagerDashboard() {
         </Card>
       </div>
 
-      <SharedQualityDashboard hub={hub} spoke={spokes[0]} />
+      <RuralDashboardPanel delay={0.1}>
+        <MobileUnitScheduler />
+      </RuralDashboardPanel>
+
+      <RuralDashboardPanel delay={0.15}>
+        <SharedQualityDashboard hub={hub} spoke={spokes[0]} />
+      </RuralDashboardPanel>
     </div>
   );
 }

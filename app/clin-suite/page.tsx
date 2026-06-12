@@ -9,6 +9,7 @@ import { ChevronRight, ExternalLink } from "lucide-react";
 import { CdsDemoClient } from "@/components/cds-platform/demo/CdsDemoClient";
 import { DemoLoadingSkeleton } from "@/components/demos/DemoLoadingSkeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CopyJsonButton } from "@/components/cds-platform/demo/CopyJsonButton";
 import { complianceLinks, routes } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { safeFetchJson } from "@/lib/utils/safe-fetch-json";
@@ -54,7 +55,7 @@ export default function ClinSuitePage() {
 
 function ClinSuitePageFallback() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-full flex-1 bg-white">
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 xl:px-12">
         <DemoLoadingSkeleton />
       </div>
@@ -78,7 +79,7 @@ function ClinSuitePageContent() {
   );
 
   return (
-    <div className="min-h-screen bg-white dark:bg-white">
+    <div className="min-h-full flex-1 bg-white dark:bg-white">
       <div
         className={cn(
           "mx-auto px-4 py-6 sm:px-6 lg:px-8 xl:px-12",
@@ -182,7 +183,7 @@ function DiscoveryTabContent() {
     async function loadDiscovery() {
       setLoading(true);
       setLoadError(null);
-      const result = await safeFetchJson<unknown>("/.well-known/cds-services", {
+      const result = await safeFetchJson<unknown>(routes.cdsWellKnown, {
         cache: "no-store",
       });
 
@@ -257,16 +258,25 @@ function DiscoveryTabContent() {
       <div className="rounded-xl border border-arka-light bg-white p-4 sm:p-6 shadow-card">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-base font-semibold text-arka-text-dark sm:text-lg">
-            /.well-known/cds-services
+            {routes.cdsWellKnown}
           </h2>
-          <a
-            href="/.well-known/cds-services"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm font-medium text-arka-teal-600 hover:underline"
-          >
-            Open raw JSON
-          </a>
+          <div className="flex flex-wrap items-center gap-2">
+            {json ? <CopyJsonButton text={json} label="Copy JSON" /> : null}
+            <a
+              href={routes.cdsWellKnown}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-[44px] touch-manipulation items-center text-sm font-medium text-arka-teal-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-teal-500"
+            >
+              Open raw JSON
+            </a>
+            <Link
+              href={routes.cdsHooksDiscovery}
+              className="inline-flex min-h-[44px] touch-manipulation items-center text-sm font-medium text-arka-slate-600 hover:text-arka-teal-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-teal-500"
+            >
+              Human-readable catalog →
+            </Link>
+          </div>
         </div>
         {loading ? (
           <p className="text-sm text-arka-text-dark-muted">Loading discovery document…</p>

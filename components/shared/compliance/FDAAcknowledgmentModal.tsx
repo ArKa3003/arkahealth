@@ -21,7 +21,7 @@ import {
 } from "@/lib/compliance/fda-notice-copy";
 
 const REGULATORY_LINK_CLASS =
-  "text-base font-semibold text-arka-cyan underline decoration-arka-cyan/70 underline-offset-2 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-cyan focus-visible:ring-offset-1 focus-visible:ring-offset-arka-bg-dark";
+  "text-base font-semibold text-arka-teal-300 underline decoration-arka-teal-300/80 underline-offset-2 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-teal-300 focus-visible:ring-offset-1 focus-visible:ring-offset-arka-bg-dark";
 
 /**
  * One-time FDA Non-Device CDS acknowledgment modal shown site-wide until dismissed.
@@ -71,7 +71,7 @@ export function FDAAcknowledgmentModal() {
           <button
             type="button"
             onClick={handleAcknowledge}
-            className="w-full rounded-lg bg-arka-teal-600 px-7 py-3 text-base font-semibold text-white transition-colors hover:bg-arka-teal-700 focus:outline-none focus:ring-2 focus:ring-arka-teal-600 focus:ring-offset-2 focus:ring-offset-arka-bg-dark sm:w-auto"
+            className="w-full rounded-lg bg-arka-slate-900 px-7 py-3 text-base font-semibold text-white transition-colors hover:bg-arka-slate-800 focus:outline-none focus:ring-2 focus:ring-arka-teal-500 focus:ring-offset-2 focus:ring-offset-arka-bg-dark sm:w-auto"
           >
             I Acknowledge
           </button>

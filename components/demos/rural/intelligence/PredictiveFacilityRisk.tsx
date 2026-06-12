@@ -6,6 +6,12 @@ import { useSelectedFacility } from "@/lib/demos/rural/rural-store";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/demos/rural/shared/ui/Card";
 import { Badge } from "@/components/demos/rural/shared/ui/Badge";
 
+function riskBadgeVariant(band: "green" | "amber" | "red"): "success" | "warning" | "danger" {
+  if (band === "green") return "success";
+  if (band === "amber") return "warning";
+  return "danger";
+}
+
 export function PredictiveFacilityRisk() {
   const facility = useSelectedFacility();
   const model = predictFacilityRisk({
@@ -17,7 +23,7 @@ export function PredictiveFacilityRisk() {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between gap-2">
         <CardTitle>Predictive facility risk</CardTitle>
-        <Badge variant={model.band === "green" ? "success" : model.band === "amber" ? "warning" : "default"}>
+        <Badge variant={riskBadgeVariant(model.band)}>
           {model.band.toUpperCase()} · {model.score}
         </Badge>
       </CardHeader>

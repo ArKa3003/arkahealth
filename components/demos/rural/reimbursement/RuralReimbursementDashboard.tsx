@@ -1,5 +1,6 @@
 "use client";
 
+import { RuralDashboardPanel } from "@/components/demos/rural/shared/RuralDashboardPanel";
 import { RuralStatBanner } from "@/components/demos/rural/shared/RuralStatBanner";
 import { RuralRateTable } from "@/components/demos/rural/reimbursement/RuralRateTable";
 import { RuralRevenueCalculator } from "@/components/demos/rural/reimbursement/RuralRevenueCalculator";
@@ -14,29 +15,53 @@ import { GrantFundingNavigator } from "@/components/demos/rural/reimbursement/Gr
 export function RuralReimbursementDashboard() {
   return (
     <div className="space-y-6">
-      <RuralStatBanner
-        stats={[
-          { label: "Batch queue", value: "2", hint: "Demo orders" },
-          { label: "Denial rate (demo)", value: "8%", hint: "Rolling" },
-          { label: "Rural adj.", value: "+3%", hint: "Illustrative" },
-        ]}
-      />
+      <RuralDashboardPanel>
+        <RuralStatBanner
+          stats={[
+            { label: "Batch queue", value: "2", hint: "Demo" },
+            { label: "Denial rate (demo)", value: "8%", hint: "Illustrative" },
+            { label: "Rural adj.", value: "+3%", hint: "Synthetic" },
+          ]}
+        />
+      </RuralDashboardPanel>
+
       <div className="grid gap-6 lg:grid-cols-2">
-        <RuralRateTable />
-        <RuralRevenueCalculator />
+        <RuralDashboardPanel delay={0.05}>
+          <RuralRateTable />
+        </RuralDashboardPanel>
+        <RuralDashboardPanel delay={0.1}>
+          <RuralRevenueCalculator />
+        </RuralDashboardPanel>
       </div>
+
       <div className="grid gap-6 lg:grid-cols-2">
-        <RuralExemptionDetector />
-        <BatchAuthorizationWorkflow />
+        <RuralDashboardPanel delay={0.15}>
+          <RuralExemptionDetector />
+        </RuralDashboardPanel>
+        <RuralDashboardPanel delay={0.2}>
+          <BatchAuthorizationWorkflow />
+        </RuralDashboardPanel>
       </div>
+
       <div className="grid gap-6 lg:grid-cols-2">
-        <AlternativeStudyJustifier />
-        <RevenueCycleIntelligence />
+        <RuralDashboardPanel delay={0.25}>
+          <AlternativeStudyJustifier />
+        </RuralDashboardPanel>
+        <RuralDashboardPanel delay={0.3}>
+          <RevenueCycleIntelligence />
+        </RuralDashboardPanel>
       </div>
+
       <div className="grid gap-6 lg:grid-cols-3">
-        <PayerMixOptimizer />
-        <REHPaymentOptimizer />
-        <GrantFundingNavigator />
+        <RuralDashboardPanel delay={0.35}>
+          <PayerMixOptimizer />
+        </RuralDashboardPanel>
+        <RuralDashboardPanel delay={0.4}>
+          <REHPaymentOptimizer />
+        </RuralDashboardPanel>
+        <RuralDashboardPanel delay={0.45}>
+          <GrantFundingNavigator />
+        </RuralDashboardPanel>
       </div>
     </div>
   );

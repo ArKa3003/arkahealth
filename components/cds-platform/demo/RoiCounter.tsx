@@ -44,7 +44,7 @@ export function RoiCounter({ dollarsAvoided, ordersOptimized, className = '' }: 
       aria-label={`${display} dollars potentially avoided across ${ordersOptimized} orders reviewed`}
     >
       <p className="text-xs uppercase text-arka-text-dark-muted">Potentially avoided</p>
-      <p className="mt-1 text-2xl font-semibold text-arka-teal tabular-nums">{formatted}</p>
+      <p className="mt-1 text-2xl font-semibold text-arka-teal-700 tabular-nums">{formatted}</p>
       <p className="mt-2 text-xs text-arka-text-dark-soft">
         {ordersOptimized > 0
           ? `${formatted} potentially avoided when clinician chose guideline-consistent alternative.`

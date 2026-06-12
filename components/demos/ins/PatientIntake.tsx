@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Check, User, CreditCard, Building2, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/demos/ins/ui/Card";
@@ -50,9 +50,14 @@ function PatientCard({
   const isComplex = isComplexCase(patient);
   const primaryDiagnosis = getPrimaryDiagnosis(patient);
   const color = avatarColors[index % avatarColors.length] ?? "bg-arka-deep";
+  const prefersReducedMotion = useReducedMotion();
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: index * 0.1 }}>
+    <motion.div
+      initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.4, delay: index * 0.1 }}
+    >
       <Card
         variant="interactive"
         className={cn(
@@ -106,7 +111,7 @@ function PatientCard({
             <div className="bg-arka-deep rounded-lg p-3 mb-4">
               <p className="text-xs text-slate-200 mb-1">Primary Diagnosis</p>
               <p className="text-sm font-medium text-white">{primaryDiagnosis.condition}</p>
-              <p className="text-xs text-slate-300 font-mono">{primaryDiagnosis.icdCode}</p>
+              <p className="text-xs text-arka-slate-200 font-mono">{primaryDiagnosis.icdCode}</p>
             </div>
           )}
           <Button variant={isSelected ? "success" : "secondary"} size="sm" fullWidth>

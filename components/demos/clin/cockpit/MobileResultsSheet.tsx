@@ -94,7 +94,7 @@ export function MobileResultsSheet({
                 AIIE Results
               </DialogPrimitive.Title>
               <DialogPrimitive.Close
-                className="inline-flex h-10 w-10 items-center justify-center rounded-radius-md text-arka-slate-500 hover:bg-arka-slate-100"
+                className="inline-flex h-11 w-11 min-h-[44px] min-w-[44px] touch-manipulation items-center justify-center rounded-radius-md text-arka-slate-500 hover:bg-arka-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-teal-500"
               >
                 <X className="h-4 w-4" />
                 <span className="sr-only">Close</span>

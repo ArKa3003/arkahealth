@@ -55,23 +55,32 @@ export function CtaSection() {
           initial={fadeIn.initial}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ ...fadeIn.transition, delay: 0.15 }}
-          className="mt-10 flex justify-center"
+          className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4"
         >
           <Link
-            href="/action-plan"
+            href="/evidence"
             className={cn(
               buttonVariants({ variant: "premium", size: "lg" }),
               "min-h-[44px] touch-manipulation",
             )}
           >
-            Build your action plan
+            Evidence & Compliance
+          </Link>
+          <Link
+            href="/action-plan"
+            className={cn(
+              buttonVariants({ variant: "ghost", size: "lg" }),
+              "min-h-[44px] touch-manipulation border border-arka-teal-400 text-arka-teal-300 hover:bg-arka-teal-400/10 hover:text-arka-teal-300",
+            )}
+          >
+            Action Plan
           </Link>
         </motion.div>
         <motion.p
           initial={fadeIn.initial}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ ...fadeIn.transition, delay: 0.22 }}
-          className="mt-6 text-xs text-arka-slate-500"
+          className="mt-6 text-xs text-arka-slate-400"
         >
           remARKAbly precise — and remarkably profitable.
         </motion.p>

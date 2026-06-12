@@ -26,6 +26,7 @@ export function ClinDemoContent() {
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [evaluationStep, setEvaluationStep] = useState(0);
   const [hasStarted, setHasStarted] = useState(false);
+  const [composerKey, setComposerKey] = useState(0);
 
   const displayScenario = draftScenario ?? loadedScenario;
 
@@ -64,6 +65,15 @@ export function ClinDemoContent() {
     handleSelectScenario(DEFAULT_EXAMPLE_KEY);
   }, [handleSelectScenario]);
 
+  const handleStartNew = useCallback(() => {
+    setHasStarted(true);
+    setLoadedScenario(null);
+    setDraftScenario(null);
+    setSelectedScenarioKey(null);
+    setResult(null);
+    setComposerKey((k) => k + 1);
+  }, []);
+
   const handleNewEvaluation = useCallback(() => {
     setResult(null);
     setLoadedScenario(null);
@@ -91,6 +101,7 @@ export function ClinDemoContent() {
         />
 
         <OrderComposer
+          key={composerKey}
           scenario={loadedScenario}
           onScenarioDraftChange={setDraftScenario}
           onEvaluate={runEvaluation}
@@ -98,6 +109,7 @@ export function ClinDemoContent() {
           evaluationStep={evaluationStep}
           showEmptyState={showEmptyState}
           onLoadExample={handleLoadExample}
+          onStartNew={handleStartNew}
         />
 
         <div className="hidden lg:block">

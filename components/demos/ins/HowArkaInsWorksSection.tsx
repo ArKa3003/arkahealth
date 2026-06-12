@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, useReducedMotion } from "framer-motion";
 import {
   Inbox,
   Cpu,
@@ -83,6 +83,14 @@ const BENEFITS = [
 export function HowArkaInsWorksSection() {
   const ref = useRef<HTMLElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
+  const prefersReducedMotion = useReducedMotion();
+  const reveal = isInView ? { opacity: 1, y: 0 } : {};
+  const listVariants = prefersReducedMotion
+    ? { visible: {}, hidden: {} }
+    : { visible: { transition: { staggerChildren: 0.1, delayChildren: 0.1 } }, hidden: {} };
+  const benefitVariants = prefersReducedMotion
+    ? { visible: {}, hidden: {} }
+    : { visible: { transition: { staggerChildren: 0.08, delayChildren: 0.25 } }, hidden: {} };
 
   return (
     <section
@@ -94,18 +102,18 @@ export function HowArkaInsWorksSection() {
       <motion.h2
         id="how-arka-ins-works-heading"
         className="text-2xl sm:text-3xl font-heading font-semibold text-arka-text-dark mb-2"
-        initial={{ opacity: 0, y: 16 }}
-        animate={isInView ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.35 }}
+        initial={prefersReducedMotion ? false : { opacity: 0, y: 24 }}
+        animate={prefersReducedMotion ? {} : reveal}
+        transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.5, ease: "easeOut" }}
       >
         How ARKA-INS Works for RBMs
       </motion.h2>
 
       <motion.p
         className="text-arka-text-dark-muted text-base sm:text-lg max-w-3xl mb-8"
-        initial={{ opacity: 0, y: 12 }}
-        animate={isInView ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.35, delay: 0.05 }}
+        initial={prefersReducedMotion ? false : { opacity: 0, y: 24 }}
+        animate={prefersReducedMotion ? {} : reveal}
+        transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.5, ease: "easeOut", delay: 0.05 }}
       >
         Streamlining utilization management with transparent, evidence-based decisioning.
       </motion.p>
@@ -114,17 +122,14 @@ export function HowArkaInsWorksSection() {
       <motion.ol
         className="space-y-5 mb-10"
         initial="hidden"
-        animate={isInView ? "visible" : "hidden"}
-        variants={{
-          visible: { transition: { staggerChildren: 0.1, delayChildren: 0.1 } },
-          hidden: {},
-        }}
+        animate={prefersReducedMotion ? "visible" : isInView ? "visible" : "hidden"}
+        variants={listVariants}
       >
         {WORKFLOW_STEPS.map((step, i) => (
           <motion.li
             key={step.title}
-            variants={fadeInUp}
-            transition={{ duration: 0.35, ease: "easeOut" }}
+            variants={prefersReducedMotion ? undefined : fadeInUp}
+            transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.35, ease: "easeOut" }}
             className="arka-card rounded-xl border border-arka-primary/20 p-4 sm:p-5 flex gap-4"
           >
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-arka-teal/15 text-arka-teal">
@@ -152,26 +157,23 @@ export function HowArkaInsWorksSection() {
       {/* Benefits callout boxes */}
       <motion.h3
         className="text-xl font-heading font-semibold text-arka-text-dark mb-4"
-        initial={{ opacity: 0, y: 12 }}
-        animate={isInView ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.35, delay: 0.2 }}
+        initial={prefersReducedMotion ? false : { opacity: 0, y: 24 }}
+        animate={prefersReducedMotion ? {} : reveal}
+        transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.5, ease: "easeOut", delay: 0.2 }}
       >
         Benefits for RBMs
       </motion.h3>
       <motion.div
         className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4"
         initial="hidden"
-        animate={isInView ? "visible" : "hidden"}
-        variants={{
-          visible: { transition: { staggerChildren: 0.08, delayChildren: 0.25 } },
-          hidden: {},
-        }}
+        animate={prefersReducedMotion ? "visible" : isInView ? "visible" : "hidden"}
+        variants={benefitVariants}
       >
         {BENEFITS.map((box) => (
           <motion.div
             key={box.title}
-            variants={fadeInUp}
-            transition={{ duration: 0.35, ease: "easeOut" }}
+            variants={prefersReducedMotion ? undefined : fadeInUp}
+            transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.35, ease: "easeOut" }}
             className="arka-card rounded-xl border border-arka-primary/20 p-4 sm:p-5 flex gap-3 hover:border-arka-teal/30 transition-colors"
           >
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-arka-teal/15 text-arka-teal">

@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 export type BadgeStatus = "success" | "warning" | "error" | "info" | "neutral" | "processing";
@@ -45,6 +45,7 @@ const Badge: React.FC<InsBadgeProps> = ({
   children,
 }) => {
   const isProcessing = status === "processing";
+  const prefersReducedMotion = useReducedMotion();
   return (
     <motion.span
       className={cn(
@@ -53,16 +54,16 @@ const Badge: React.FC<InsBadgeProps> = ({
         sizeStyles[size],
         className
       )}
-      initial={{ scale: 0.9, opacity: 0 }}
+      initial={prefersReducedMotion ? false : { scale: 0.9, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
-      transition={{ duration: 0.2 }}
+      transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.2 }}
     >
       {dot && <span className={cn("rounded-full flex-shrink-0 bg-current opacity-80", dotSizes[size])} />}
       {isProcessing && !dot && (
         <motion.span
           className={cn("rounded-full flex-shrink-0 bg-current", dotSizes[size])}
-          animate={{ scale: [1, 1.2, 1], opacity: [1, 0.7, 1] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+          animate={prefersReducedMotion ? undefined : { scale: [1, 1.2, 1], opacity: [1, 0.7, 1] }}
+          transition={prefersReducedMotion ? undefined : { duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
         />
       )}
       {icon && !dot && !isProcessing && <span className="flex-shrink-0">{icon}</span>}

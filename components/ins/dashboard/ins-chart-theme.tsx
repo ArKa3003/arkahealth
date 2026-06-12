@@ -6,7 +6,7 @@ export const INS_CHART_COLORS = {
   primaryLight: "#5EEAD4",
   primaryDark: "#0D9488",
   grid: "rgba(15, 23, 42, 0.06)",
-  axis: "#94A3B8",
+  axis: "#64748B",
   funnel: ["#CCFBF1", "#99F6E4", "#5EEAD4", "#2DD4BF", "#14B8A6", "#0D9488"],
 } as const;
 

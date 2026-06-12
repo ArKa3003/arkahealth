@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { ChevronDown, ExternalLink } from "lucide-react";
 
+import { evidencePath } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import type { EvaluationResult } from "@/lib/demos/clin/types";
 import { factorEvidenceSlug } from "./clin-cockpit-utils";
@@ -104,7 +105,7 @@ export function ShapFactorBreakdown({ shap, className }: ShapFactorBreakdownProp
                 <div className="border-t border-border-subtle px-3 pb-3 pt-2 space-y-2 animate-fade-in-up">
                   <p className="text-caption text-arka-slate-600">{factor.explanation}</p>
                   <Link
-                    href={`/evidence/${slug}`}
+                    href={evidencePath(slug)}
                     className="inline-flex items-center gap-1 text-caption font-medium text-arka-teal-700 hover:text-arka-teal-600 hover:underline"
                   >
                     View evidence

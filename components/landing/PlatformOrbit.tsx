@@ -70,11 +70,11 @@ function polarToCartesian(cx: number, cy: number, r: number, angleDeg: number) {
 }
 
 /**
- * SVG orbital layout — central AIIE core with four clickable phase nodes.
+ * SVG orbital layout — central ARKA core with four clickable phase nodes.
  */
 export function PlatformOrbit() {
   const description =
-    "ARKA platform diagram: AIIE Knowledge Core at center, connected to four phases — CLIN for clinicians, ED for learners, INS for payers, and RURAL for rural sites. Each node links to its phase page.";
+    "ARKA platform diagram: ARKA Knowledge Core at center, connected to four phases — CLIN for clinicians, ED for learners, INS for payers, and RURAL for rural sites. Each node links to its phase page.";
 
   return (
     <div className="relative mx-auto w-full max-w-lg">
@@ -136,7 +136,7 @@ export function PlatformOrbit() {
           fontWeight="600"
           fontFamily="ui-monospace, monospace"
         >
-          AIIE
+          ARKA
         </text>
         <text
           x={CX}

@@ -72,7 +72,7 @@ export function EpicSimChart({
 
   return (
     <section
-      className="flex min-w-0 flex-col bg-white text-slate-900 md:rounded-l-xl"
+      className="flex min-w-0 flex-col !bg-white text-slate-900 md:rounded-l-xl"
       aria-label="EpicSim patient chart"
     >
       <header className="shrink-0 border-b border-arka-primary/15 bg-gradient-to-r from-slate-800 to-slate-700 px-4 py-2.5 text-white">
@@ -306,7 +306,7 @@ export function EpicSimChart({
       </Tabs>
 
       <footer className="shrink-0 border-t border-slate-200 bg-slate-100 px-4 py-3">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Demo scenarios">
             <span className="text-xs font-semibold text-slate-600">Scenarios:</span>
             {scenarioIds.map((s) => (
@@ -322,7 +322,7 @@ export function EpicSimChart({
                   variant={scenario.id === s.id ? 'default' : 'outline'}
                   className={
                     scenario.id === s.id
-                      ? 'cursor-default border-arka-teal bg-arka-teal/15 text-arka-teal'
+                      ? 'cursor-default border-arka-teal-700 bg-arka-teal/15 text-arka-teal-800'
                       : 'cursor-pointer hover:border-arka-teal/50'
                   }
                 >
@@ -334,7 +334,7 @@ export function EpicSimChart({
           <Button
             type="button"
             variant="primary"
-            className="shrink-0 bg-arka-teal px-6 hover:bg-arka-teal-dark focus-visible:ring-2 focus-visible:ring-arka-cyan"
+            className="w-full min-h-[44px] shrink-0 touch-manipulation bg-arka-teal px-6 hover:bg-arka-teal-dark focus-visible:ring-2 focus-visible:ring-arka-cyan sm:w-auto"
             onClick={onSignOrder}
             disabled={signing}
             aria-label="Sign imaging order"

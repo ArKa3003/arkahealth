@@ -43,8 +43,11 @@ export function RuralPhaseChrome({ areaId, children, className }: RuralPhaseChro
         </ol>
       </nav>
 
-      <header>
-        <p className="mb-2 font-mono text-xs font-medium uppercase tracking-[0.14em] text-arka-teal-600">
+      <header
+        id={`rural-phase-${areaId}`}
+        className="relative z-10 scroll-mt-[8.5rem] md:scroll-mt-24"
+      >
+        <p className="mb-2 overflow-visible font-mono text-xs font-medium uppercase tracking-[0.12em] text-arka-teal-600 sm:tracking-[0.14em]">
           {area.eyebrow}
         </p>
         <h1 className="font-heading text-2xl font-semibold text-arka-text-dark sm:text-3xl lg:text-4xl">

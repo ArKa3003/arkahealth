@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+import { PhaseComplianceBar } from "@/components/shared/PhaseComplianceBar";
+
 export const metadata: Metadata = {
   title: "CDS Hooks Discovery",
   description:
@@ -9,5 +11,10 @@ export const metadata: Metadata = {
 export default function CdsHooksDiscoveryLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  return <div className="min-h-screen bg-arka-navy">{children}</div>;
+  return (
+    <>
+      <PhaseComplianceBar />
+      <div className="min-h-full flex-1 bg-arka-navy">{children}</div>
+    </>
+  );
 }

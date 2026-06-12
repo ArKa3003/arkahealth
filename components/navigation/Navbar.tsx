@@ -3,19 +3,25 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
-import { useMotionValueEvent, useScroll } from "framer-motion";
+import { motion, useMotionValueEvent, useReducedMotion, useScroll } from "framer-motion";
 import { Menu } from "lucide-react";
 
 import { ArkaAnimatedLogo } from "@/components/ArkaAnimatedLogo";
 import { buttonVariants } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import { routes } from "@/lib/constants";
+import { AuthNavActions } from "@/components/auth/AuthNavActions";
+import { DEMO_BOOKING_MAILTO } from "@/lib/navigation/routes";
 import {
-  DEMO_BOOKING_MAILTO,
-  isLightTopPage,
-  SIGN_IN_MAILTO,
-} from "@/lib/navigation/routes";
-import { useEvidenceModalOptional } from "@/components/shared/compliance/evidence-modal-context";
+  isNavItemActive,
+  NAV_HEADER_CLASSES,
+  navItemClasses,
+  navLabelClasses,
+  navMenuButtonClasses,
+  navUnderlineClasses,
+  resolveNavAppearance,
+  type NavAppearance,
+} from "@/lib/navigation/nav-appearance";
 import { MobileMenuSheet } from "./MobileMenuSheet";
 import { PhasesMegaMenu } from "./PhasesMegaMenu";
 
@@ -41,48 +47,55 @@ const NavLogo = (
 type NavLinkProps = {
   href: string;
   children: React.ReactNode;
-  inverted: boolean;
+  appearance: NavAppearance;
+  active: boolean;
   onClick?: (event: React.MouseEvent<HTMLAnchorElement>) => void;
+  motionIndex?: number;
 };
 
-function NavLink({ href, children, inverted, onClick }: NavLinkProps) {
+function NavLink({ href, children, appearance, active, onClick, motionIndex = 0 }: NavLinkProps) {
+  const prefersReducedMotion = useReducedMotion();
+
   return (
-    <Link
-      href={href}
-      prefetch
-      onClick={onClick}
-      className={cn(
-        "rounded-radius-sm px-2 py-1.5 text-sm font-medium transition-colors",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-teal-500 focus-visible:ring-offset-2",
-        inverted
-          ? "text-white/90 hover:bg-white/10 hover:text-white"
-          : "text-arka-slate-700 hover:bg-arka-slate-100 hover:text-arka-slate-900",
-      )}
+    <motion.li
+      initial={prefersReducedMotion ? false : { opacity: 0, y: -8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={
+        prefersReducedMotion
+          ? { duration: 0 }
+          : { delay: motionIndex * 0.06, duration: 0.35, ease: "easeOut" }
+      }
     >
-      {children}
-    </Link>
+      <Link
+        href={href}
+        prefetch
+        onClick={onClick}
+        aria-current={active ? "page" : undefined}
+        className={navItemClasses(appearance, active)}
+      >
+        <span className={navLabelClasses()}>{children}</span>
+        <span className={navUnderlineClasses(active)} aria-hidden />
+      </Link>
+    </motion.li>
   );
 }
 
 /**
- * Global sticky header — transparent over dark hero, solid on scroll or light pages.
+ * Global sticky header — overlay over dark hero, solid on scroll or light pages.
  */
 export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const evidenceModal = useEvidenceModalOptional();
+  const prefersReducedMotion = useReducedMotion();
 
-  const lightTop = isLightTopPage(pathname);
+  const appearance = resolveNavAppearance(pathname, scrolled);
   const { scrollY } = useScroll();
 
   useMotionValueEvent(scrollY, "change", (value) => {
     setScrolled(value > 16);
   });
-
-  const isSolid = lightTop || scrolled;
-  const inverted = !isSolid;
 
   const handlePlatformClick = useCallback(
     (event: React.MouseEvent<HTMLAnchorElement>) => {
@@ -101,10 +114,8 @@ export function Navbar() {
       <header
         className={cn(
           "sticky top-0 z-50 safe-area-top pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]",
-          "transition-[background-color,border-color,box-shadow,backdrop-filter] duration-200",
-          isSolid
-            ? "border-b border-border-subtle bg-white/80 shadow-elevation-1 backdrop-blur-md"
-            : "border-b border-transparent bg-transparent",
+          "transition-[background-color,border-color,box-shadow,backdrop-filter] duration-200 motion-reduce:transition-none",
+          NAV_HEADER_CLASSES[appearance],
         )}
       >
         <nav
@@ -113,69 +124,86 @@ export function Navbar() {
         >
           <div className="flex min-w-0 shrink-0 items-center">{NavLogo}</div>
 
-          <ul className="hidden items-center gap-1 lg:flex">
-            <li>
-              <NavLink href="/#platform" inverted={inverted} onClick={handlePlatformClick}>
-                Platform
-              </NavLink>
-            </li>
-            <li>
-              <PhasesMegaMenu inverted={inverted} />
-            </li>
-            <li>
-              <button
-                type="button"
-                onClick={() => evidenceModal?.setOpen(true)}
-                className={cn(
-                  "rounded-radius-sm px-2 py-1.5 text-sm font-medium transition-colors",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-teal-500 focus-visible:ring-offset-2",
-                  inverted
-                    ? "text-white/90 hover:bg-white/10 hover:text-white"
-                    : "text-arka-slate-700 hover:bg-arka-slate-100 hover:text-arka-slate-900",
-                )}
-              >
-                Evidence
-              </button>
-            </li>
-            <li>
-              <NavLink href={routes.roi} inverted={inverted}>
-                ROI
-              </NavLink>
-            </li>
-            <li>
-              <NavLink href={routes.featureCatalog} inverted={inverted}>
-                Docs
-              </NavLink>
-            </li>
+          <ul className="hidden items-center gap-0.5 lg:flex">
+            <NavLink
+              href="/#platform"
+              appearance={appearance}
+              active={isNavItemActive("platform", pathname)}
+              onClick={handlePlatformClick}
+              motionIndex={0}
+            >
+              Platform
+            </NavLink>
+            <motion.li
+              initial={prefersReducedMotion ? false : { opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={
+                prefersReducedMotion
+                  ? { duration: 0 }
+                  : { delay: 0.06, duration: 0.35, ease: "easeOut" }
+              }
+            >
+              <PhasesMegaMenu
+                appearance={appearance}
+                active={isNavItemActive("phases", pathname)}
+              />
+            </motion.li>
+            <NavLink
+              href={routes.evidence}
+              appearance={appearance}
+              active={isNavItemActive("evidence", pathname)}
+              motionIndex={2}
+            >
+              Evidence
+            </NavLink>
+            <NavLink
+              href={routes.roi}
+              appearance={appearance}
+              active={isNavItemActive("roi", pathname)}
+              motionIndex={3}
+            >
+              ROI
+            </NavLink>
+            <NavLink
+              href={routes.security}
+              appearance={appearance}
+              active={isNavItemActive("security", pathname)}
+              motionIndex={4}
+            >
+              Security
+            </NavLink>
+            <NavLink
+              href={routes.featureCatalog}
+              appearance={appearance}
+              active={isNavItemActive("docs", pathname)}
+              motionIndex={5}
+            >
+              Docs
+            </NavLink>
           </ul>
 
           <div className="flex shrink-0 items-center gap-2">
-            <a
-              href={SIGN_IN_MAILTO}
+            <AuthNavActions appearance={appearance} motionDelay={0.3} />
+            <motion.a
+              href={DEMO_BOOKING_MAILTO}
+              initial={prefersReducedMotion ? false : { opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={
+                prefersReducedMotion
+                  ? { duration: 0 }
+                  : { delay: 0.36, duration: 0.35, ease: "easeOut" }
+              }
               className={cn(
-                buttonVariants({ variant: "ghost", size: "sm" }),
-                "hidden sm:inline-flex",
-                inverted && "text-white/90 hover:bg-white/10 hover:text-white",
+                buttonVariants({ variant: "premium", size: "md" }),
+                "hidden min-h-[44px] touch-manipulation text-base sm:inline-flex",
               )}
             >
-              Sign in
-            </a>
-            <a
-              href={DEMO_BOOKING_MAILTO}
-              className={cn(buttonVariants({ variant: "premium", size: "sm" }), "hidden sm:inline-flex")}
-            >
               Book a demo
-            </a>
+            </motion.a>
             <button
               type="button"
               onClick={() => setMobileOpen(true)}
-              className={cn(
-                "inline-flex h-10 w-10 items-center justify-center rounded-radius-md lg:hidden",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-teal-500 focus-visible:ring-offset-2",
-                inverted
-                  ? "text-white hover:bg-white/10"
-                  : "text-arka-slate-700 hover:bg-arka-slate-100",
-              )}
+              className={cn("lg:hidden", navMenuButtonClasses(appearance))}
               aria-label="Open menu"
               aria-expanded={mobileOpen}
             >

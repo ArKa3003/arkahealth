@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, useReducedMotion } from "framer-motion";
 
 const STATS = [
   { value: "~40%", label: "Average PA review time reduction" },
@@ -9,9 +9,16 @@ const STATS = [
   { value: "~35%", label: "Auto-approval rate for clearly appropriate studies" },
 ];
 
+const fadeIn = {
+  initial: { opacity: 0, y: 24 },
+  transition: { duration: 0.5, ease: "easeOut" as const },
+};
+
 export function AIIEForUtilizationManagementSection() {
   const ref = useRef<HTMLElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
+  const prefersReducedMotion = useReducedMotion();
+  const reveal = isInView ? { opacity: 1, y: 0 } : {};
 
   return (
     <section
@@ -23,9 +30,9 @@ export function AIIEForUtilizationManagementSection() {
       <motion.span
         className="inline-block px-3 py-1 rounded-full text-xs font-semibold tracking-wide uppercase bg-arka-teal/15 text-arka-teal border border-arka-teal/30 mb-4"
         aria-hidden
-        initial={{ opacity: 0, y: 8 }}
-        animate={isInView ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.35 }}
+        initial={prefersReducedMotion ? false : fadeIn.initial}
+        animate={prefersReducedMotion ? {} : reveal}
+        transition={prefersReducedMotion ? { duration: 0 } : fadeIn.transition}
       >
         Technology
       </motion.span>
@@ -33,18 +40,18 @@ export function AIIEForUtilizationManagementSection() {
       <motion.h2
         id="aiie-um-heading"
         className="text-2xl sm:text-3xl font-heading font-semibold text-arka-text-dark mb-2"
-        initial={{ opacity: 0, y: 16 }}
-        animate={isInView ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.35, delay: 0.05 }}
+        initial={prefersReducedMotion ? false : fadeIn.initial}
+        animate={prefersReducedMotion ? {} : reveal}
+        transition={prefersReducedMotion ? { duration: 0 } : { ...fadeIn.transition, delay: 0.05 }}
       >
         AIIE for Utilization Management
       </motion.h2>
 
       <motion.div
         className="space-y-3 mb-6 sm:mb-8 max-w-3xl"
-        initial={{ opacity: 0, y: 12 }}
-        animate={isInView ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.35, delay: 0.1 }}
+        initial={prefersReducedMotion ? false : fadeIn.initial}
+        animate={prefersReducedMotion ? {} : reveal}
+        transition={prefersReducedMotion ? { duration: 0 } : { ...fadeIn.transition, delay: 0.1 }}
       >
         <p className="text-arka-text-dark-muted text-base sm:text-lg">
           <strong className="text-arka-text-dark">AIIE (ARKA Imaging Intelligence Engine)</strong>{" "}
@@ -54,12 +61,11 @@ export function AIIEForUtilizationManagementSection() {
         </p>
       </motion.div>
 
-      {/* Key stats - data-driven aesthetic */}
       <motion.div
         className="rounded-xl bg-arka-bg-dark border border-arka-deep p-5 sm:p-6"
-        initial={{ opacity: 0, y: 8 }}
-        animate={isInView ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.3, delay: 0.2 }}
+        initial={prefersReducedMotion ? false : { opacity: 0, y: 8 }}
+        animate={prefersReducedMotion ? {} : reveal}
+        transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.3, delay: 0.2 }}
       >
         <h3 className="text-lg font-semibold text-arka-text mb-4">Key metrics for RBMs</h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

@@ -5,10 +5,13 @@
  * @description Live CDS Hooks shareholder demo — EpicSim chart + citation-first ARKA sidebar.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { AlertTriangle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/Button';
 import type { CDSHookRequest, CDSHookResponse } from '@/lib/types/cds-hooks';
+import { STANDARD_OVERRIDE_REASONS } from '@/lib/cds-platform/alerting/override-reasons';
+import { routes } from '@/lib/constants';
 import { buildCdsRequest } from './build-cds-request';
 import {
   DEMO_SCENARIO_LIST,
@@ -27,8 +30,6 @@ import {
   type DemoCdsCard,
 } from './demo-response';
 
-const ORDER_SELECT_PATH = '/api/cds-services/arka-clin-appropriateness';
-const ORDER_SIGN_PATH = '/api/cds-services/arka-clin-appropriateness-sign';
 const FETCH_TIMEOUT_MS = 9_000;
 
 interface HookExchange {
@@ -38,6 +39,8 @@ interface HookExchange {
   error?: string;
   offline?: boolean;
 }
+
+type ConnectionState = 'idle' | 'live' | 'fallback';
 
 /**
  * Parses a CDS Hooks response body; returns null when JSON is invalid or lacks a cards array.
@@ -59,6 +62,45 @@ function parseCdsHookResponse(text: string): CDSHookResponse | null {
 }
 
 /**
+ * Records CDS Hooks feedback (accept / override) for the active card.
+ */
+function postCdsFeedback(
+  cardUuid: string,
+  outcome: 'accepted' | 'overridden',
+  hookInstance: string | undefined,
+  overrideReason?: { code: string; display: string },
+): void {
+  void fetch(routes.cdsFeedbackApi, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      feedback: [
+        {
+          card: cardUuid,
+          outcome,
+          outcomeTimestamp: new Date().toISOString(),
+          ...(overrideReason
+            ? {
+                overrideReason: {
+                  reason: {
+                    code: overrideReason.code,
+                    display: overrideReason.display,
+                  },
+                },
+              }
+            : {}),
+        },
+      ],
+      serviceId: 'arka-clin-appropriateness',
+      hookInstance,
+    }),
+    keepalive: true,
+  }).catch(() => {
+    // Feedback is best-effort; demo flow never blocks on it.
+  });
+}
+
+/**
  * Interactive CDS Hooks live demo client (EHR mock + ARKA sidebar + raw JSON).
  */
 export function CdsDemoClient() {
@@ -74,7 +116,14 @@ export function CdsDemoClient() {
   const [roi, setRoi] = useState({ dollarsAvoided: 0, ordersOptimized: 0 });
   const [scoresSeen, setScoresSeen] = useState<number[]>([]);
   const [ordersReviewed, setOrdersReviewed] = useState(0);
-  const [live, setLive] = useState(true);
+  const [connectionState, setConnectionState] = useState<ConnectionState>('idle');
+  const [fetchError, setFetchError] = useState<string | null>(null);
+  const [activeHook, setActiveHook] = useState<'order-select' | 'order-sign'>('order-select');
+  const [hookInstance, setHookInstance] = useState<string | undefined>();
+  const [feedbackStatus, setFeedbackStatus] = useState<string | null>(null);
+
+  const abortRef = useRef<AbortController | null>(null);
+  const requestGenRef = useRef(0);
 
   const scenario = useMemo(() => getDemoScenario(scenarioId), [scenarioId]);
   const prediction = useMemo(
@@ -89,27 +138,34 @@ export function CdsDemoClient() {
     () => resolveShapRows(primaryCard, scenario),
     [primaryCard, scenario],
   );
-  const emptyCards = exchanges.some((e) => e.hook === 'order-select' && e.response?.cards.length === 0);
+  const emptyCards = exchanges.some(
+    (e) => e.hook === 'order-select' && !e.offline && e.response?.cards.length === 0,
+  );
 
   const invokeHook = useCallback(
-    async (hook: 'order-select' | 'order-sign', path: string): Promise<HookExchange> => {
-      const request = buildCdsRequest(scenario, hook);
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+    async (
+      hook: 'order-select' | 'order-sign',
+      path: string,
+      signal: AbortSignal,
+      forScenarioId: DemoScenarioId,
+    ): Promise<HookExchange> => {
+      const activeScenario = getDemoScenario(forScenarioId);
+      const request = buildCdsRequest(activeScenario, hook);
 
       try {
         const res = await fetch(path, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(request),
-          signal: controller.signal,
+          signal,
         });
         const text = await res.text();
         if (!res.ok) {
           return {
             hook,
             request,
-            response: buildLocalCdsResponse(scenario, hook),
+            response: buildLocalCdsResponse(activeScenario, hook),
+            error: `CDS service returned ${res.status}`,
             offline: true,
           };
         }
@@ -118,86 +174,197 @@ export function CdsDemoClient() {
           return {
             hook,
             request,
-            response: buildLocalCdsResponse(scenario, hook),
+            response: buildLocalCdsResponse(activeScenario, hook),
+            error: 'Invalid JSON response from CDS service',
             offline: true,
           };
         }
         return { hook, request, response };
-      } catch {
+      } catch (err) {
+        if (err instanceof DOMException && err.name === 'AbortError') {
+          throw err;
+        }
         return {
           hook,
           request,
-          response: buildLocalCdsResponse(scenario, hook),
+          response: buildLocalCdsResponse(activeScenario, hook),
+          error: 'CDS service unreachable — using demo fallback response',
           offline: true,
         };
-      } finally {
-        clearTimeout(timeoutId);
       }
     },
-    [scenario],
+    [],
   );
 
-  const runOrderSelect = useCallback(async () => {
+  const runOrderSelect = useCallback(async (forScenarioId: DemoScenarioId, requestGen: number) => {
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+
+    const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+
     setLoading(true);
     setShowReviewPanel(false);
     setSignPending(false);
-    const exchange = await invokeHook('order-select', ORDER_SELECT_PATH);
-    setExchanges((prev) => {
-      const rest = prev.filter((e) => e.hook !== 'order-select');
-      return [...rest, exchange];
-    });
-    const cards = (exchange.response?.cards ?? []) as DemoCdsCard[];
-    setPrimaryCard(cards[0]);
-    const score = buildPredictionFromCard(cards[0], scenario).score;
-    setScoresSeen((s) => [...s, score]);
-    setOrdersReviewed((n) => n + 1);
-    setLoading(false);
-    setLive(!exchange.offline);
-  }, [invokeHook, scenario]);
+    setActiveHook('order-select');
+    setFetchError(null);
+    setFeedbackStatus(null);
+
+    try {
+      const exchange = await invokeHook(
+        'order-select',
+        routes.cdsClinAppropriateness,
+        controller.signal,
+        forScenarioId,
+      );
+
+      if (requestGenRef.current !== requestGen) return;
+
+      setExchanges((prev) => {
+        const rest = prev.filter((e) => e.hook !== 'order-select' && e.hook !== 'order-sign');
+        return [...rest, exchange];
+      });
+
+      const cards = (exchange.response?.cards ?? []) as DemoCdsCard[];
+      setPrimaryCard(cards[0]);
+      setHookInstance(exchange.request.hookInstance);
+
+      if (!exchange.offline) {
+        const score = buildPredictionFromCard(cards[0], getDemoScenario(forScenarioId)).score;
+        setScoresSeen((s) => [...s, score]);
+        setOrdersReviewed((n) => n + 1);
+        setConnectionState('live');
+      } else {
+        setConnectionState('fallback');
+        setFetchError(exchange.error ?? 'CDS service unreachable — showing demo fallback response.');
+      }
+    } catch (err) {
+      if (!(err instanceof DOMException && err.name === 'AbortError')) {
+        setConnectionState('fallback');
+        setFetchError('Request timed out — showing demo fallback response.');
+      }
+    } finally {
+      clearTimeout(timeoutId);
+      if (requestGenRef.current === requestGen) {
+        setLoading(false);
+      }
+    }
+  }, [invokeHook]);
+
+  const handleScenarioSelect = useCallback(
+    (id: DemoScenarioId) => {
+      const requestGen = requestGenRef.current + 1;
+      requestGenRef.current = requestGen;
+      setScenarioId(id);
+      setOverrideDialogOpen(false);
+      setShowReviewPanel(false);
+      setSignPending(false);
+      setExchanges((prev) => prev.filter((e) => e.hook !== 'order-sign'));
+      void runOrderSelect(id, requestGen);
+    },
+    [runOrderSelect],
+  );
 
   useEffect(() => {
-    void runOrderSelect();
-  }, [scenarioId, runOrderSelect]);
+    const requestGen = requestGenRef.current + 1;
+    requestGenRef.current = requestGen;
+    const timer = window.setTimeout(() => {
+      void runOrderSelect('lbp-1', requestGen);
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [runOrderSelect]);
 
   const handleReset = () => {
-    setScenarioId('lbp-1');
+    abortRef.current?.abort();
     setExchanges([]);
     setRoi({ dollarsAvoided: 0, ordersOptimized: 0 });
     setScoresSeen([]);
     setOrdersReviewed(0);
-    setOverrideDialogOpen(false);
-    setShowReviewPanel(false);
-    setSignPending(false);
-    setLive(false);
+    setConnectionState('idle');
+    setFetchError(null);
+    setFeedbackStatus(null);
+    setPrimaryCard(undefined);
+    setHookInstance(undefined);
+    handleScenarioSelect('lbp-1');
   };
 
   const handleSignOrder = async () => {
+    const runForId = scenarioId;
     setSigning(true);
-    let exchange = await invokeHook('order-sign', ORDER_SIGN_PATH);
-    if (exchange.error || !exchange.response) {
-      exchange = await invokeHook('order-sign', ORDER_SELECT_PATH);
+    setActiveHook('order-sign');
+    setFetchError(null);
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+
+    try {
+      const exchange = await invokeHook(
+        'order-sign',
+        routes.cdsClinAppropriatenessSign,
+        controller.signal,
+        runForId,
+      );
+
+      if (exchange.offline) {
+        setConnectionState('fallback');
+        setFetchError(
+          exchange.error ?? 'Order-sign hook failed — demo fallback response shown below.',
+        );
+      } else {
+        setConnectionState('live');
+      }
+
+      setExchanges((prev) => {
+        const rest = prev.filter((e) => e.hook !== 'order-sign');
+        return [...rest, exchange];
+      });
+
+      const cards = (exchange.response?.cards ?? []) as DemoCdsCard[];
+      const signCard = cards[0];
+      if (signCard) {
+        setPrimaryCard(signCard);
+        setHookInstance(exchange.request.hookInstance);
+      }
+      if (signCard?.indicator === 'critical' || signCard?.indicator === 'warning') {
+        setSignPending(true);
+      }
+    } catch {
+      setFetchError('Order-sign request timed out.');
+      setConnectionState('fallback');
+    } finally {
+      clearTimeout(timeoutId);
+      setSigning(false);
     }
-    setExchanges((prev) => {
-      const rest = prev.filter((e) => e.hook !== 'order-sign');
-      return [...rest, exchange];
-    });
-    const cards = (exchange.response?.cards ?? []) as DemoCdsCard[];
-    const signCard = cards[0];
-    if (signCard) {
-      setPrimaryCard(signCard);
-    }
-    if (signCard?.indicator === 'critical' || signCard?.indicator === 'warning') {
-      setSignPending(true);
-    }
-    setSigning(false);
   };
+
+  const recordFeedback = useCallback(
+    (outcome: 'accepted' | 'overridden', overrideReason?: { code: string; display: string }) => {
+      const cardUuid = primaryCard?.uuid;
+      if (!cardUuid) return;
+      postCdsFeedback(cardUuid, outcome, hookInstance, overrideReason);
+      setFeedbackStatus(
+        outcome === 'accepted' ? 'Alternative recorded in feedback log.' : 'Override recorded in feedback log.',
+      );
+    },
+    [primaryCard?.uuid, hookInstance],
+  );
 
   const handleOpenAlternativeInChart = () => {
     setShowReviewPanel(false);
+    recordFeedback('accepted');
     setRoi((r) => ({
       dollarsAvoided: r.dollarsAvoided + scenario.avoidedCostEstimate,
       ordersOptimized: r.ordersOptimized + 1,
     }));
+  };
+
+  const handleOverrideSubmit = (payload: { code: string; documentation?: string }) => {
+    const reasonLabel =
+      STANDARD_OVERRIDE_REASONS.find((r) => r.id === payload.code)?.label ?? payload.code;
+    const display = payload.documentation?.trim() || reasonLabel;
+    recordFeedback('overridden', { code: payload.code, display });
+    setOverrideDialogOpen(false);
+    setSignPending(false);
   };
 
   const medianScore =
@@ -207,17 +374,20 @@ export function CdsDemoClient() {
           [...scoresSeen].sort((a, b) => a - b)[Math.floor(scoresSeen.length / 2)] ?? '—',
         );
 
-  const latestOrderSelect = exchanges.find((e) => e.hook === 'order-select');
-  const badgeLabel = !latestOrderSelect
-    ? '○ Idle'
-    : live
-      ? '● Live'
-      : '● Cached';
-  const badgeAria = !latestOrderSelect
-    ? 'Idle'
-    : live
-      ? 'Live connection'
-      : 'Cached scenario response';
+  const badgeLabel =
+    connectionState === 'idle'
+      ? '○ Idle'
+      : connectionState === 'live'
+        ? '● Live'
+        : '● Demo fallback';
+  const badgeAria =
+    connectionState === 'idle'
+      ? 'Idle — no requests yet'
+      : connectionState === 'live'
+        ? 'Live connection to CDS service'
+        : 'Demo fallback — CDS endpoint unreachable';
+
+  const jsonPanelId = 'live-cds-json-panel';
 
   return (
     <div className="min-w-0 space-y-6">
@@ -229,11 +399,11 @@ export function CdsDemoClient() {
           <Badge
             variant="outline"
             className={
-              !latestOrderSelect
-                ? 'border-arka-muted text-arka-muted'
-                : live
-                  ? 'border-emerald-500/50 text-emerald-600'
-                  : 'border-amber-500/50 text-amber-600'
+              connectionState === 'idle'
+                ? 'border-arka-slate-300 text-arka-slate-600'
+                : connectionState === 'live'
+                  ? 'border-emerald-600/50 text-emerald-800'
+                  : 'border-amber-600/50 text-amber-800'
             }
             aria-label={badgeAria}
           >
@@ -245,14 +415,30 @@ export function CdsDemoClient() {
           variant="secondary"
           onClick={handleReset}
           aria-label="Reset demo"
-          className="focus-visible:ring-2 focus-visible:ring-arka-cyan"
+          className="min-h-[44px] touch-manipulation focus-visible:ring-2 focus-visible:ring-arka-teal-500"
         >
           Reset
         </Button>
       </div>
 
+      {fetchError ? (
+        <div
+          className="flex items-start gap-3 rounded-lg border border-amber-500/40 bg-amber-50 px-4 py-3 text-sm text-arka-slate-800"
+          role="alert"
+        >
+          <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" aria-hidden />
+          <p>{fetchError}</p>
+        </div>
+      ) : null}
+
+      {feedbackStatus ? (
+        <p className="sr-only" role="status" aria-live="polite">
+          {feedbackStatus}
+        </p>
+      ) : null}
+
       <div
-        className="grid w-full min-w-0 grid-cols-1 gap-4 md:grid-cols-[minmax(0,1fr)_minmax(340px,420px)] md:items-start md:gap-0 md:rounded-xl md:border md:border-arka-light md:bg-slate-100/90 md:shadow-sm"
+        className="grid w-full min-w-0 grid-cols-1 gap-4 bg-white md:grid-cols-[minmax(0,1fr)_minmax(340px,420px)] md:items-start md:gap-0 md:rounded-xl md:border md:border-arka-light md:bg-slate-100/90 md:shadow-sm"
         aria-label="EHR workspace"
       >
         <div className="flex min-w-0 flex-col md:border-r md:border-arka-primary/10">
@@ -260,7 +446,7 @@ export function CdsDemoClient() {
             scenario={scenario}
             onSignOrder={() => void handleSignOrder()}
             signing={signing}
-            onScenarioSelect={(id) => setScenarioId(id as DemoScenarioId)}
+            onScenarioSelect={(id) => handleScenarioSelect(id as DemoScenarioId)}
             scenarioIds={DEMO_SCENARIO_LIST.map((s) => ({ id: s.id, label: s.label }))}
           />
         </div>
@@ -271,6 +457,7 @@ export function CdsDemoClient() {
           shapRows={shapRows}
           loading={loading}
           emptyCards={emptyCards}
+          activeHook={activeHook}
           onReviewAlternative={() => setShowReviewPanel(true)}
           onOverride={() => setOverrideDialogOpen(true)}
           showReviewPanel={showReviewPanel}
@@ -278,11 +465,7 @@ export function CdsDemoClient() {
           onOpenAlternativeInChart={handleOpenAlternativeInChart}
           overrideDialogOpen={overrideDialogOpen}
           onOverrideDialogClose={() => setOverrideDialogOpen(false)}
-          onOverrideSubmit={() => {
-            setOverrideDialogOpen(false);
-            setSignPending(false);
-          }}
-          onAboutRecommendation={() => undefined}
+          onOverrideSubmit={handleOverrideSubmit}
           signPending={signPending}
           onSignAnywayWithReason={() => setOverrideDialogOpen(true)}
         />
@@ -298,42 +481,39 @@ export function CdsDemoClient() {
           </h2>
           <button
             type="button"
-            className="text-xs text-arka-cyan hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-cyan"
+            className="min-h-[44px] touch-manipulation px-2 text-xs text-arka-teal-300 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-teal-500"
             onClick={() => setShowRawJson((v) => !v)}
             aria-expanded={showRawJson}
+            aria-controls={jsonPanelId}
           >
             {showRawJson ? 'Collapse' : 'Expand'}
           </button>
         </div>
         {showRawJson && (
-          <div className="mt-4 space-y-4">
+          <div id={jsonPanelId} className="mt-4 space-y-4">
             {exchanges.length === 0 && (
               <p className="text-xs text-arka-text-soft">No requests yet. Select a scenario or sign an order.</p>
             )}
             {exchanges.map((ex) => (
               <div key={ex.hook} className="space-y-2">
-                <p className="text-xs font-semibold text-arka-teal">
+                <p className="text-xs font-semibold text-arka-teal-300">
                   {ex.hook === 'order-select' ? 'Request →' : 'Sign →'} POST{' '}
-                  {ex.hook === 'order-select' ? ORDER_SELECT_PATH : ORDER_SIGN_PATH}
+                  {ex.hook === 'order-select'
+                    ? routes.cdsClinAppropriateness
+                    : routes.cdsClinAppropriatenessSign}
                 </p>
                 <JsonSyntaxPre value={ex.request} />
                 <p className="text-xs font-semibold text-arka-cyan">Response ←</p>
-                {ex.offline && (
-                  <p className="font-mono text-xs text-arka-text-soft">
-                    // Served from cached scenario response (CDS endpoint unreachable)
+                {ex.offline ? (
+                  <p className="font-mono text-xs text-amber-200">
+                    {'// Demo fallback — live CDS endpoint unreachable'}
                   </p>
-                )}
+                ) : null}
                 {ex.response ? (
-                  <JsonSyntaxPre value={ex.response} maxHeightClass="max-h-64" />
+                  <JsonSyntaxPre value={ex.response} maxHeightClass="max-h-64 sm:max-h-[70vh]" />
                 ) : (
                   <pre className="max-h-48 overflow-auto rounded bg-slate-900 p-3 font-mono text-xs text-red-300">
-                    {(() => {
-                      const raw = ex.error ?? 'null';
-                      if (raw.includes('did not match the expected pattern')) {
-                        return 'CDS service unreachable in offline mode — using cached scenario response.';
-                      }
-                      return raw;
-                    })()}
+                    {ex.error ?? 'null'}
                   </pre>
                 )}
               </div>

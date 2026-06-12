@@ -1,6 +1,7 @@
 "use client";
 
 import { MetricCard } from "@/components/ins/MetricCard";
+import { Badge } from "@/components/demos/rural/shared/ui/Badge";
 
 type RuralStat = {
   label: string;
@@ -15,16 +16,14 @@ export function RuralStatBanner({ stats }: { stats: RuralStat[] }) {
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {stats.map((s) => (
-        <MetricCard
-          key={s.label}
-          label={s.label}
-          value={s.value}
-          delta={
-            s.hint
-              ? { value: s.hint, direction: "neutral", positiveIsGood: true }
-              : undefined
-          }
-        />
+        <div key={s.label} className="relative">
+          <MetricCard label={s.label} value={s.value} />
+          {s.hint ? (
+            <div className="pointer-events-none absolute right-3 top-3">
+              <Badge variant="demo">{s.hint}</Badge>
+            </div>
+          ) : null}
+        </div>
       ))}
     </div>
   );

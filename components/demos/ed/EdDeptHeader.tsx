@@ -19,7 +19,7 @@ export function EdDeptHeader() {
           <span className="rounded-md bg-danger px-2 py-0.5 text-xs font-bold uppercase tracking-widest text-white">
             ED Live
           </span>
-          <h1 className="text-lg font-bold tracking-tight sm:text-xl">Incoming Imaging Queue</h1>
+          <h2 className="text-lg font-bold tracking-tight sm:text-xl">Incoming Imaging Queue</h2>
         </div>
 
         <div className="flex flex-wrap items-center gap-6 sm:gap-10" role="list">

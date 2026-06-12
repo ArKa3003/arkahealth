@@ -28,7 +28,9 @@ export function AITriagePrioritizer() {
                 <p className="text-xs text-arka-text-dark-muted">{site}</p>
               </div>
               <div className="flex items-center gap-2">
-                <Badge variant={pri === "critical" ? "default" : "muted"}>{pri}</Badge>
+                <Badge variant={pri === "critical" ? "danger" : pri === "urgent" ? "warning" : "muted"}>
+                  {pri}
+                </Badge>
                 <span className="text-xs text-arka-text-dark-muted">{s.status}</span>
               </div>
             </div>

@@ -3,7 +3,7 @@ import Image from "next/image";
 
 export default function NotFound() {
   return (
-    <div className="flex min-h-[80vh] flex-col items-center justify-center px-4 py-16 text-center">
+    <div className="flex flex-1 flex-col items-center justify-center px-4 py-16 text-center">
       <Image
         src="/arka-logo.svg"
         alt="ARKA Health"

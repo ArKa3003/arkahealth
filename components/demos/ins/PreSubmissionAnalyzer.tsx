@@ -94,7 +94,7 @@ export function PreSubmissionAnalyzer({ onGoBack }: { onGoBack?: () => void }) {
         <Card variant="default">
           <CardHeader className="border-b border-white/10">
             <CardTitle className="flex items-center gap-2 text-lg">
-              <AlertTriangle className="h-5 w-5 text-amber-400" />
+              <AlertTriangle className="h-5 w-5 text-amber-600" />
               Documentation Gaps
             </CardTitle>
           </CardHeader>

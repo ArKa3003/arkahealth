@@ -27,7 +27,7 @@ export default function InsPage() {
   const [aboutOpen, setAboutOpen] = React.useState(false);
 
   return (
-    <div className="min-h-screen bg-arka-bg-light">
+    <div className="min-h-full flex-1 bg-arka-bg-light">
       <PhaseComplianceBar />
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         {/* Breadcrumb */}

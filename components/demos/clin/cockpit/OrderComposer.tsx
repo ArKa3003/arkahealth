@@ -90,6 +90,7 @@ export interface OrderComposerProps {
   evaluationStep: number;
   showEmptyState: boolean;
   onLoadExample: () => void;
+  onStartNew: () => void;
 }
 
 /**
@@ -103,6 +104,7 @@ export function OrderComposer({
   evaluationStep,
   showEmptyState,
   onLoadExample,
+  onStartNew,
 }: OrderComposerProps) {
   const [age, setAge] = React.useState("");
   const [sex, setSex] = React.useState<"male" | "female" | "">("");
@@ -384,7 +386,7 @@ export function OrderComposer({
   if (showEmptyState && !scenario) {
     return (
       <div className="flex-1">
-        <ClinEmptyState onLoadExample={onLoadExample} />
+        <ClinEmptyState onLoadExample={onLoadExample} onStartNew={onStartNew} />
       </div>
     );
   }

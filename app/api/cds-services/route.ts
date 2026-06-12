@@ -4,9 +4,20 @@
 
 import { NextResponse } from "next/server";
 
+import { PREFETCH_TEMPLATES } from "@/lib/cds-platform/fhir/prefetch";
 import { FDA_DISCLOSURE_VERSION } from "@/lib/compliance/fda-disclosure";
 import { APPOINTMENT_PREFETCH, COVERAGE_PREFETCH } from "@/lib/fhir/prefetch";
+import { routes } from "@/lib/constants";
 import { withInsApiLogging } from "@/lib/server/with-ins-api-logging";
+
+const CLIN_PREFETCH = {
+  patient: PREFETCH_TEMPLATES.patient,
+  activeConditions: PREFETCH_TEMPLATES.activeConditions,
+  relevantLabs: PREFETCH_TEMPLATES.relevantLabs,
+  recentImaging: PREFETCH_TEMPLATES.recentImaging,
+  activeMedications: PREFETCH_TEMPLATES.activeMedications,
+  priorServiceRequests: PREFETCH_TEMPLATES.priorServiceRequests,
+} as const;
 
 /** Set on every response from this route (not via next.config.ts). */
 const CORS_HEADERS = {
@@ -41,12 +52,7 @@ const services = [
     description:
       "Guideline-anchored imaging-appropriateness CDS for the order-select hook. Recommendations cite USPSTF and specialty-society guidelines; ML-derived patient-specific refinement is shown as a non-authoritative confidence layer.",
     id: "arka-clin-appropriateness",
-    prefetch: {
-      patient: "Patient/{{context.patientId}}",
-      conditions: "Condition?patient={{context.patientId}}",
-      observations: "Observation?patient={{context.patientId}}&category=laboratory",
-      imagingStudies: "ImagingStudy?patient={{context.patientId}}",
-    },
+    prefetch: { ...CLIN_PREFETCH },
   },
   {
     hook: "order-sign",
@@ -54,10 +60,7 @@ const services = [
     title: "ARKA-CLIN Final Imaging Review",
     description:
       "Final guideline-anchored appropriateness check at order-sign. Returns a non-blocking critical-tier card with descriptive override reasons when the proposed study departs from evidence-based appropriateness criteria or specialty-society guidance for the indication.",
-    prefetch: {
-      patient: "Patient/{{context.patientId}}",
-      conditions: "Condition?patient={{context.patientId}}",
-    },
+    prefetch: { ...CLIN_PREFETCH },
   },
   {
     hook: "order-select",
@@ -88,7 +91,10 @@ const services = [
  * CDS Hooks service discovery (GET). Returns ARKA-CLIN and ARKA-INS service metadata for a single EHR registration URL.
  */
 async function discoveryGet(_request: Request): Promise<NextResponse> {
-  const response = NextResponse.json({ services }, { headers: discoveryMetaHeaders });
+  const response = NextResponse.json(
+    { services, feedback: routes.cdsFeedbackApi },
+    { headers: discoveryMetaHeaders },
+  );
   return withCorsHeaders(response);
 }
 

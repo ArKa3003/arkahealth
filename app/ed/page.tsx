@@ -2,25 +2,31 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 
 import { EdPageClient } from "@/components/demos/ed/EdPageClient";
-import { getEdCockpitCases } from "@/components/demos/ed/ed-cockpit-cases";
+import {
+  getEdCockpitCases,
+  getEdPracticeCases,
+} from "@/components/demos/ed/ed-cockpit-cases";
 import { precomputeEdEvaluations } from "@/components/demos/ed/ed-scoring";
 import { routes } from "@/lib/constants";
 
 /**
- * ARKA-ED emergency department imaging cockpit.
- * Scores are precomputed server-side for instant client render.
+ * ARKA-ED — guided practice scenarios (default) and simulated live queue cockpit.
  */
 export default async function EdPage() {
-  const cases = getEdCockpitCases();
-  const evaluations = await precomputeEdEvaluations(cases);
+  const cockpitCases = getEdCockpitCases();
+  const practiceCases = getEdPracticeCases();
+  const evaluations = await precomputeEdEvaluations(practiceCases);
 
   return (
-    <div className="min-h-screen bg-arka-slate-50">
+    <>
       <div className="mx-auto max-w-[1600px] px-4 pt-4 sm:px-6 lg:px-8">
-        <nav aria-label="Breadcrumb" className="mb-3">
-          <ol className="flex flex-wrap items-center gap-1.5 text-sm font-medium text-arka-slate-500">
+        <nav aria-label="Breadcrumb" className="mb-1">
+          <ol className="flex flex-wrap items-center gap-1.5 text-sm font-medium text-arka-slate-600">
             <li>
-              <Link href={routes.home} className="hover:text-arka-teal-600 transition-colors">
+              <Link
+                href={routes.home}
+                className="transition-colors hover:text-arka-teal-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-teal-500"
+              >
                 Home
               </Link>
             </li>
@@ -30,14 +36,13 @@ export default async function EdPage() {
             </li>
           </ol>
         </nav>
-
-        <p className="mb-4 max-w-3xl text-base font-medium text-arka-slate-600 sm:text-lg">
-          Emergency imaging triage — select an incoming case for instant AIIE scoring and
-          disposition guidance.
-        </p>
       </div>
 
-      <EdPageClient cases={cases} evaluations={evaluations} />
-    </div>
+      <EdPageClient
+        cockpitCases={cockpitCases}
+        practiceCases={practiceCases}
+        evaluations={evaluations}
+      />
+    </>
   );
 }

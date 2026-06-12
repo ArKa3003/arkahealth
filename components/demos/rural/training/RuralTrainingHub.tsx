@@ -9,6 +9,7 @@ import { RuralCaseViewer } from "@/components/demos/rural/training/RuralCaseView
 import { FacilityContextCard } from "@/components/demos/rural/training/FacilityContextCard";
 import { CMETracker } from "@/components/demos/rural/training/CMETracker";
 import { CurriculumChecklist } from "@/components/demos/rural/training/CurriculumChecklist";
+import { RuralDashboardPanel } from "@/components/demos/rural/shared/RuralDashboardPanel";
 import { RuralStatBanner } from "@/components/demos/rural/shared/RuralStatBanner";
 import { Button } from "@/components/demos/rural/shared/ui/Button";
 import type { RuralCase, RuralCaseCategory } from "@/lib/demos/rural/types";
@@ -81,15 +82,19 @@ export function RuralTrainingHub() {
 
   return (
     <div className="space-y-6">
-      <RuralStatBanner
-        stats={[
-          { label: "Rural cases", value: String(RURAL_CASES.length), hint: "In library" },
-          { label: "Library CME (demo)", value: `${totalCme.toFixed(1)}`, hint: "Credits if completed" },
-          { label: "Est. time", value: `${RURAL_CASES[0]?.estimatedCompletionMinutes ?? "—"}`, hint: "First case" },
-        ]}
-      />
+      <RuralDashboardPanel>
+        <RuralStatBanner
+          stats={[
+            { label: "Rural cases", value: String(RURAL_CASES.length), hint: "Demo" },
+            { label: "Library CME", value: `${totalCme.toFixed(1)}`, hint: "Illustrative" },
+            { label: "Est. time", value: `${RURAL_CASES[0]?.estimatedCompletionMinutes ?? "—"}`, hint: "Synthetic" },
+          ]}
+        />
+      </RuralDashboardPanel>
 
-      <CurriculumChecklist />
+      <RuralDashboardPanel delay={0.05}>
+        <CurriculumChecklist />
+      </RuralDashboardPanel>
 
       <AnimatePresence mode="wait">
         {!selectedCase ? (

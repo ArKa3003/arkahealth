@@ -22,13 +22,13 @@ export function Badge({
         "inline-flex items-center rounded-full font-medium",
         variant === "default" && "bg-arka-bg-alt text-arka-text-dark-muted border border-arka-light",
         variant === "success" &&
-          "bg-arka-cyan/20 text-arka-cyan border border-arka-cyan/40",
+          "bg-arka-teal-100 text-arka-teal-800 border border-arka-teal-300",
         variant === "warning" &&
           "bg-amber-500/20 text-amber-800 border border-amber-500/40",
         variant === "error" &&
           "bg-red-500/20 text-red-900 border border-red-500/40",
         variant === "info" &&
-          "bg-arka-primary/20 text-arka-light border border-arka-primary/40",
+          "bg-arka-teal-50 text-arka-teal-800 border border-arka-teal-200",
         variant === "infoOnLight" &&
           "bg-slate-200/90 text-slate-800 border border-slate-300",
         size === "sm" && "px-2 py-0.5 text-sm",

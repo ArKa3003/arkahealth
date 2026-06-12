@@ -10,6 +10,7 @@ import type { MLPrediction, SHAPFeatureContribution } from '@/lib/cds-platform/m
 import type { TieredAlert } from '@/lib/cds-platform/alerting/types';
 import { AlertCategory, AlertTierEnum } from '@/lib/cds-platform/alerting/types';
 import type { ClinicalScenario } from '@/lib/cds-platform/types';
+import { routes } from '@/lib/constants';
 import { FDA_NON_DEVICE_CDS_DISCLOSURE } from '@/lib/compliance/fda-disclosure';
 import type { CDSCard, CDSHookResponse } from '@/lib/types/cds-hooks';
 import type { DemoExpectedTier, DemoScenario } from './scenarios';
@@ -308,7 +309,7 @@ export function buildLocalCdsResponse(
     indicator,
     source: {
       label: basis.label,
-      url: basis.url ?? 'https://arkahealth.com/clin',
+      url: basis.url ?? routes.clin,
     },
     medicalBasis: basis,
     extension: { shapWithRationales },

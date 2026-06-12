@@ -41,7 +41,7 @@ export function InsShell({ children }: InsShellProps) {
   const crumbs = insBreadcrumbs(pathname);
 
   return (
-    <div className="flex min-h-screen bg-surface-sunken">
+    <div className="flex min-h-full flex-1 bg-surface-sunken">
       <aside
         className={cn(
           "sticky top-0 flex h-screen shrink-0 flex-col border-r border-border-subtle bg-surface transition-[width] duration-200",
@@ -114,7 +114,7 @@ export function InsShell({ children }: InsShellProps) {
             <ol className="flex flex-wrap items-center gap-1 text-caption text-arka-slate-500">
               {crumbs.map((crumb, i) => (
                 <li key={`${crumb.label}-${i}`} className="flex items-center gap-1">
-                  {i > 0 ? <ChevronRight className="h-3.5 w-3.5 text-arka-slate-400" aria-hidden /> : null}
+                  {i > 0 ? <ChevronRight className="h-3.5 w-3.5 text-arka-slate-500" aria-hidden /> : null}
                   {crumb.href ? (
                     <Link href={crumb.href} className="hover:text-arka-teal-700">
                       {crumb.label}

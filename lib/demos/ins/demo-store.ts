@@ -22,6 +22,7 @@ import {
   generatedAppeals,
 } from "@/lib/demos/ins/mock-data";
 import { buildGeneratedAppeal } from "@/lib/demos/ins/build-appeal";
+import { bumpCounter } from "@/lib/client/metrics-counters";
 
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -146,11 +147,13 @@ export const useInsDemoStore = create<DemoStore>()(
       },
       nextStep: () => set((s) => ({ currentStep: Math.min(s.currentStep + 1, 10), lastUpdatedAt: new Date().toISOString() })),
       previousStep: () => set((s) => ({ currentStep: Math.max(s.currentStep - 1, 1), lastUpdatedAt: new Date().toISOString() })),
-      completeStep: (step) =>
+      completeStep: (step) => {
+        bumpCounter("ins_demo_step_completed", { source: `step_${step}` });
         set((s) => ({
           completedSteps: s.completedSteps.includes(step) ? s.completedSteps : [...s.completedSteps, step].sort((a, b) => a - b),
           lastUpdatedAt: new Date().toISOString(),
-        })),
+        }));
+      },
       resetDemo: () => set({ ...initialState, demoStartedAt: null, lastUpdatedAt: new Date().toISOString() }),
 
       setProcessing: (state) => set((s) => ({ processing: { ...s.processing, ...state }, lastUpdatedAt: new Date().toISOString() })),
@@ -169,6 +172,9 @@ export const useInsDemoStore = create<DemoStore>()(
         set((s) => ({ processing: { ...s.processing, processingProgress: 75, processingMessage: "Identifying gaps..." } }));
         await delay(500);
         const analysis = getAnalysisForOrder(currentOrderId);
+        const order = getOrderById(currentOrderId);
+        const modality = order?.imagingType?.replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 32) || "imaging";
+        bumpCounter("aiie_score_requests", { modality });
         set({ preSubmissionAnalysis: analysis, processing: initialProcessing, lastUpdatedAt: new Date().toISOString() });
       },
 
@@ -232,6 +238,7 @@ export const useInsDemoStore = create<DemoStore>()(
 
         const appeal =
           getAppealForOrder(currentOrderId) ?? buildGeneratedAppeal(order, patient);
+        bumpCounter("ins_demo_appeal_generated", { source: "submit_step" });
         set({
           generatedAppeal: appeal,
           processing: initialProcessing,

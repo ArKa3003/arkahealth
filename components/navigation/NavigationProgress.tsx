@@ -42,7 +42,7 @@ export function NavigationProgress() {
             initial={{ width: "0%" }}
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.35, ease: "easeOut" }}
-            className="h-full bg-gradient-to-r from-arka-primary to-arka-cyan shadow-[0_0_12px_var(--arka-cyan)]"
+            className="h-full bg-arka-teal shadow-[0_0_12px_var(--arka-teal)]"
           />
         </div>
       )}

@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Clock, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -11,6 +11,7 @@ export interface AnalysisTimeoutBannerProps {
 }
 
 export function AnalysisTimeoutBanner({ onDismiss, className }: AnalysisTimeoutBannerProps) {
+  const prefersReducedMotion = useReducedMotion();
   return (
     <motion.div
       className={cn(
@@ -19,10 +20,10 @@ export function AnalysisTimeoutBanner({ onDismiss, className }: AnalysisTimeoutB
         "text-arka-text-dark",
         className
       )}
-      initial={{ opacity: 0, y: -8 }}
+      initial={prefersReducedMotion ? false : { opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -8 }}
-      transition={{ duration: 0.25 }}
+      exit={prefersReducedMotion ? undefined : { opacity: 0, y: -8 }}
+      transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.25 }}
     >
       <div className="flex items-center gap-2">
         <Clock className="h-5 w-5 text-amber-800 flex-shrink-0" />

@@ -15,14 +15,16 @@ export function RuralMobileNav() {
     >
       {RURAL_NAV_ITEMS.map(({ href, shortLabel }) => {
         const isHub = href === ruralRoutes.hub;
-        const isActive = isHub ? pathname === href : pathname === href;
+        const isActive = isHub ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
         return (
           <Link
             key={href}
             href={href}
             className={cn(
               "shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition",
-              isActive ? "bg-arka-teal text-white" : "bg-white/80 text-arka-text-dark-muted ring-1 ring-arka-primary/15"
+              isActive
+                ? "bg-arka-teal text-white"
+                : "bg-white/80 text-arka-text-dark-muted ring-1 ring-arka-primary/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-teal-500"
             )}
           >
             {shortLabel}

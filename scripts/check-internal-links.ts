@@ -10,12 +10,13 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { routes } from "../lib/constants";
 import { commandRoutes, phaseNavItems } from "../lib/navigation/routes";
 import { listEvidenceEntries } from "../lib/evidence/registry";
 
-const ROOT = path.resolve(import.meta.dirname, "..");
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const APP_DIR = path.join(ROOT, "app");
 
 /** Source locations scanned for href literals beyond the nav registries. */

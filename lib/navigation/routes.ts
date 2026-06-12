@@ -69,30 +69,13 @@ export const scrollProgressPaths = [
   "/privacy",
   "/terms",
   "/trust",
+  "/security",
   "/action-plan",
   "/evidence",
 ] as const;
 
-/** True when the page top is a light background (header starts in solid mode). */
-export function isLightTopPage(pathname: string): boolean {
-  if (pathname === "/") return false;
-  const lightPrefixes = [
-    "/clin",
-    "/ins",
-    "/ed",
-    "/clin-suite",
-    "/docs",
-    "/privacy",
-    "/terms",
-    "/roi",
-    "/action-plan",
-    "/trust",
-    "/cds-hooks",
-    "/rural",
-    "/evidence",
-  ];
-  return lightPrefixes.some((p) => pathname.startsWith(p));
-}
+/** @see {@link isLightTopPage} in nav-appearance.ts — re-exported for backward compatibility. */
+export { isLightTopPage } from "@/lib/navigation/nav-appearance";
 
 /** True when scroll progress bar should render. */
 export function showsScrollProgress(pathname: string): boolean {
@@ -197,7 +180,7 @@ export const commandRoutes: CommandRoute[] = [
     id: "evidence-library",
     title: "AIIE Evidence Library",
     description: "First-party evidence registry behind every AIIE recommendation.",
-    href: "/evidence",
+    href: routes.evidence,
     group: "Evidence",
     keywords: ["evidence", "citations", "guidelines", "knowledge matrix", "literature"],
   },
@@ -223,12 +206,28 @@ export const commandRoutes: CommandRoute[] = [
     keywords: ["home", "platform", "landing", "ecosystem"],
   },
   {
+    id: "aiie",
+    title: "AIIE Technology",
+    description: "ARKA Imaging Intelligence Engine vs traditional ACR Appropriateness Criteria.",
+    href: "/#aiie",
+    group: "Company",
+    keywords: ["aiie", "acr", "appropriateness", "ml", "cds"],
+  },
+  {
     id: "trust",
     title: "Trust Center",
     description: "Regulatory posture summary and Q-Sub package links.",
     href: routes.trust,
     group: "Compliance",
     keywords: ["trust", "regulatory", "fda", "q-sub"],
+  },
+  {
+    id: "security",
+    title: "Security & Compliance",
+    description: "HIPAA, SOC 2, HITRUST, encryption, and audit controls.",
+    href: routes.security,
+    group: "Compliance",
+    keywords: ["security", "hipaa", "soc 2", "hitrust", "compliance", "encryption"],
   },
   {
     id: "doc-regulatory",
@@ -294,4 +293,4 @@ export const CONTACT_EMAIL = "arrihantk@getarka.health" as const;
 
 export const DEMO_BOOKING_MAILTO = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("Book an ARKA demo")}`;
 
-export const SIGN_IN_MAILTO = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("ARKA platform access")}`;
+export const REQUEST_ACCESS_MAILTO = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("ARKA platform access")}`;

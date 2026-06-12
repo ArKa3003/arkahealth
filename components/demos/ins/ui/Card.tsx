@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { motion, type HTMLMotionProps } from "framer-motion";
+import { motion, useReducedMotion, type HTMLMotionProps } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 export type CardVariant = "default" | "elevated" | "glass" | "interactive";
@@ -21,13 +21,14 @@ const variantStyles: Record<CardVariant, string> = {
 const Card = React.forwardRef<HTMLDivElement, InsCardProps>(
   ({ className, variant = "default", children, ...props }, ref) => {
     const isInteractive = variant === "interactive";
+    const prefersReducedMotion = useReducedMotion();
     return (
       <motion.div
         ref={ref}
         className={cn("rounded-xl overflow-hidden", variantStyles[variant], className)}
-        whileHover={isInteractive ? { scale: 1.01 } : undefined}
-        whileTap={isInteractive ? { scale: 0.99 } : undefined}
-        transition={{ duration: 0.2, ease: "easeOut" }}
+        whileHover={!prefersReducedMotion && isInteractive ? { scale: 1.01 } : undefined}
+        whileTap={!prefersReducedMotion && isInteractive ? { scale: 0.99 } : undefined}
+        transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.2, ease: "easeOut" }}
         {...props}
       >
         {children}

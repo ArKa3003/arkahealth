@@ -49,7 +49,7 @@ export function PlatformBand() {
     <section
       ref={ref}
       id="platform"
-      className="scroll-mt-14 border-t border-arka-bg-dark bg-arka-bg-medium px-4 py-24 sm:px-6 lg:px-8"
+      className="scroll-mt-20 border-t border-arka-bg-dark bg-arka-bg-medium px-4 py-24 sm:px-6 lg:px-8"
       aria-labelledby="platform-heading"
     >
       <div className="mx-auto max-w-6xl">

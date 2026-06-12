@@ -28,7 +28,7 @@ export default function ClinPage() {
   const [aboutOpen, setAboutOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-arka-bg-light">
+    <div className="min-h-full flex-1 bg-arka-bg-light">
       <div className="mx-auto max-w-[1600px] px-4 py-6 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
         <nav aria-label="Breadcrumb" className="mb-4 sm:mb-6">
@@ -123,8 +123,8 @@ export default function ClinPage() {
                   Demo.
                 </p>
                 <Link
-                  href={routes.cdsHooksDemo}
-                  className="mt-3 inline-flex items-center gap-2 rounded-lg border border-arka-teal/40 bg-arka-teal/5 px-4 py-2.5 text-sm font-medium text-arka-teal-600 hover:bg-arka-teal/10 hover:border-arka-teal/60 transition-colors"
+                  href={`${routes.clinSuite}?view=embedded`}
+                  className="mt-3 inline-flex min-h-[44px] touch-manipulation items-center gap-2 rounded-lg border border-arka-teal/40 bg-arka-teal/5 px-4 py-2.5 text-sm font-medium text-arka-teal-600 hover:bg-arka-teal/10 hover:border-arka-teal/60 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-teal-500"
                 >
                   CDS Hooks Live Demo
                 </Link>
@@ -156,7 +156,7 @@ export default function ClinPage() {
               <li key={href}>
                 <Link
                   href={href}
-                  className="inline-flex items-center gap-2 rounded-lg border border-arka-teal/40 bg-arka-teal/5 px-4 py-2.5 text-sm font-medium text-arka-teal-600 hover:bg-arka-teal/10 hover:border-arka-teal/60 transition-colors"
+                  className="inline-flex min-h-[44px] touch-manipulation items-center gap-2 rounded-lg border border-arka-teal/40 bg-arka-teal/5 px-4 py-2.5 text-sm font-medium text-arka-teal-600 hover:bg-arka-teal/10 hover:border-arka-teal/60 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-teal-500"
                 >
                   <Icon className="h-4 w-4" aria-hidden />
                   {label}

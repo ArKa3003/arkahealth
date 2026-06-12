@@ -172,7 +172,7 @@ export function RoiPageClient() {
   const waterfallData: WaterfallRow[] = WATERFALL.map((w) => ({ ...w }));
 
   return (
-    <div className="min-h-screen bg-arka-bg-dark text-arka-text-soft">
+    <div className="min-h-full flex-1 bg-arka-bg-dark text-arka-text-soft">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
         {/* 1 — Hero */}
         <header className="border-b border-arka-deep/50 pb-12">

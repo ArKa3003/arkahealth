@@ -4,6 +4,7 @@ import * as React from "react";
 import { Check, Clock, FileQuestion, X } from "lucide-react";
 
 import type { ReviewerAction, ReviewerQueueCase } from "@/lib/ins/reviewer-types";
+import { bumpCounter } from "@/lib/client/metrics-counters";
 import { cn } from "@/lib/utils";
 
 const OVERRIDE_REASONS = [
@@ -75,6 +76,7 @@ export function ReviewerActionBar({ caseRow, onSubmitted }: ReviewerActionBarPro
         const j = (await res.json()) as { error?: string };
         throw new Error(j.error ?? "Action failed");
       }
+      bumpCounter("ins_reviewer_action", { status: action });
       onSubmitted();
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Action failed");
@@ -189,7 +191,7 @@ export function ReviewerActionBar({ caseRow, onSubmitted }: ReviewerActionBarPro
               AIIE: {caseRow.aiieRecommendationLabel} ({caseRow.aiieRecommendationConfidencePct}%)
             </p>
           ) : (
-            <p className="text-caption text-arka-slate-400">Select a case from the queue</p>
+            <p className="text-caption text-arka-slate-500">Select a case from the queue</p>
           )}
         </div>
       </div>

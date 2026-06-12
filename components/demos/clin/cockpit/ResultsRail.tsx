@@ -17,6 +17,7 @@ import { detectIncidentals, incidentalFindingKey } from "@/lib/aiie/incidentals"
 import { IncidentalFollowupCard } from "@/components/shared/IncidentalFollowupCard";
 import { PriorImagingControlSheetGate } from "@/components/shared/PriorImagingControlSheet";
 import { FDA_COMPLIANCE } from "@/lib/demos/clin/constants/fda-compliance";
+import { routes } from "@/lib/constants";
 import { DenialRiskGauge } from "./DenialRiskGauge";
 import { ShapFactorBreakdown } from "./ShapFactorBreakdown";
 import { getRecommendationState } from "./clin-cockpit-utils";
@@ -68,6 +69,9 @@ export function ResultsRail({
   className,
 }: ResultsRailProps) {
   const [dismissedIncidentalKeys, setDismissedIncidentalKeys] = React.useState<Set<string>>(() => new Set());
+  const [incidentalStatus, setIncidentalStatus] = React.useState<string | null>(null);
+  const [copyStatus, setCopyStatus] = React.useState<string | null>(null);
+  const [priorImagingOverride, setPriorImagingOverride] = React.useState<string | null>(null);
 
   const recordSnapshot = React.useMemo(
     () => (scenario ? buildClinDemoRecordSnapshot(scenario) : null),
@@ -147,7 +151,7 @@ export function ResultsRail({
           snapshot={recordSnapshot}
           proposed={clinicalScenarioToAIIEOrder(scenario)}
           product="CLIN"
-          onOverride={() => undefined}
+          onOverride={(reason) => setPriorImagingOverride(reason)}
         />
       ) : null}
 
@@ -160,9 +164,22 @@ export function ResultsRail({
             onDismiss={() =>
               setDismissedIncidentalKeys((prev) => new Set(prev).add(incidentalFindingKey(finding)))
             }
-            onSchedule={() => undefined}
+            onSchedule={() =>
+              setIncidentalStatus(`Follow-up scheduled for ${finding.category} incidental finding.`)
+            }
           />
         ))}
+
+      {incidentalStatus ? (
+        <p className="sr-only" role="status" aria-live="polite">
+          {incidentalStatus}
+        </p>
+      ) : null}
+      {priorImagingOverride ? (
+        <p className="rounded-radius-md border border-border-subtle bg-surface-sunken px-3 py-2 text-caption text-arka-slate-700" role="status">
+          Prior imaging override recorded: {priorImagingOverride}
+        </p>
+      ) : null}
 
       <Card className={cn("border-l-4 animate-fade-in-up", styles.border, styles.bg)}>
         <CardHeader className="pb-2">
@@ -171,7 +188,13 @@ export function ResultsRail({
               <StateIcon className={cn("h-5 w-5", styles.iconClass)} aria-hidden />
               <CardTitle className="text-base">{styles.label}</CardTitle>
             </div>
-            <Button variant="ghost" size="sm" onClick={onNewEvaluation} aria-label="New evaluation">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="min-h-[44px] min-w-[44px] touch-manipulation"
+              onClick={onNewEvaluation}
+              aria-label="New evaluation"
+            >
               <RefreshCw className="h-4 w-4" aria-hidden />
             </Button>
           </div>
@@ -270,19 +293,30 @@ export function ResultsRail({
           <Button
             variant="secondary"
             size="sm"
-            onClick={() => {
+            className="min-h-[44px] touch-manipulation"
+            onClick={async () => {
               const text = `AIIE Score: ${result.appropriatenessScore.value}/9 — ${oneLineRecommendation}\n${FDA_COMPLIANCE.PRINT_AND_COPY_DISCLAIMER}`;
-              void navigator.clipboard.writeText(text);
+              try {
+                await navigator.clipboard.writeText(text);
+                setCopyStatus("Justification copied to clipboard.");
+              } catch {
+                setCopyStatus("Copy failed — select text manually.");
+              }
             }}
           >
             <Copy className="h-4 w-4" aria-hidden />
             Copy justification
           </Button>
+          {copyStatus ? (
+            <span className="sr-only" role="status" aria-live="polite">
+              {copyStatus}
+            </span>
+          ) : null}
           <Link
-            href="/methodology"
-            className="inline-flex h-8 items-center rounded-radius-md border border-border-strong px-3 text-xs font-medium text-arka-slate-700 hover:bg-surface-sunken"
+            href={routes.featureCatalog}
+            className="inline-flex min-h-[44px] touch-manipulation items-center rounded-radius-md border border-border-strong px-3 text-xs font-medium text-arka-slate-700 hover:bg-surface-sunken focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-teal-500"
           >
-            Methodology
+            Feature catalog
           </Link>
         </div>
       ) : null}

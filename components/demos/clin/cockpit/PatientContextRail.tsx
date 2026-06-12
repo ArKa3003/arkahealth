@@ -126,7 +126,7 @@ export function PatientContextRail({
               placeholder="Search scenarios…"
               aria-label="Search demo scenarios"
               className={cn(
-                "h-9 w-full rounded-radius-md border border-border-subtle bg-surface pl-9 pr-3 text-sm",
+                "h-11 min-h-[44px] w-full rounded-radius-md border border-border-subtle bg-surface pl-9 pr-3 text-sm touch-manipulation",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-teal-500 focus-visible:ring-offset-2",
               )}
             />
@@ -134,6 +134,11 @@ export function PatientContextRail({
         </CardHeader>
         <CardContent className="min-h-0 flex-1 overflow-y-auto pt-0">
           <ul className="space-y-1" role="listbox" aria-label="Demo scenarios">
+            {filtered.length === 0 ? (
+              <li className="px-3 py-4 text-center text-caption text-arka-slate-500" role="status">
+                No scenarios match your search.
+              </li>
+            ) : null}
             {filtered.map(({ key, title, description }) => {
               const severity = getScenarioSeverity(title);
               const selected = selectedScenarioKey === key;

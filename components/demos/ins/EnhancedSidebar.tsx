@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Check, ChevronRight, RotateCcw, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/demos/ins/ui/Button";
@@ -30,6 +30,7 @@ export function EnhancedSidebar({
   const progress = (currentStep / totalSteps) * 100;
   const steps = DEMO_STEPS_10;
   const minutesRemaining = Math.max(1, Math.ceil((totalSteps - currentStep) * 0.8));
+  const prefersReducedMotion = useReducedMotion();
 
   return (
     <aside
@@ -45,13 +46,13 @@ export function EnhancedSidebar({
           <span className="text-teal-300">ARKA</span>
           <span className="px-1.5 py-0.5 text-[10px] font-bold text-arka-bg-dark bg-arka-teal rounded text-white">INS</span>
         </Link>
-        <p className="text-xs text-slate-300 mt-1">Utilization Management</p>
+        <p className="text-xs text-arka-slate-200 mt-1">Utilization Management</p>
       </div>
 
       <div className="p-4 border-b border-white/10">
         <div className="flex items-center justify-between text-sm mb-2">
           <span className="font-medium text-slate-200">Step {currentStep} of {totalSteps}</span>
-          <span className="text-slate-400">~{minutesRemaining} min left</span>
+          <span className="text-arka-slate-300">~{minutesRemaining} min left</span>
         </div>
         <Progress value={progress} max={100} size="sm" className="[&>div]:bg-arka-bg-dark" />
       </div>
@@ -93,9 +94,13 @@ export function EnhancedSidebar({
                 </span>
               )}
               {isCurrent && (
-                <motion.span animate={{ opacity: [0.6, 1, 0.6] }} transition={{ duration: 2, repeat: Infinity }}>
-                  <ChevronRight className="h-4 w-4 text-arka-deep shrink-0" />
-                </motion.span>
+                prefersReducedMotion ? (
+                  <ChevronRight className="h-4 w-4 text-arka-deep shrink-0" aria-hidden />
+                ) : (
+                  <motion.span animate={{ opacity: [0.6, 1, 0.6] }} transition={{ duration: 2, repeat: Infinity }}>
+                    <ChevronRight className="h-4 w-4 text-arka-deep shrink-0" aria-hidden />
+                  </motion.span>
+                )
               )}
             </button>
           );

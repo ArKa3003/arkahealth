@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, AlertTriangle, Building2, MapPin, Users } from "lucide-react";
+import { ArrowRight, AlertTriangle, Building2, ChevronRight, MapPin, Users } from "lucide-react";
 import {
   RURAL_CRISIS_STATS,
   RURAL_HUB_AREAS,
@@ -10,6 +10,7 @@ import { RuralHubMapLazy } from "@/components/demos/rural/shared/RuralHubMapLazy
 import { MetricCard } from "@/components/ins/MetricCard";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { routes } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Rural Imaging Solutions | ARKA Health",
@@ -20,6 +21,23 @@ export const metadata: Metadata = {
 export default function RuralHubPage() {
   return (
     <div className="space-y-10 sm:space-y-14">
+      <nav aria-label="Breadcrumb" className="text-sm font-medium text-arka-text-dark-muted">
+        <ol className="flex flex-wrap items-center gap-1.5">
+          <li>
+            <Link
+              href={routes.home}
+              className="transition-colors hover:text-arka-teal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-teal-500"
+            >
+              Home
+            </Link>
+          </li>
+          <li className="flex items-center gap-1.5">
+            <ChevronRight className="h-4 w-4 shrink-0 text-arka-text-dark-soft" aria-hidden />
+            <span className="font-medium text-arka-teal">ARKA-RURAL</span>
+          </li>
+        </ol>
+      </nav>
+
       {/* Hero */}
       <section className="grid gap-8 lg:grid-cols-2 lg:items-center">
         <div>

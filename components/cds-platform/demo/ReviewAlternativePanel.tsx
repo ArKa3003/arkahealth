@@ -192,17 +192,17 @@ export function ReviewAlternativePanel({
       >
         <p className="font-medium text-arka-text-dark">{displayName}</p>
         <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-arka-text-dark-muted">
-          <dt className="font-medium text-arka-muted">CPT</dt>
+          <dt className="font-medium text-arka-text-dark-soft">CPT</dt>
           <dd>{detail.cpt}</dd>
-          <dt className="font-medium text-arka-muted">Modality</dt>
+          <dt className="font-medium text-arka-text-dark-soft">Modality</dt>
           <dd>{detail.modality}</dd>
-          <dt className="font-medium text-arka-muted">Body part</dt>
+          <dt className="font-medium text-arka-text-dark-soft">Body part</dt>
           <dd>{detail.bodyPart}</dd>
-          <dt className="font-medium text-arka-muted">Prep</dt>
+          <dt className="font-medium text-arka-text-dark-soft">Prep</dt>
           <dd>{detail.prep}</dd>
           {detail.radiation !== null && (
             <>
-              <dt className="font-medium text-arka-muted">Radiation</dt>
+              <dt className="font-medium text-arka-text-dark-soft">Radiation</dt>
               <dd>{detail.radiation}</dd>
             </>
           )}
@@ -212,7 +212,7 @@ export function ReviewAlternativePanel({
       <section className="mt-4" aria-labelledby={`${headingId}-considerations`}>
         <h4
           id={`${headingId}-considerations`}
-          className="text-xs font-bold uppercase tracking-wide text-arka-teal"
+          className="text-xs font-bold uppercase tracking-wide text-arka-teal-700"
         >
           Considerations
         </h4>

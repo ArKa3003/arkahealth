@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import { Suspense } from "react";
 import { useInsDemoStore } from "@/lib/demos/ins/demo-store";
@@ -79,19 +79,19 @@ function DemoModeSelector({
           className={cn(
             "flex flex-col items-start px-4 py-2.5 rounded-lg border-2 text-left transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-arka-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-arka-bg-dark",
             value === m.id
-              ? "border-arka-deep bg-arka-deep/10"
-              : "border-white/10 hover:border-arka-deep/30 bg-arka-bg-medium/50"
+              ? "border-arka-deep bg-arka-teal-50"
+              : "border-border-subtle hover:border-arka-deep/40 bg-surface-sunken"
           )}
         >
           <span
             className={cn(
               "font-medium text-sm",
-              value === m.id ? "text-arka-deep" : "text-slate-700"
+              value === m.id ? "text-arka-teal-800" : "text-arka-slate-800"
             )}
           >
             {m.label}
           </span>
-          <span className="text-xs text-slate-600">{m.description}</span>
+          <span className="text-xs text-arka-slate-600">{m.description}</span>
         </button>
       ))}
     </div>
@@ -100,6 +100,7 @@ function DemoModeSelector({
 
 export function InsDemoView() {
   const mounted = useClientMounted();
+  const prefersReducedMotion = useReducedMotion();
   const [scenarioMode, setScenarioMode] = React.useState<ScenarioMode>("standard");
 
   const {
@@ -191,11 +192,11 @@ export function InsDemoView() {
   return (
     <div className="space-y-6 sm:space-y-8">
       <div className="arka-card rounded-xl border border-arka-deep/20 px-4 py-4 lg:px-6">
-        <p className="text-xs font-medium text-slate-700 uppercase tracking-wide mb-2">
+        <p className="text-xs font-medium text-arka-slate-700 uppercase tracking-wide mb-2">
           DEMO MODE
         </p>
         <DemoModeSelector value={scenarioMode} onChange={handleModeChange} />
-        <p className="text-xs text-slate-600 mt-2" role="note">
+        <p className="text-xs text-arka-slate-600 mt-2" role="note">
           Demonstration only — not for clinical use.
         </p>
       </div>
@@ -221,10 +222,10 @@ export function InsDemoView() {
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentStep}
-                initial={{ opacity: 0, x: 8 }}
+                initial={prefersReducedMotion ? false : { opacity: 0, x: 8 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -8 }}
-                transition={{ duration: 0.2, ease: "easeOut" }}
+                exit={prefersReducedMotion ? undefined : { opacity: 0, x: -8 }}
+                transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.2, ease: "easeOut" }}
               >
                 <Suspense fallback={<StepFallback />}>
                   {renderStep()}
@@ -236,7 +237,7 @@ export function InsDemoView() {
           )}
 
           <nav
-            className="mt-8 flex items-center justify-between border-t border-white/10 pt-6"
+            className="mt-8 flex items-center justify-between border-t border-border-subtle pt-6"
             aria-label="Demo step navigation"
           >
             <Button

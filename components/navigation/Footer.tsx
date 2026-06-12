@@ -9,9 +9,11 @@ import { useEvidenceModalOptional } from "@/components/shared/compliance/evidenc
 
 const productLinks = [
   { href: "/#platform", label: "Platform" },
+  { href: "/#aiie", label: "AIIE Technology" },
+  { href: routes.evidence, label: "Evidence Library" },
   { href: routes.roi, label: "ROI Calculator" },
-  { href: routes.cdsHooksDemo, label: "CDS Hooks Demo" },
   { href: routes.clinSuite, label: "CLIN Suite" },
+  { href: routes.cdsHooksDiscovery, label: "CDS Discovery" },
 ] as const;
 
 const companyLinks = [
@@ -94,6 +96,14 @@ export function Footer() {
                   className="text-sm text-white/75 transition hover:text-white"
                 >
                   HIPAA-aligned demo posture
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href={routes.security}
+                  className="text-sm text-white/75 transition hover:text-white"
+                >
+                  Security & Compliance
                 </Link>
               </li>
               <li>

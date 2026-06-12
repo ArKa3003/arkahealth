@@ -3,10 +3,16 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChevronDown, GraduationCap, Shield, Stethoscope, TreePine } from "lucide-react";
+import { ChevronDown, GraduationCap, Shield, Sparkles, Stethoscope, TreePine } from "lucide-react";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import {
+  navItemClasses,
+  navLabelClasses,
+  navUnderlineClasses,
+  type NavAppearance,
+} from "@/lib/navigation/nav-appearance";
 import { phaseNavItems } from "@/lib/navigation/routes";
 
 const phaseIcons = {
@@ -17,14 +23,14 @@ const phaseIcons = {
 } as const;
 
 type PhasesMegaMenuProps = {
-  /** Light text when header is transparent over dark hero. */
-  inverted?: boolean;
+  appearance: NavAppearance;
+  active?: boolean;
 };
 
 /**
  * Radix popover mega-menu for ARKA phase pillars (2-column grid).
  */
-export function PhasesMegaMenu({ inverted = false }: PhasesMegaMenuProps) {
+export function PhasesMegaMenu({ appearance, active = false }: PhasesMegaMenuProps) {
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
 
@@ -33,21 +39,19 @@ export function PhasesMegaMenu({ inverted = false }: PhasesMegaMenuProps) {
       <PopoverTrigger asChild>
         <button
           type="button"
-          className={cn(
-            "inline-flex items-center gap-1 rounded-radius-sm px-2 py-1.5 text-sm font-medium transition-colors",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-teal-500 focus-visible:ring-offset-2",
-            inverted
-              ? "text-white/90 hover:text-white hover:bg-white/10"
-              : "text-arka-slate-700 hover:text-arka-slate-900 hover:bg-arka-slate-100",
-          )}
           aria-expanded={open}
           aria-haspopup="dialog"
+          aria-current={active ? "page" : undefined}
+          className={navItemClasses(appearance, active || open)}
         >
-          Phases
-          <ChevronDown
-            className={cn("h-4 w-4 transition-transform", open && "rotate-180")}
-            aria-hidden
-          />
+          <span className={navLabelClasses()}>
+            Phases
+            <ChevronDown
+              className={cn("h-4 w-4 transition-transform duration-200", open && "rotate-180")}
+              aria-hidden
+            />
+          </span>
+          <span className={navUnderlineClasses(active || open)} aria-hidden />
         </button>
       </PopoverTrigger>
       <PopoverContent
@@ -90,6 +94,20 @@ export function PhasesMegaMenu({ inverted = false }: PhasesMegaMenuProps) {
             );
           })}
         </ul>
+        <div className="mt-2 border-t border-border-subtle pt-2">
+          <Link
+            href="/#aiie"
+            prefetch
+            onClick={() => setOpen(false)}
+            className={cn(
+              "flex min-h-[44px] items-center gap-2 rounded-radius-md px-2.5 py-2 text-sm font-medium text-arka-teal-700 transition-colors",
+              "hover:bg-arka-teal-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-teal-500",
+            )}
+          >
+            <Sparkles className="h-4 w-4 shrink-0" aria-hidden />
+            AIIE Technology
+          </Link>
+        </div>
       </PopoverContent>
     </Popover>
   );

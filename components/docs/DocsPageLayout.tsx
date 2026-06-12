@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { useReducedMotion } from "framer-motion";
 
 import type { DocHeading } from "@/lib/docs/extract-headings";
 import { cn } from "@/lib/utils";
@@ -30,6 +31,7 @@ export function DocsPageLayout({
   const articleRef = React.useRef<HTMLElement>(null);
   const [activeId, setActiveId] = React.useState<string>("");
   const [toc, setToc] = React.useState<DocHeading[]>(tocProp ?? []);
+  const prefersReducedMotion = useReducedMotion();
 
   React.useEffect(() => {
     if (tocProp?.length) {
@@ -76,6 +78,14 @@ export function DocsPageLayout({
     return () => observer.disconnect();
   }, [toc]);
 
+  const handleTocClick = (event: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    event.preventDefault();
+    document.getElementById(id)?.scrollIntoView({
+      behavior: prefersReducedMotion ? "auto" : "smooth",
+    });
+    setActiveId(id);
+  };
+
   const tocNav =
     toc.length > 0 ? (
       <nav aria-label="Table of contents">
@@ -87,8 +97,10 @@ export function DocsPageLayout({
             <li key={item.id} className={item.level === 3 ? "pl-3" : undefined}>
               <a
                 href={`#${item.id}`}
+                onClick={(event) => handleTocClick(event, item.id)}
                 className={cn(
                   "block text-sm leading-snug transition-colors",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-teal-500 focus-visible:ring-offset-2",
                   activeId === item.id
                     ? "font-medium text-arka-teal-700"
                     : "text-arka-slate-600 hover:text-arka-slate-900",
@@ -103,12 +115,12 @@ export function DocsPageLayout({
     ) : null;
 
   return (
-    <div className={cn("min-h-screen bg-surface", className)}>
+    <div className={cn("min-h-full flex-1 bg-surface", className)}>
       <div className="mx-auto max-w-7xl px-4 py-10 pb-20 pt-12 sm:px-6 lg:px-8">
         {tocNav ? (
           <details className="mb-8 rounded-radius-lg border border-border-subtle bg-surface-sunken p-4 lg:hidden">
-            <summary className="cursor-pointer text-sm font-medium text-arka-slate-800">
-              Table of contents
+            <summary className="cursor-pointer text-sm font-medium text-arka-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-teal-500">
+              On this page
             </summary>
             <div className="mt-3">{tocNav}</div>
           </details>
@@ -122,7 +134,7 @@ export function DocsPageLayout({
                 <div className="mt-8 border-t border-border-subtle pt-4">
                   <Link
                     href="/trust"
-                    className="text-sm font-medium text-arka-teal-700 hover:text-arka-teal-600"
+                    className="text-sm font-medium text-arka-teal-700 hover:text-arka-teal-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arka-teal-500 focus-visible:ring-offset-2"
                   >
                     Trust center →
                   </Link>

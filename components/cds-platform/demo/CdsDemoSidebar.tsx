@@ -17,6 +17,7 @@ import { OverrideDialog } from '@/components/cds-platform/sidebar/OverrideDialog
 import { ReviewAlternativePanel } from './ReviewAlternativePanel';
 import { ShapFactorsBlock } from './ShapFactorsBlock';
 import type { ShapRowWithRationale } from './demo-response';
+import { routes } from '@/lib/constants';
 import type { DemoScenario } from './scenarios';
 
 const OVERRIDE_OPTIONS: OverrideOption[] = STANDARD_OVERRIDE_REASONS.map((r) => ({
@@ -41,7 +42,8 @@ export interface CdsDemoSidebarProps {
   overrideDialogOpen: boolean;
   onOverrideDialogClose: () => void;
   onOverrideSubmit: (payload: { code: string; documentation?: string }) => void;
-  onAboutRecommendation: () => void;
+  /** Active CDS hook driving the sidebar (order-select vs order-sign). */
+  activeHook?: 'order-select' | 'order-sign';
   signPending?: boolean;
   onSignAnywayWithReason?: () => void;
 }
@@ -64,7 +66,7 @@ export function CdsDemoSidebar({
   overrideDialogOpen,
   onOverrideDialogClose,
   onOverrideSubmit,
-  onAboutRecommendation,
+  activeHook = 'order-select',
   signPending = false,
   onSignAnywayWithReason,
 }: CdsDemoSidebarProps) {
@@ -74,7 +76,7 @@ export function CdsDemoSidebar({
   const guidelineShort = medicalBasis.label.split('—')[0]?.trim() ?? medicalBasis.label;
 
   const asideClass =
-    'flex min-w-0 w-full flex-col rounded-xl border border-slate-200 bg-white text-slate-900 shadow-sm md:rounded-none md:rounded-r-xl md:border-0 md:shadow-none';
+    'flex min-w-0 w-full flex-col rounded-xl border border-slate-200 !bg-white text-slate-900 shadow-sm md:rounded-none md:rounded-r-xl md:border-0 md:shadow-none';
 
   return (
     <AnimatePresence mode="wait">
@@ -108,17 +110,14 @@ export function CdsDemoSidebar({
         <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-600">
           ARKA Sidebar
         </p>
-        <p className="mt-0.5 text-xs text-slate-600">CDS Hooks · order-select</p>
+        <p className="mt-0.5 text-xs text-slate-600">CDS Hooks · {activeHook}</p>
       </header>
 
       {overrideDialogOpen ? (
         <div className="flex flex-col p-3">
           <OverrideDialog
             options={OVERRIDE_OPTIONS}
-            onSubmit={(payload) => {
-              onOverrideSubmit(payload);
-              onOverrideDialogClose();
-            }}
+            onSubmit={onOverrideSubmit}
             onGoBack={onOverrideDialogClose}
             alertTitle="CDS recommendation"
           />
@@ -217,10 +216,7 @@ export function CdsDemoSidebar({
             </p>
             <button
               type="button"
-              onClick={() => {
-                setAboutOpen((o) => !o);
-                onAboutRecommendation();
-              }}
+              onClick={() => setAboutOpen((o) => !o)}
               className="mt-2 text-xs font-medium text-teal-700 underline-offset-2 hover:text-teal-900 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500"
               aria-expanded={aboutOpen}
             >
@@ -236,12 +232,12 @@ export function CdsDemoSidebar({
                   </a>
                 </p>
                 <p>
-                  <a href="/docs/MODEL_CARD.md" className="font-medium text-teal-700 hover:underline">
-                    MODEL_CARD.md
+                  <a href={routes.modelCard} className="font-medium text-teal-700 hover:underline">
+                    Model card
                   </a>
                   {' · '}
-                  <a href="/docs/REGULATORY_RATIONALE_MEMO.md" className="font-medium text-teal-700 hover:underline">
-                    REGULATORY_RATIONALE_MEMO.md
+                  <a href={routes.regulatoryRationale} className="font-medium text-teal-700 hover:underline">
+                    Regulatory rationale
                   </a>
                 </p>
               </div>

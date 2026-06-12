@@ -36,6 +36,15 @@ export function EdDemoContent({ cases, evaluations }: EdDemoContentProps) {
     <div className="-mx-4 sm:-mx-6 lg:-mx-8">
       <EdDeptHeader />
 
+      <div className="mx-auto max-w-[1600px] px-4 sm:px-6 lg:px-8">
+        <p
+          className="mb-5 rounded-radius-md border border-border-subtle bg-arka-teal-50 px-4 py-3 text-sm font-medium text-arka-teal-900"
+          role="note"
+        >
+          Simulated ED queue — ARKA-ED scoring live cases as they arrive.
+        </p>
+      </div>
+
       <div className="mx-auto max-w-[1600px] px-4 py-5 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:gap-6">
           <div className="lg:w-[300px] lg:shrink-0">

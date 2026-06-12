@@ -15,6 +15,11 @@ const RevenueProof = dynamic(() =>
 const WhyArka = dynamic(() =>
   import("@/components/landing/WhyArka").then((m) => ({ default: m.WhyArka })),
 );
+const AiieVsAcrSection = dynamic(() =>
+  import("@/components/landing/AiieVsAcrSection").then((m) => ({
+    default: m.AiieVsAcrSection,
+  })),
+);
 const TrustBand = dynamic(() =>
   import("@/components/landing/TrustBand").then((m) => ({ default: m.TrustBand })),
 );
@@ -48,6 +53,7 @@ export default function Home() {
       <ProblemSection />
       <RevenueProof />
       <WhyArka />
+      <AiieVsAcrSection />
       <TrustBand />
       <PlatformEcosystem />
       <Testimonials />

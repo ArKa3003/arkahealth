@@ -52,12 +52,34 @@ export const routes = {
   cdsHooksDemo: "/cds-hooks-demo",
   cdsHooksDemoValidation: "/cds-hooks-demo/validation",
   cdsHooksDiscovery: "/cds-hooks-discovery",
+  /** HL7 CDS Hooks 2.0 well-known discovery (rewrites to /api/cds-services). */
+  cdsWellKnown: "/.well-known/cds-services",
+  cdsServicesApi: "/api/cds-services",
+  cdsFeedbackApi: "/api/cds-services/feedback",
+  cdsClinAppropriateness: "/api/cds-services/arka-clin-appropriateness",
+  cdsClinAppropriatenessSign: "/api/cds-services/arka-clin-appropriateness-sign",
+  evidence: "/evidence",
   regulatoryRationale: "/docs/regulatory-rationale",
   featureCatalog: "/docs/feature-catalog",
   modelCard: "/docs/model-card",
   trust: "/trust",
   roi: "/roi",
+  security: "/security",
+  signin: "/signin",
 } as const;
+
+/**
+ * First-party evidence registry path for a Knowledge Matrix slug.
+ *
+ * @param slug - Stable kebab-case evidence slug.
+ */
+export function evidencePath(slug: string): string {
+  const safeSlug = slug
+    .toLowerCase()
+    .replace(/[^a-z0-9-]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return `/evidence/${safeSlug || "imaging"}`;
+}
 
 /** FDA §520(o)(1)(E) non-device CDS criteria — links anchor Phase 11 regulatory memo route. */
 export const FDA_NON_DEVICE_CRITERIA = [
@@ -162,7 +184,12 @@ export const complianceLinks = [
     description: "Per-feature evidence with last-verified citations.",
   },
   {
-    href: "/.well-known/cds-services",
+    href: routes.cdsHooksDiscovery,
+    label: "CDS Hooks Discovery",
+    description: "Human-readable service catalog and integration guide.",
+  },
+  {
+    href: routes.cdsWellKnown,
     label: "Discovery JSON",
     description: "Raw HL7 CDS Hooks 2.0 discovery document.",
     external: true,

@@ -362,6 +362,8 @@
 html {
   scroll-behavior: smooth;
   overflow-x: hidden;
+  background-color: var(--surface-dark);
+  overscroll-behavior-y: none;
 }
 
 body {

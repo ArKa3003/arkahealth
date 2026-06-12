@@ -12,6 +12,14 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/webp", "image/avif"],
   },
+  async rewrites() {
+    return [
+      {
+        source: "/.well-known/cds-services",
+        destination: "/api/cds-services",
+      },
+    ];
+  },
   async headers() {
     return [
       {

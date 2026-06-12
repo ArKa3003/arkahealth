@@ -4,7 +4,7 @@ import { ComplianceBar } from "@/components/shared/ComplianceBar";
 import { EvidenceIndexClient } from "@/components/evidence/EvidenceIndexClient";
 import { FDA_NON_DEVICE_CDS_DISCLOSURE } from "@/lib/compliance/fda-disclosure";
 import { MATRIX_VERSION } from "@/lib/aiie/knowledge-matrix";
-import { evidenceEntriesByRegion } from "@/lib/evidence/registry";
+import { evidenceEntriesByRegion, evidenceRegistryCount } from "@/lib/evidence/registry";
 
 export const metadata: Metadata = {
   title: "AIIE Evidence Library",
@@ -28,9 +28,10 @@ export default function EvidenceIndexPage() {
       lastReviewed: entry.lastReviewed,
     })),
   }));
+  const totalTopics = evidenceRegistryCount();
 
   return (
-    <div className="min-h-screen bg-surface">
+    <div className="min-h-full flex-1 bg-surface">
       <ComplianceBar />
 
       <div className="mx-auto max-w-5xl px-4 py-12 pb-20 sm:px-6 lg:px-8">
@@ -42,12 +43,12 @@ export default function EvidenceIndexPage() {
           <p className="mt-4 max-w-2xl text-body-lg text-arka-slate-600">
             Every recommendation from the ARKA Imaging Intelligence Engine links here — a
             plain-language synthesis per clinical scenario, with the underlying society
-            guidelines, USPSTF statements, and peer-reviewed literature cited beneath. Knowledge
-            Matrix v{MATRIX_VERSION}.
+            guidelines, USPSTF statements, and peer-reviewed literature cited beneath.{" "}
+            {totalTopics} topics · Knowledge Matrix v{MATRIX_VERSION}.
           </p>
         </header>
 
-        <EvidenceIndexClient groups={groups} />
+        <EvidenceIndexClient groups={groups} totalTopics={totalTopics} />
 
         <div
           role="note"

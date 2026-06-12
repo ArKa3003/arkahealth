@@ -309,7 +309,7 @@ export function GoldCardDashboardClient({ embedded = false }: GoldCardDashboardC
               <Link href={routes.ins} className="text-arka-teal hover:underline">
                 ARKA-INS
               </Link>
-              <span className="text-slate-400">
+              <span className="text-slate-500">
                 {embedded ? " / Provider dashboard / Gold Card" : " / Provider / Gold Card"}
               </span>
             </p>
@@ -495,7 +495,7 @@ export function GoldCardDashboardClient({ embedded = false }: GoldCardDashboardC
                         className="rounded-lg border border-slate-100 bg-slate-50/80 px-4 py-3 text-sm text-slate-800"
                       >
                         <span className="font-mono font-semibold text-slate-900">{row.cptCode}</span>
-                        <span className="text-slate-400"> / </span>
+                        <span className="text-slate-500"> / </span>
                         <span className="font-medium">{payerLabel(row.payerId)}</span>
                         <p className="mt-1 text-slate-600">{row.status.nextMilestone}</p>
                       </li>

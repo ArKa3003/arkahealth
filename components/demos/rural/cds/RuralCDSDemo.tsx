@@ -2,13 +2,20 @@
 
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MapPin, Building2 } from "lucide-react";
+import { AlertCircle, MapPin, Building2 } from "lucide-react";
 import { evaluateRAAS } from "@/lib/demos/rural/scoring/raas-engine";
+import { evaluateRaasViaApi } from "@/lib/demos/rural/rural-api";
 import { DEMO_FACILITIES } from "@/lib/demos/rural/facility-profiles";
+import { useRuralStore, useSelectedFacility } from "@/lib/demos/rural/rural-store";
+import { RuralDashboardPanel } from "@/components/demos/rural/shared/RuralDashboardPanel";
+import { FacilityProfileForm } from "@/components/demos/rural/cds/FacilityProfileForm";
+import { ResourceAwareScoring } from "@/components/demos/rural/cds/ResourceAwareScoring";
 import { DualScoreDisplay } from "./DualScoreDisplay";
 import { SmartTriagePathway } from "./SmartTriagePathway";
+import { LocalFirstProtocol } from "./LocalFirstProtocol";
+import { MobileUnitProtocol } from "./MobileUnitProtocol";
+import { TransferProtocol } from "./TransferProtocol";
 import type {
-  FacilityProfile,
   RAASInput,
   RAASResult,
   ClinicalScenarioExtended,
@@ -190,16 +197,21 @@ const DEMO_SCENARIOS: {
 ];
 
 export function RuralCDSDemo() {
-  const [selectedFacility, setSelectedFacility] = useState<FacilityProfile>(DEMO_FACILITIES[0]!);
+  const selectedFacility = useSelectedFacility();
+  const setStoreFacility = useRuralStore((s) => s.setSelectedFacility);
   const [selectedScenarioIdx, setSelectedScenarioIdx] = useState<number | null>(null);
   const [result, setResult] = useState<RAASResult | null>(null);
   const [isEvaluating, setIsEvaluating] = useState(false);
+  const [evalError, setEvalError] = useState<string | null>(null);
+  const [usedFallback, setUsedFallback] = useState(false);
 
   const handleEvaluate = useCallback(
-    (scenarioIdx: number) => {
+    async (scenarioIdx: number) => {
       setSelectedScenarioIdx(scenarioIdx);
       setIsEvaluating(true);
       setResult(null);
+      setEvalError(null);
+      setUsedFallback(false);
 
       const demo = DEMO_SCENARIOS[scenarioIdx]!;
       const input: RAASInput = {
@@ -208,120 +220,142 @@ export function RuralCDSDemo() {
         patientContext: demo.patientContext,
       };
 
-      // Simulate processing delay for realism
-      setTimeout(() => {
-        const evaluation = evaluateRAAS(input);
-        setResult(evaluation);
+      const apiResult = await evaluateRaasViaApi(input);
+
+      if (apiResult.data) {
+        setResult(apiResult.data);
         setIsEvaluating(false);
-      }, 1200);
+        return;
+      }
+
+      const local = evaluateRAAS(input);
+      setResult(local);
+      setUsedFallback(true);
+      setEvalError(apiResult.error);
+      setIsEvaluating(false);
     },
-    [selectedFacility]
+    [selectedFacility],
   );
 
-  const handleFacilityChange = useCallback((facilityId: string) => {
-    const facility = DEMO_FACILITIES.find((f) => f.id === facilityId);
-    if (facility) {
-      setSelectedFacility(facility);
-      setResult(null);
-      setSelectedScenarioIdx(null);
-    }
-  }, []);
+  const handleFacilityChange = useCallback(
+    (facilityId: string) => {
+      const facility = DEMO_FACILITIES.find((f) => f.id === facilityId);
+      if (facility) {
+        setStoreFacility(facility);
+        setResult(null);
+        setSelectedScenarioIdx(null);
+        setEvalError(null);
+        setUsedFallback(false);
+      }
+    },
+    [setStoreFacility],
+  );
 
   return (
     <div className="space-y-8">
-      {/* Facility Selector */}
-      <section
-        className="rounded-xl border border-slate-200 bg-white p-6 shadow-card"
-        aria-labelledby="facility-selector-heading"
-      >
-        <h3 id="facility-selector-heading" className="text-lg font-heading text-arka-text-dark mb-4 flex items-center gap-2">
-          <Building2 className="h-5 w-5 text-arka-teal" />
-          Select Facility Profile
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {DEMO_FACILITIES.map((facility) => (
-            <button
-              key={facility.id}
-              type="button"
-              onClick={() => handleFacilityChange(facility.id)}
-              className={`text-left rounded-lg border-2 p-4 transition-all ${
-                selectedFacility.id === facility.id
-                  ? "border-arka-teal bg-arka-teal/5 shadow-glow-sm"
-                  : "border-slate-200 hover:border-slate-300 bg-white"
-              }`}
+      <RuralDashboardPanel>
+        <section
+          className="rounded-xl border border-slate-200 bg-white p-6 shadow-card"
+          aria-labelledby="facility-selector-heading"
+        >
+          <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <h3
+              id="facility-selector-heading"
+              className="flex items-center gap-2 font-heading text-lg text-arka-text-dark"
             >
-              <p className="font-body-medium text-arka-text-dark">{facility.name}</p>
-              <p className="text-xs text-arka-text-dark-muted mt-1">
-                {facility.location.city}, {facility.location.state} · {facility.designation.join(", ") || "Regional Center"}
-              </p>
-              <div className="mt-2 flex flex-wrap gap-1">
-                {facility.equipment.map((eq) => (
+              <Building2 className="h-5 w-5 text-arka-teal" aria-hidden />
+              Select facility profile
+            </h3>
+            <div className="w-full sm:max-w-xs">
+              <FacilityProfileForm />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            {DEMO_FACILITIES.map((facility) => (
+              <button
+                key={facility.id}
+                type="button"
+                onClick={() => handleFacilityChange(facility.id)}
+                className={`min-h-[44px] rounded-lg border-2 p-4 text-left transition-all touch-manipulation ${
+                  selectedFacility.id === facility.id
+                    ? "border-arka-teal bg-arka-teal/5 shadow-glow-sm"
+                    : "border-slate-200 bg-white hover:border-slate-300"
+                }`}
+              >
+                <p className="font-body-medium text-arka-text-dark">{facility.name}</p>
+                <p className="mt-1 text-xs text-arka-text-dark-muted">
+                  {facility.location.city}, {facility.location.state} ·{" "}
+                  {facility.designation.join(", ") || "Regional Center"}
+                </p>
+                <div className="mt-2 flex flex-wrap gap-1">
+                  {facility.equipment.map((eq) => (
+                    <span
+                      key={eq.id}
+                      className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600"
+                    >
+                      {eq.modality}
+                    </span>
+                  ))}
+                </div>
+                <p className="mt-2 text-xs text-arka-text-dark-soft">
+                  <MapPin className="mr-1 inline h-3 w-3" aria-hidden />
+                  {facility.location.distanceToUrbanCenter} mi to {facility.location.nearestUrbanCenter}
+                </p>
+              </button>
+            ))}
+          </div>
+        </section>
+      </RuralDashboardPanel>
+
+      <RuralDashboardPanel delay={0.04}>
+        <ResourceAwareScoring facility={selectedFacility} />
+      </RuralDashboardPanel>
+
+      <RuralDashboardPanel delay={0.05}>
+        <section
+          className="rounded-xl border border-slate-200 bg-white p-6 shadow-card"
+          aria-labelledby="scenario-selector-heading"
+        >
+          <h3 id="scenario-selector-heading" className="mb-4 font-heading text-lg text-arka-text-dark">
+            Select clinical scenario
+          </h3>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {DEMO_SCENARIOS.map((demo, idx) => (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => void handleEvaluate(idx)}
+                disabled={isEvaluating}
+                className={`min-h-[44px] rounded-lg border p-4 text-left transition-all touch-manipulation disabled:opacity-60 ${
+                  selectedScenarioIdx === idx
+                    ? "border-arka-teal bg-arka-teal/5"
+                    : "border-slate-200 hover:border-arka-teal/50 hover:bg-slate-50"
+                }`}
+              >
+                <p className="font-body-medium text-sm text-arka-text-dark">{demo.label}</p>
+                <p className="mt-1 text-xs text-arka-text-dark-muted">{demo.description}</p>
+                <div className="mt-2 flex items-center gap-2">
                   <span
-                    key={eq.id}
-                    className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600"
+                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                      demo.scenario.proposedImaging.urgency === "stat"
+                        ? "bg-red-100 text-red-700"
+                        : demo.scenario.proposedImaging.urgency === "urgent"
+                          ? "bg-amber-100 text-amber-700"
+                          : "bg-green-100 text-green-700"
+                    }`}
                   >
-                    {eq.modality}
+                    {demo.scenario.proposedImaging.urgency.toUpperCase()}
                   </span>
-                ))}
-              </div>
-              <p className="text-xs text-arka-text-dark-soft mt-2">
-                <MapPin className="inline h-3 w-3 mr-1" />
-                {facility.location.distanceToUrbanCenter} mi to {facility.location.nearestUrbanCenter}
-              </p>
-            </button>
-          ))}
-        </div>
-      </section>
+                  <span className="text-xs text-arka-text-dark-soft">
+                    {demo.scenario.proposedImaging.modality}
+                  </span>
+                </div>
+              </button>
+            ))}
+          </div>
+        </section>
+      </RuralDashboardPanel>
 
-      {/* Demo Scenario Selector */}
-      <section
-        className="rounded-xl border border-slate-200 bg-white p-6 shadow-card"
-        aria-labelledby="scenario-selector-heading"
-      >
-        <h3 id="scenario-selector-heading" className="text-lg font-heading text-arka-text-dark mb-4">
-          Select Clinical Scenario
-        </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {DEMO_SCENARIOS.map((demo, idx) => (
-            <button
-              key={idx}
-              type="button"
-              onClick={() => handleEvaluate(idx)}
-              disabled={isEvaluating}
-              className={`text-left rounded-lg border p-4 transition-all disabled:opacity-60 ${
-                selectedScenarioIdx === idx
-                  ? "border-arka-teal bg-arka-teal/5"
-                  : "border-slate-200 hover:border-arka-teal/50 hover:bg-slate-50"
-              }`}
-            >
-              <p className="font-body-medium text-arka-text-dark text-sm">
-                {demo.label}
-              </p>
-              <p className="text-xs text-arka-text-dark-muted mt-1">
-                {demo.description}
-              </p>
-              <div className="mt-2 flex items-center gap-2">
-                <span
-                  className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                    demo.scenario.proposedImaging.urgency === "stat"
-                      ? "bg-red-100 text-red-700"
-                      : demo.scenario.proposedImaging.urgency === "urgent"
-                        ? "bg-amber-100 text-amber-700"
-                        : "bg-green-100 text-green-700"
-                  }`}
-                >
-                  {demo.scenario.proposedImaging.urgency.toUpperCase()}
-                </span>
-                <span className="text-xs text-arka-text-dark-soft">
-                  {demo.scenario.proposedImaging.modality}
-                </span>
-              </div>
-            </button>
-          ))}
-        </div>
-      </section>
-
-      {/* Loading State */}
       <AnimatePresence>
         {isEvaluating && (
           <motion.div
@@ -329,6 +363,8 @@ export function RuralCDSDemo() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             className="flex items-center justify-center py-12"
+            role="status"
+            aria-live="polite"
           >
             <div className="flex flex-col items-center gap-4">
               <div className="h-10 w-10 animate-spin rounded-full border-4 border-arka-teal/20 border-t-arka-teal" />
@@ -340,7 +376,20 @@ export function RuralCDSDemo() {
         )}
       </AnimatePresence>
 
-      {/* Results */}
+      {evalError ? (
+        <div
+          className="flex items-start gap-2 rounded-lg border border-warning/30 bg-warning-bg px-4 py-3 text-sm text-warning"
+          role="alert"
+        >
+          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+          <p>
+            {usedFallback
+              ? `API unavailable — showing local evaluation. ${evalError}`
+              : evalError}
+          </p>
+        </div>
+      ) : null}
+
       <AnimatePresence>
         {result && !isEvaluating && (
           <motion.div
@@ -349,21 +398,36 @@ export function RuralCDSDemo() {
             transition={{ duration: 0.4 }}
             className="space-y-6"
           >
-            {/* Dual Score Display */}
-            <DualScoreDisplay
-              cas={result.clinicalAppropriatenessScore}
-              raas={result.resourceAdjustedScore}
-              resourceFactors={result.resourceFactors}
-              urgency={result.urgencyClassification}
-            />
+            <RuralDashboardPanel>
+              <DualScoreDisplay
+                cas={result.clinicalAppropriatenessScore}
+                raas={result.resourceAdjustedScore}
+                resourceFactors={result.resourceFactors}
+                urgency={result.urgencyClassification}
+              />
+            </RuralDashboardPanel>
 
-            {/* Smart Triage Pathway */}
-            <SmartTriagePathway
-              recommendation={result.triageRecommendation}
-              alternatives={result.alternativePathways}
-              costEstimate={result.estimatedCost}
-              facilityName={selectedFacility.name}
-            />
+            <RuralDashboardPanel delay={0.05}>
+              <SmartTriagePathway
+                recommendation={result.triageRecommendation}
+                alternatives={result.alternativePathways}
+                costEstimate={result.estimatedCost}
+                facilityName={selectedFacility.name}
+              />
+            </RuralDashboardPanel>
+
+            <RuralDashboardPanel delay={0.1}>
+              {result.triageRecommendation.tier === "local-first" ? (
+                <LocalFirstProtocol />
+              ) : result.triageRecommendation.tier === "mobile-unit" ? (
+                <MobileUnitProtocol />
+              ) : result.triageRecommendation.tier === "transfer" ? (
+                <TransferProtocol
+                  facility={selectedFacility}
+                  studyType={DEMO_SCENARIOS[selectedScenarioIdx ?? 0]?.scenario.proposedImaging.modality ?? "CT"}
+                />
+              ) : null}
+            </RuralDashboardPanel>
           </motion.div>
         )}
       </AnimatePresence>

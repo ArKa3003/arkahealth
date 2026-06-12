@@ -3,14 +3,44 @@ import { routes } from "@/lib/constants";
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://arkahealth.com";
 
+/** Static marketing routes included in sitemap and release QA sweeps. */
+export const QA_STATIC_ROUTES = [
+  routes.home,
+  routes.clinSuite,
+  routes.clin,
+  routes.cdsHooksDemo,
+  routes.cdsHooksDiscovery,
+  routes.cdsHooksDemoValidation,
+  routes.ed,
+  routes.ins,
+  routes.rural,
+  routes.signin,
+  routes.security,
+  routes.trust,
+  routes.evidence,
+  routes.roi,
+  routes.featureCatalog,
+  "/action-plan",
+  "/privacy",
+  "/terms",
+] as const;
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  const staticPages = [
-    { url: baseUrl + routes.home, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 1 },
-    { url: baseUrl + routes.clinSuite, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.9 },
-    { url: baseUrl + routes.clin, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.85 },
-    { url: baseUrl + routes.ed, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.9 },
-    { url: baseUrl + routes.ins, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.9 },
-    { url: baseUrl + routes.rural, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.85 },
-  ];
+  const staticPages = QA_STATIC_ROUTES.map((route) => ({
+    url: baseUrl + route,
+    lastModified: new Date(),
+    changeFrequency:
+      route === routes.home
+        ? ("weekly" as const)
+        : route === routes.security || route === routes.trust
+          ? ("monthly" as const)
+          : ("weekly" as const),
+    priority:
+      route === routes.home
+        ? 1
+        : route === routes.security || route === routes.trust
+          ? 0.8
+          : 0.85,
+  }));
   return staticPages;
 }

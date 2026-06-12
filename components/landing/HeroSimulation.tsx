@@ -1,12 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  AnimatePresence,
-  motion,
-  useAnimationControls,
-  useReducedMotion,
-} from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { BookOpen, FileText } from "lucide-react";
 
 import { ScoreRing } from "@/components/ui/score-ring";
@@ -23,114 +18,226 @@ const SIM_DATA = {
   hookLabel: "CDS Hooks · order-select",
 } as const;
 
-const LOOP_MS = 9000;
+const INTRO_MS = 200;
+const TYPING_START_MS = 600;
+const CHAR_DELAY_MS = 45;
+const SCORE_DELAY_MS = 200;
+const EVIDENCE_DELAY_MS = 700;
+const HOLD_MS = 2600;
+const EXIT_MS = 600;
+const REDUCED_STEP_MS = 400;
+const REDUCED_HOLD_MS = 4000;
+
+type SimPhase = "idle" | "intro" | "typing" | "score" | "evidence" | "hold" | "exit";
+
+/** Phases where interrupting would visibly break the card — skip hard-reset during these. */
+const MID_FLIGHT_PHASES: SimPhase[] = ["intro", "typing", "score", "evidence", "exit"];
+
+/**
+ * Derive full cycle duration from phase timings so copy changes cannot desync the loop.
+ */
+function computeCycleTiming(orderLength: number, reducedMotion: boolean) {
+  const typingMs = TYPING_START_MS + orderLength * CHAR_DELAY_MS;
+  const fullMotionMs =
+    typingMs + SCORE_DELAY_MS + EVIDENCE_DELAY_MS + HOLD_MS + EXIT_MS;
+  const reducedMotionMs = REDUCED_STEP_MS * 2 + REDUCED_HOLD_MS + EXIT_MS;
+  return {
+    typingMs,
+    cycleDurationMs: reducedMotion ? reducedMotionMs : fullMotionMs,
+  };
+}
+
+/** Full-cycle duration (ms) — derived from phase constants, not hard-coded. */
+export const HERO_SIM_FULL_CYCLE_MS = computeCycleTiming(
+  SIM_DATA.orderText.length,
+  false,
+).cycleDurationMs;
+
+/** Abort-aware delay — rejects with AbortError when the signal fires. */
+function sleep(ms: number, signal: AbortSignal): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (signal.aborted) {
+      reject(new DOMException("Aborted", "AbortError"));
+      return;
+    }
+    const id = window.setTimeout(() => resolve(), ms);
+    const onAbort = () => {
+      window.clearTimeout(id);
+      reject(new DOMException("Aborted", "AbortError"));
+    };
+    signal.addEventListener("abort", onAbort, { once: true });
+  });
+}
+
+function isMidFlight(phase: SimPhase): boolean {
+  return MID_FLIGHT_PHASES.includes(phase);
+}
 
 /**
  * Self-playing mini CDS card simulation for the landing hero.
- * Pure presentation — no API calls. Pauses when offscreen.
+ * Pure presentation — no API calls. Loops while visible; pauses when offscreen.
  */
 export function HeroSimulation() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const isVisibleRef = useRef(false);
+  const phaseRef = useRef<SimPhase>("idle");
+  const abortRef = useRef<AbortController | null>(null);
+  const wasIntersectingRef = useRef(false);
+  const hasLeftViewportRef = useRef(false);
+
   const [isVisible, setIsVisible] = useState(false);
+  const [runToken, setRunToken] = useState(0);
   const [cycle, setCycle] = useState(0);
+  const [phase, setPhase] = useState<SimPhase>("idle");
   const [typedChars, setTypedChars] = useState(0);
-  const [showScore, setShowScore] = useState(false);
-  const [showEvidence, setShowEvidence] = useState(false);
-  const [scoreKey, setScoreKey] = useState(0);
-  const panelControls = useAnimationControls();
-  const chipControls = useAnimationControls();
+  const [announceLive, setAnnounceLive] = useState(true);
+  const announceLiveRef = useRef(true);
+
   const prefersReducedMotion = useReducedMotion();
+  const reducedMotion = prefersReducedMotion === true;
+
+  const setPhaseSafe = useCallback((next: SimPhase) => {
+    phaseRef.current = next;
+    setPhase(next);
+  }, []);
+
+  const hardRestart = useCallback(() => {
+    abortRef.current?.abort();
+    setRunToken((t) => t + 1);
+  }, []);
+
+  useEffect(() => {
+    phaseRef.current = phase;
+  }, [phase]);
+
+  useEffect(() => {
+    isVisibleRef.current = isVisible;
+  }, [isVisible]);
 
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
 
     const observer = new IntersectionObserver(
-      ([entry]) => setIsVisible(entry?.isIntersecting ?? false),
+      ([entry]) => {
+        const intersecting = entry?.isIntersecting ?? false;
+
+        if (intersecting) {
+          if (hasLeftViewportRef.current && !isMidFlight(phaseRef.current)) {
+            hardRestart();
+          }
+          wasIntersectingRef.current = true;
+          hasLeftViewportRef.current = false;
+          setIsVisible(true);
+          return;
+        }
+
+        if (wasIntersectingRef.current) {
+          hasLeftViewportRef.current = true;
+        }
+        setIsVisible(false);
+        abortRef.current?.abort();
+        setPhaseSafe("idle");
+        setTypedChars(0);
+      },
       { threshold: 0.15 },
     );
+
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [hardRestart, setPhaseSafe]);
 
-  const resetCycle = useCallback(() => {
-    setTypedChars(0);
-    setShowScore(false);
-    setShowEvidence(false);
-    setScoreKey((k) => k + 1);
-    void panelControls.set({ opacity: 0, y: 12 });
-    void chipControls.set({ opacity: 0, scale: 0.95 });
-  }, [panelControls, chipControls]);
+  useEffect(() => {
+    const onVisibilityChange = () => {
+      if (document.visibilityState !== "visible" || !isVisibleRef.current) return;
+      if (!isMidFlight(phaseRef.current)) {
+        hardRestart();
+      }
+    };
+
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", onVisibilityChange);
+  }, [hardRestart]);
 
   useEffect(() => {
     if (!isVisible) return;
 
-    let cancelled = false;
-    const timeouts: ReturnType<typeof setTimeout>[] = [];
+    const ac = new AbortController();
+    abortRef.current = ac;
+    const { signal } = ac;
+    const orderLength = SIM_DATA.orderText.length;
 
-    const schedule = (fn: () => void, ms: number) => {
-      timeouts.push(
-        setTimeout(() => {
-          if (!cancelled) fn();
-        }, ms),
-      );
-    };
+    const runLoop = async () => {
+      try {
+        while (!signal.aborted && isVisibleRef.current) {
+          setPhaseSafe("idle");
+          setTypedChars(0);
 
-    const runCycle = () => {
-      resetCycle();
+          await sleep(INTRO_MS, signal);
+          setPhaseSafe("intro");
 
-      schedule(() => {
-        void panelControls.start({
-          opacity: 1,
-          y: 0,
-          transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] },
-        });
-      }, 200);
+          if (reducedMotion) {
+            setPhaseSafe("typing");
+            setTypedChars(orderLength);
+            await sleep(REDUCED_STEP_MS, signal);
+            setPhaseSafe("score");
+            await sleep(REDUCED_STEP_MS, signal);
+            setPhaseSafe("evidence");
+            await sleep(REDUCED_HOLD_MS, signal);
+          } else {
+            await sleep(TYPING_START_MS - INTRO_MS, signal);
+            setPhaseSafe("typing");
 
-      if (prefersReducedMotion) {
-        schedule(() => setTypedChars(SIM_DATA.orderText.length), 400);
-        schedule(() => setShowScore(true), 700);
-        schedule(() => setShowEvidence(true), 1000);
-        schedule(() => {
-          void chipControls.start({
-            opacity: 1,
-            scale: 1,
-            transition: { duration: 0.3 },
-          });
-        }, 1000);
-      } else {
-        const charDelay = 45;
-        for (let i = 1; i <= SIM_DATA.orderText.length; i++) {
-          schedule(() => setTypedChars(i), 600 + i * charDelay);
+            for (let i = 1; i <= orderLength; i++) {
+              await sleep(CHAR_DELAY_MS, signal);
+              setTypedChars(i);
+            }
+
+            await sleep(SCORE_DELAY_MS, signal);
+            setPhaseSafe("score");
+
+            await sleep(EVIDENCE_DELAY_MS, signal);
+            setPhaseSafe("evidence");
+
+            await sleep(HOLD_MS, signal);
+            setPhaseSafe("hold");
+          }
+
+          setPhaseSafe("exit");
+          setCycle((c) => c + 1);
+          if (announceLiveRef.current) {
+            announceLiveRef.current = false;
+            setAnnounceLive(false);
+          }
+
+          await sleep(EXIT_MS, signal);
         }
-        const typingEnd = 600 + SIM_DATA.orderText.length * charDelay + 200;
-        schedule(() => setShowScore(true), typingEnd);
-        schedule(() => {
-          setShowEvidence(true);
-          void chipControls.start({
-            opacity: 1,
-            scale: 1,
-            transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] },
-          });
-        }, typingEnd + 700);
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") {
+          return;
+        }
+        throw error;
       }
-
-      schedule(() => setCycle((c) => c + 1), LOOP_MS);
     };
 
-    runCycle();
+    void runLoop();
 
     return () => {
-      cancelled = true;
-      timeouts.forEach(clearTimeout);
+      ac.abort();
     };
-  }, [isVisible, cycle, panelControls, chipControls, resetCycle, prefersReducedMotion]);
+  }, [isVisible, runToken, reducedMotion, setPhaseSafe]);
 
   const typedOrder = SIM_DATA.orderText.slice(0, typedChars);
+  const showScore = phase === "score" || phase === "evidence" || phase === "hold" || phase === "exit";
+  const showEvidence =
+    phase === "evidence" || phase === "hold" || phase === "exit";
+  const panelVisible = phase !== "idle";
+  const showCursor =
+    !reducedMotion && phase === "typing" && typedChars < SIM_DATA.orderText.length;
 
   return (
     <div ref={containerRef} className="relative mx-auto w-full max-w-2xl">
-      <p className="sr-only" aria-live="polite">
+      <p className="sr-only" aria-live={announceLive ? "polite" : "off"} aria-atomic="true">
         Simulated EHR order panel: {typedOrder || "waiting for order entry"}. AIIE score{" "}
         {showScore ? SIM_DATA.score : "pending"} out of 9.
         {showEvidence ? ` Evidence: ${SIM_DATA.evidenceLabel}.` : ""}
@@ -141,7 +248,7 @@ export function HeroSimulation() {
           key={cycle}
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: EXIT_MS / 1000, ease: "easeOut" }}
           className="overflow-hidden rounded-radius-xl border border-white/10 bg-surface-dark-raised shadow-elevation-3"
           aria-hidden
         >
@@ -158,7 +265,14 @@ export function HeroSimulation() {
           </div>
 
           <div className="grid gap-5 p-4 sm:grid-cols-[1fr_auto] sm:gap-6 sm:p-6">
-            <motion.div animate={panelControls} initial={{ opacity: 0, y: 12 }}>
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={panelVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
+              transition={{
+                duration: reducedMotion ? 0.2 : 0.45,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+            >
               <div className="space-y-4">
                 <div>
                   <p className="text-caption font-medium text-arka-slate-400">
@@ -175,7 +289,7 @@ export function HeroSimulation() {
                     <FileText className="mr-2 h-4 w-4 shrink-0 text-arka-teal-400" aria-hidden />
                     <span className="font-mono text-sm text-white">
                       {typedOrder}
-                      {!prefersReducedMotion && typedChars < SIM_DATA.orderText.length ? (
+                      {showCursor ? (
                         <span className="ml-0.5 inline-block h-4 w-0.5 animate-pulse bg-arka-teal-400" />
                       ) : null}
                     </span>
@@ -185,8 +299,13 @@ export function HeroSimulation() {
                 <AnimatePresence>
                   {showEvidence ? (
                     <motion.div
-                      animate={chipControls}
                       initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{
+                        duration: reducedMotion ? 0.2 : 0.4,
+                        ease: [0.16, 1, 0.3, 1],
+                      }}
                       className="inline-flex items-center gap-2 rounded-full border border-arka-teal-500/30 bg-arka-teal-500/10 px-3 py-1.5"
                     >
                       <BookOpen className="h-3.5 w-3.5 text-arka-teal-400" aria-hidden />
@@ -208,11 +327,11 @@ export function HeroSimulation() {
               {showScore ? (
                 <div className="rounded-full bg-white p-1 shadow-elevation-2">
                   <ScoreRing
-                    key={scoreKey}
+                    key={`${cycle}-score`}
                     score={SIM_DATA.score}
                     size={100}
                     label="AIIE"
-                    animate={!prefersReducedMotion}
+                    animate={!reducedMotion}
                   />
                 </div>
               ) : (

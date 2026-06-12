@@ -129,7 +129,7 @@ export function ProblemSection() {
               ) : (
                 <div className="flex flex-col items-center gap-1 py-2">
                   <ArrowUp className="h-7 w-7 text-arka-teal" aria-hidden />
-                  <p className="text-xs text-arka-slate-500">loops back to the start</p>
+                  <p className="text-xs text-arka-slate-600">loops back to the start</p>
                 </div>
               )}
             </div>
